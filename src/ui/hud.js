@@ -39,6 +39,9 @@
       if (port && WB.Assets && WB.Assets.url('char_captain_1')) port.style.backgroundImage = "url('" + WB.Assets.url('char_captain_1') + "')";
       setT('hc-name', 'Kpt. ' + ((WB.Save && WB.Save.data.captainName) || 'Captain'));
       setT('hc-rank', WB.Rank ? WB.Rank.current().rank.name : '');
+      var reg = (WB.data && WB.data.regionById) ? WB.data.regionById(m.regionId) : null;
+      var chart = $('hud-chart');
+      if (chart && reg) chart.innerHTML = '<span>📡 KANAL ' + (reg.channel || 16) + '</span><span>⚓ ' + reg.name + '</span><span>📍 ' + (reg.coord || '') + '</span>';
     }
   };
 })(window.WB = window.WB || {});

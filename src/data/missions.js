@@ -53,7 +53,7 @@
     { id: 'm_diebstahl', type: 'pursuit', title: 'Bootsdieb auf der Flucht', icon: '🚨',
       objective: 'Dieb stellen', desc: 'Ein gestohlenes Boot flieht durch den Kanal. Bleib dran, lass dich nicht abhängen.',
       regionId: 'kanal', distance: 2100, timeLimit: 48, rewardCoins: 240, rewardXp: 170,
-      unlockLevel: 4, difficulty: 3, briefChar: 'char_thief_1', briefStation: 'station_suspicious_boat_1',
+      unlockLevel: 4, difficulty: 3, briefChar: 'char_kessler', briefStation: 'station_suspicious_boat_1',
       brief: 'Diebstahl gemeldet! Täter flieht mit dem Boot Richtung Kanal. Verfolgung aufnehmen!' },
 
     { id: 'm_vip', type: 'control', title: 'VIP-Eskorte Hafenkanal', icon: '🎖',
@@ -83,13 +83,13 @@
     { id: 'm_vermisst', type: 'rescue', title: 'Vermisstes Boot', icon: '🛟',
       objective: 'Vermisste erreichen', desc: 'Ein Boot wird seit Stunden vermisst. Erreiche die letzte bekannte Position bei aufkommendem Wind.',
       regionId: 'seenplatte', distance: 2500, timeLimit: 52, rewardCoins: 280, rewardXp: 200,
-      unlockLevel: 8, difficulty: 4, briefChar: 'char_radio_operator_1', briefStation: 'station_abandoned_jetty_1',
+      unlockLevel: 8, difficulty: 4, briefChar: 'char_mara', briefStation: 'station_abandoned_jetty_1',
       brief: 'Vermisstenmeldung! Letzte Position auf der Seenplatte. Wind frischt auf – volle Fahrt, jede Minute zählt.' },
 
     { id: 'm_razzia', type: 'smuggler', title: 'Großrazzia Oberhafen', icon: '🚔',
       objective: 'Schmugglerring sprengen', desc: 'Der Schmugglerring schleust Ware durch die Schleuse. Fang das Leitboot ab – enges Zeitfenster.',
       regionId: 'schleuse', distance: 2800, timeLimit: 44, rewardCoins: 420, rewardXp: 300,
-      unlockLevel: 9, difficulty: 4, briefChar: 'char_thief_1', briefStation: 'station_event_deck_1',
+      unlockLevel: 9, difficulty: 4, briefChar: 'char_wolff', briefStation: 'station_event_deck_1',
       brief: 'Großeinsatz Oberhafen: Leitboot des Rings gesichtet. Vor der Schleuse stellen – los, los, los!' },
 
     { id: 'm_sturm', type: 'rescue', title: 'Sturmrettung', icon: '⛈',

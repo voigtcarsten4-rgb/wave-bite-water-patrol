@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="assets/icons/icon.svg" />
   <link rel="icon" type="image/svg+xml" href="assets/icons/icon.svg" />
-  <link rel="stylesheet" href="styles/main.css?v=27" />
+  <link rel="stylesheet" href="styles/main.css?v=28" />
   <title>Wave Bite – Captain's Run</title>
 </head>
 <body>
@@ -103,6 +103,7 @@
           <div class="hc-meta"><b id="hc-name">Kapitän</b><span id="hc-rank">Deckhand</span></div>
         </div>
 
+        <div id="hud-chart" class="hud-chart"></div>
         <!-- HUD oben -->
         <div class="hud-top">
           <div class="hud-pill hud-mission">
@@ -208,50 +209,50 @@
   </div>
 
   <!-- Scripts (klassisch, in Abhängigkeitsreihenfolge → läuft auch lokal) -->
-  <script src="src/utils/math.js?v=27"></script>
-  <script src="src/utils/storage.js?v=27"></script>
-  <script src="src/data/models.js?v=27"></script>
-  <script src="src/data/boats.js?v=27"></script>
-  <script src="src/data/upgrades.js?v=27"></script>
-  <script src="src/data/regions.js?v=27"></script>
-  <script src="src/data/missions.js?v=27"></script>
-  <script src="src/data/achievements.js?v=27"></script>
-  <script src="src/data/content.js?v=27"></script>
-  <script src="src/data/legal.js?v=27"></script>
-  <script src="src/data/story.js?v=27"></script>
-  <script src="src/data/ranks.js?v=27"></script>
-  <script src="src/data/asset-manifest.js?v=27"></script>
-  <script src="src/systems/worldstate.js?v=27"></script>
-  <script src="src/systems/save.js?v=27"></script>
-  <script src="src/systems/progression.js?v=27"></script>
-  <script src="src/systems/rank.js?v=27"></script>
-  <script src="src/systems/assets.js?v=27"></script>
-  <script src="src/systems/track.js?v=27"></script>
-  <script src="src/systems/endless.js?v=27"></script>
-  <script src="src/systems/story.js?v=27"></script>
-  <script src="src/systems/audio.js?v=27"></script>
-  <script src="src/systems/input.js?v=27"></script>
-  <script src="src/core/water.js?v=27"></script>
-  <script src="src/core/engine.js?v=27"></script>
-  <script src="src/game/boat.js?v=27"></script>
-  <script src="src/game/ai.js?v=27"></script>
-  <script src="src/game/opponent.js?v=27"></script>
-  <script src="src/game/minigame.js?v=27"></script>
-  <script src="src/game/minigame-lock.js?v=27"></script>
-  <script src="src/game/minigame-search.js?v=27"></script>
-  <script src="src/game/obstacle.js?v=27"></script>
-  <script src="src/game/world.js?v=27"></script>
-  <script src="src/game/mission.js?v=27"></script>
-  <script src="src/game/game.js?v=27"></script>
-  <script src="src/game/minigame-radar.js?v=27"></script>
-  <script src="src/ui/news.js?v=27"></script>
-  <script src="src/ui/lucy.js?v=27"></script>
-  <script src="src/ui/hud.js?v=27"></script>
-  <script src="src/ui/screens.js?v=27"></script>
-  <script src="src/ui/cinematic.js?v=27"></script>
-  <script src="src/ui/dialogue.js?v=27"></script>
-  <script src="src/ui/intro.js?v=27"></script>
-  <script src="src/ui/rating.js?v=27"></script>
-  <script src="src/main.js?v=27"></script>
+  <script src="src/utils/math.js?v=28"></script>
+  <script src="src/utils/storage.js?v=28"></script>
+  <script src="src/data/models.js?v=28"></script>
+  <script src="src/data/boats.js?v=28"></script>
+  <script src="src/data/upgrades.js?v=28"></script>
+  <script src="src/data/regions.js?v=28"></script>
+  <script src="src/data/missions.js?v=28"></script>
+  <script src="src/data/achievements.js?v=28"></script>
+  <script src="src/data/content.js?v=28"></script>
+  <script src="src/data/legal.js?v=28"></script>
+  <script src="src/data/story.js?v=28"></script>
+  <script src="src/data/ranks.js?v=28"></script>
+  <script src="src/data/asset-manifest.js?v=28"></script>
+  <script src="src/systems/worldstate.js?v=28"></script>
+  <script src="src/systems/save.js?v=28"></script>
+  <script src="src/systems/progression.js?v=28"></script>
+  <script src="src/systems/rank.js?v=28"></script>
+  <script src="src/systems/assets.js?v=28"></script>
+  <script src="src/systems/track.js?v=28"></script>
+  <script src="src/systems/endless.js?v=28"></script>
+  <script src="src/systems/story.js?v=28"></script>
+  <script src="src/systems/audio.js?v=28"></script>
+  <script src="src/systems/input.js?v=28"></script>
+  <script src="src/core/water.js?v=28"></script>
+  <script src="src/core/engine.js?v=28"></script>
+  <script src="src/game/boat.js?v=28"></script>
+  <script src="src/game/ai.js?v=28"></script>
+  <script src="src/game/opponent.js?v=28"></script>
+  <script src="src/game/minigame.js?v=28"></script>
+  <script src="src/game/minigame-lock.js?v=28"></script>
+  <script src="src/game/minigame-search.js?v=28"></script>
+  <script src="src/game/obstacle.js?v=28"></script>
+  <script src="src/game/world.js?v=28"></script>
+  <script src="src/game/mission.js?v=28"></script>
+  <script src="src/game/game.js?v=28"></script>
+  <script src="src/game/minigame-radar.js?v=28"></script>
+  <script src="src/ui/news.js?v=28"></script>
+  <script src="src/ui/lucy.js?v=28"></script>
+  <script src="src/ui/hud.js?v=28"></script>
+  <script src="src/ui/screens.js?v=28"></script>
+  <script src="src/ui/cinematic.js?v=28"></script>
+  <script src="src/ui/dialogue.js?v=28"></script>
+  <script src="src/ui/intro.js?v=28"></script>
+  <script src="src/ui/rating.js?v=28"></script>
+  <script src="src/main.js?v=28"></script>
 </body>
 </html>

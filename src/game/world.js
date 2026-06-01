@@ -274,6 +274,13 @@
     ctx.fillStyle = refl; ctx.fillRect(0,0,w,dt);
     ctx.restore();
 
+    // Verbindliche Tageszeit-Farbwelt (Tag: warm · Abend: gold · Nacht: blau – nie düster)
+    var hr = new Date().getHours(), tint;
+    if (hr < 7 || hr >= 21) tint = 'rgba(50,95,175,0.12)';
+    else if (hr >= 18) tint = 'rgba(255,180,95,0.12)';
+    else tint = 'rgba(255,228,150,0.07)';
+    ctx.save(); ctx.globalCompositeOperation = 'soft-light'; ctx.fillStyle = tint; ctx.fillRect(0, 0, w, dt); ctx.restore();
+
     // Cockpit-Armaturenbrett (cockpit_bridge) unten
     var dash = WB.Assets && WB.Assets.get(this.cockpitId);
     if (dash && dash.complete && dash.naturalWidth) {
