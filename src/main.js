@@ -34,7 +34,7 @@
         else if (WB.News) WB.News.maybeShow();
       };
       // Intro bei JEDEM Spielstart abspielen (skippbar per Tap).
-      var playIntroThen = function () { if (WB.Intro) WB.Intro.play(afterIntro); else afterIntro(); };
+      var playIntroThen = function () { if (WB.Intro && WB.Intro.playSignature) WB.Intro.playSignature(afterIntro); else if (WB.Intro) WB.Intro.play(afterIntro); else afterIntro(); };
       if (!st.legalAck) {
         WB.Screens.showLegalNotice(function () { st.legalAck = true; WB.Save.save(); playIntroThen(); });
       } else {

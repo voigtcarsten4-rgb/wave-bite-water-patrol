@@ -107,6 +107,63 @@
     }
   }
 
+
+  /* Signature-Intro: waehlt je nach Living-World-Lage + Tageszeit + Spielerhistorie
+     eine kurze, abwechslungsreiche Kino-Einblendung (vor dem Marken-Intro). */
+  function signatureContext() {
+    var LW = WB.LivingWorld, A = WB.Assets;
+    var hour = new Date().getHours();
+    var d = LW ? LW.day() : null, w = LW ? LW.week() : null;
+    var weather = d && d.weather ? d.weather.id : 'wolkig';
+    var special = w && w.special ? w.special.id : null;
+    var stroe = LW && LW.stroemung ? LW.stroemung() : 40;
+    var lotseLine = w && w.lotse ? w.lotse : '';
+    var s = WB.Save && WB.Save.data ? WB.Save.data : {};
+    var returning = !!WB._bootLastPlayed;
+    var lvl = s.captainLevel || 1;
+    var rankUnit = (WB.data && WB.data.rankUnit) || 'WATER PATROL';
+    var tod = hour < 6 ? 'night' : hour < 11 ? 'morning' : hour < 17 ? 'day' : hour < 22 ? 'evening' : 'night';
+
+    function has(id){ return A && A.has && A.has(id) ? id : null; }
+    function pick(){ for (var i=0;i<arguments.length;i++){ var id=has(arguments[i]); if(id) return id; } return null; }
+
+    var bg, kicker, title, lena, lucy;
+
+    // Prioritaet 1: Wochen-Sonderlage
+    var SP = {
+      sturmwoche: { bg: pick('rescue_gewitter','chase_gewitter','loc_storm'), k:'⛈️ STURMWOCHE', t:'Schwere Böen über der Seenplatte', lena:'Lena: Sturm zieht auf, Kapitän. Heute zählt jede ruhige Hand.', lucy:'Lucy: Wind böig, Wellen hoch. Ich halte das Radar offen.' },
+      razzia:     { bg: pick('chase_finale','myst_schmuggleruebergabe','loc_industriehafen'), k:'🚔 GROSSEINSATZ', t:'Razzia gegen die Strömung', lena:'Lena: Heute fahren wir gegen das Netzwerk. Bleib dran.', lucy:'Lucy: Mehrere Kontakte markiert. Verfolgung wahrscheinlich.' },
+      vermisst:   { bg: pick('rescue_nebel','rescue_dlrg_koop','loc_dahme'), k:'🛟 GROSSSUCHAKTION', t:'Vermisstenmeldungen häufen sich', lena:'Lena: Menschen brauchen uns da draußen. Volle Konzentration.', lucy:'Lucy: Suchmuster vorbereitet. Scheinwerfer bereit.' },
+      regatta:    { bg: pick('wow_regatta_grosseinsatz','im_regattastrecke_gruenau','loc_regatta'), k:'⛵ REGATTA-SICHERUNG', t:'Bootsrennen im Revier', lena:'Lena: Viel Verkehr heute. Sichere die Strecke, halt das Tempo im Blick.', lucy:'Lucy: Dichter Segelverkehr. Vorsicht an den Bojen.' },
+      fest:       { bg: pick('wow_hafenfest_polizei','loc_hafenfest','im_strandbar_wasser'), k:'🎉 HAFENFEST', t:'Festbetrieb im Hafen', lena:'Lena: Festtag im Hafen – zeig Präsenz, bleib freundlich.', lucy:'Lucy: Hohe Aktivität an den Anlegern. Bonus-Lage aktiv.' },
+      nebelwoche: { bg: pick('myst_geistersignal','rescue_nebel','im_fischer_seddinsee'), k:'🌫️ NEBELWOCHE', t:'Dichte Nebelbänke', lena:'Lena: Sicht ist schlecht. Fahr auf Sicht, vertrau dem Radar.', lucy:'Lucy: Nebel dicht. Ich übernehme die Kontaktverfolgung.' }
+    };
+    if (special && SP[special] && SP[special].bg) {
+      var sp = SP[special]; bg = sp.bg; kicker = sp.k; title = sp.t; lena = sp.lena; lucy = sp.lucy;
+    }
+    // Prioritaet 2: hohe Stroemungs-/Lotse-Aktivitaet -> Mystery
+    else if (stroe >= 68) {
+      bg = pick('myst_lotse_distanz','myst_geheimer_hafen','myst_stroemung_hinweis','char_lotse');
+      kicker = '🛰️ STRÖMUNGS-AKTIVITÄT ' + Math.round(stroe) + '%';
+      title = 'Der Lotse ist aktiv';
+      lena = 'Lena: Etwas liegt in der Luft, Kapitän. Augen offen.';
+      lucy = 'Lucy: ' + (lotseLine || 'Strömungs-Aktivität erhöht. Erhöhte Wachsamkeit empfohlen.');
+    }
+    // Prioritaet 3: Tageszeit + Wetter
+    else {
+      if (weather === 'gewitter') { bg = pick('rescue_gewitter','chase_gewitter','loc_storm'); kicker='⛈️ GEWITTERFRONT'; title='Unruhiges Wasser'; lena='Lena: Wetter dreht. Vorsicht heute.'; lucy='Lucy: Böen gemeldet. Stabilität im Blick behalten.'; }
+      else if (weather === 'nebel') { bg = pick('myst_geistersignal','im_fischer_seddinsee','rescue_nebel'); kicker='🌫️ NEBELBÄNKE'; title='Sicht unter zwei Kabellängen'; lena='Lena: Nebel auf dem Wasser. Fahr ruhig.'; lucy='Lucy: Radar ist jetzt dein bester Freund.'; }
+      else if (tod === 'night') { bg = pick('ctrl_blaulicht_hafen','wow_blaulicht_nachtnebel','chase_nacht','loc_spree'); kicker='🌙 NACHTBETRIEB'; title='Blaulicht auf ruhigem Wasser'; lena='Lena: Nachtschicht, Kapitän. Ich bin auf dem Funk.'; lucy='Lucy: Nachtbetrieb aktiv. Scheinwerfer und Blaulicht bereit.'; }
+      else if (tod === 'morning') { bg = pick('wow_sunrise_einsatz','im_steg_mueggelsee','loc_mueggelsee'); kicker='☀️ MORGENLAGE'; title='Sonnenaufgang über dem Müggelsee'; lena='Lena: Guten Morgen, Kapitän. Ruhiges Revier, gutes Licht.'; lucy='Lucy: Systeme bereit. ' + (d&&d.weather?d.weather.label+'.':'Sicht gut.'); }
+      else if (tod === 'evening') { bg = pick('wow_berlin_skyline','im_strandbar_wasser','loc_spree_day'); kicker='🌇 GOLDENE STUNDE'; title='Berlin vom Wasser'; lena='Lena: Schöner Abend für eine Streife.'; lucy='Lucy: Hafenlichter gehen an. Alle Systeme online.'; }
+      else { bg = pick('wow_hero_shot','wow_berlin_skyline','loc_spree'); kicker='● ' + rankUnit; title='Patrol One einsatzbereit'; lena='Lena: Zentrale an Patrol One – schön, dass du da bist.'; lucy='Lucy: Alle Systeme online, Kapitän.'; }
+    }
+
+    var greet = returning ? 'Willkommen zurück' : 'Willkommen an Bord';
+    var sub = greet + (lvl >= 5 ? ', Kapitän (Lvl ' + lvl + ')' : ', Kapitän') + '. ' + lena.replace(/^Lena:\s*/,'');
+    return { bg: bg ? (WB.Assets.url(bg)) : null, kicker: kicker, title: title, subtitle: sub, lucy: lucy };
+  }
+
   WB.Intro = {
     play: function (onDone) {
       var el = $('intro');
@@ -236,6 +293,24 @@
 
       el.onclick = function () { finish(); };
       setTimeout(finish, 18000);
+    },
+
+    // Signature-Intro: dynamische Welt-Einblendung -> dann Marken-Intro.
+    playSignature: function (onDone) {
+      var self = this;
+      var ctx = null;
+      try { ctx = signatureContext(); } catch (e) { ctx = null; }
+      var goWordmark = function () { self.play(onDone); };
+      if (ctx && ctx.bg && WB.Cinematic) {
+        if (WB.Audio) { WB.Audio.unlock(); WB.Audio.radio(); }
+        WB.Cinematic.play({
+          kicker: ctx.kicker, title: ctx.title, subtitle: ctx.subtitle,
+          bgUrl: ctx.bg, duration: 5200
+        }, function () {
+          if (ctx.lucy && WB.LucyHUD && WB.LucyHUD.say) { try { WB.LucyHUD.mount(); WB.LucyHUD.say(ctx.lucy, 4200); } catch (e) {} }
+          goWordmark();
+        });
+      } else { goWordmark(); }
     }
   };
 })(window.WB = window.WB || {});
