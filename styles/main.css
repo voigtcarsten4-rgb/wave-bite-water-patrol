@@ -497,3 +497,16 @@ body {
 .search-cell:active{transform:scale(.93)}
 .search-cell.found{background:rgba(91,185,139,.26);border-color:rgba(91,185,139,.75);color:#fff}
 .search-cell.empty{background:rgba(201,70,47,.14);opacity:.55}
+
+/* --- AAA Boot-Loader (verhindert Schwarzbild, zeigt echten Ladefortschritt) --- */
+#boot-loader{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  background:radial-gradient(120% 90% at 50% 18%,#10294a 0%,#0B1E3B 55%,#081627 100%);transition:opacity .42s ease}
+#boot-loader.done{opacity:0;pointer-events:none}
+#boot-loader .bl-brand{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+#boot-loader .bl-anchor{font-size:30px;filter:drop-shadow(0 4px 10px rgba(201,162,75,.5))}
+#boot-loader .bl-word{font-weight:800;letter-spacing:.14em;font-size:22px;color:#F5F0E1;line-height:1;display:flex;flex-direction:column}
+#boot-loader .bl-word small{font-weight:600;letter-spacing:.42em;font-size:10px;color:var(--gold-2);margin-top:5px}
+#boot-loader .bl-track{width:min(230px,58vw);height:6px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:2px}
+#boot-loader .bl-fill{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#C9A24B,#E7CE8B);transition:width .25s ease;box-shadow:0 0 12px rgba(201,162,75,.6)}
+#boot-loader .bl-pct{font-size:12px;font-weight:700;color:var(--gold-2);letter-spacing:.08em}
+#boot-loader .bl-hint{font-size:11px;color:rgba(245,240,225,.55);letter-spacing:.05em}

@@ -16,7 +16,7 @@
       + 'Nicht mehrwertsteuerpflichtig gem. Art. 10 MWSTG.</p>'
       + '<p><b>Operative Taetigkeit Deutschland</b><br>Wave Bite UG (haftungsbeschraenkt) i. G.<br>'
       + 'c/o Oberste Chefetage<br>Flaemingstrasse 4<br>D-15738 Zeuthen, Deutschland</p>'
-      + '<p class="muted">Haftung fuer Inhalte/externe Links ausgeschlossen, soweit gesetzlich zulaessig. '
+      + '<p class="muted">Haftung für Inhalte/externe Links ausgeschlossen, soweit gesetzlich zulaessig. '
       + 'Inhalte unterliegen dem schweizerischen Urheberrecht. Quelle: wave-bite.com/impressum</p>',
     datenschutz:
       '<h4>Datenschutz</h4>'
@@ -24,7 +24,7 @@
       + 'Spielfortschritt lokal auf deinem Geraet</b> (localStorage).</p>'
       + '<p>Es werden <b>keine personenbezogenen Daten an Server uebertragen</b>, keine Tracking-Cookies '
       + 'gesetzt und keine Analyse-, Werbe- oder Drittanbieterdienste eingesetzt. Keine Weitergabe an Dritte.</p>'
-      + '<p><b>Nutzungsstatistik (nur lokal):</b> Zur Produktverbesserung zaehlt das Spiel anonyme '
+      + '<p><b>Nutzungsstatistik (nur lokal):</b> Zur Produktverbesserung zählt das Spiel anonyme '
       + 'Nutzungs-Ereignisse (z. B. Einsatz gestartet/abgeschlossen, Bewertung) <b>ausschliesslich lokal '
       + 'auf deinem Geraet</b> - ohne Uebertragung. Abschaltbar unter Einstellungen &rarr; Nutzungsstatistik.</p>'
       + '<p>Du kannst deinen Fortschritt jederzeit unter <b>Einstellungen &rarr; Fortschritt zuruecksetzen</b> '

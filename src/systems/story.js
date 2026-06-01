@@ -1,5 +1,5 @@
 /* Wave Bite - Water Patrol · systems/story.js
- * Kampagnen-Engine: Dialog -> (Minispiel) -> Fahrt -> Erfolgs-Cinematic -> Outro -> naechstes Kapitel.
+ * Kampagnen-Engine: Dialog -> (Minispiel) -> Fahrt -> Erfolgs-Cinematic -> Outro -> nächstes Kapitel.
  * Speichert Fortschritt (Save.story.chapter/completed). */
 (function (WB) {
   'use strict';

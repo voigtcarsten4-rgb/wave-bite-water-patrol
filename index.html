@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="assets/icons/icon.svg" />
   <link rel="icon" type="image/svg+xml" href="assets/icons/icon.svg" />
-  <link rel="stylesheet" href="styles/main.css?v=15" />
+  <link rel="stylesheet" href="styles/main.css?v=16" />
   <title>Wave Bite – Captain's Run</title>
 </head>
 <body>
@@ -193,7 +193,13 @@
     <div id="overlay-legal" class="overlay"></div>
 
     <!-- Lade-Anzeige -->
-    <div id="boot-loader"><div class="spinner"></div></div>
+    <div id="boot-loader">
+      <div class="bl-brand"><span class="bl-anchor">⚓</span><div class="bl-word">WAVE BITE<small>WATER PATROL</small></div></div>
+      <div class="spinner"></div>
+      <div class="bl-track"><span id="boot-bar" class="bl-fill"></span></div>
+      <div id="boot-pct" class="bl-pct">0%</div>
+      <div class="bl-hint">Einsatzzentrale wird geladen…</div>
+    </div>
   </div>
 
   <!-- Scripts (klassisch, in Abhängigkeitsreihenfolge → läuft auch lokal) -->

@@ -1,5 +1,5 @@
 /* Wave Bite - Captain's Run * ui/screens.js
- * Screen-Navigation + dynamische Inhalte fuer alle Menues und Overlays. */
+ * Screen-Navigation + dynamische Inhalte für alle Menues und Overlays. */
 (function (WB) {
   'use strict';
   function $(id) { return document.getElementById(id); }
@@ -647,7 +647,7 @@
         + '<div class="streak-badge">🏁 Kampagne abgeschlossen</div>'
         + '<div class="result-icon">🏆</div><h2>Die Spur endet hier.</h2>'
         + '<p class="muted">Du hast das Schmugglernetzwerk zerschlagen und die Wave Region sicher gemacht. '
-        + 'Die Live Water Region laeuft weiter – Lucy hat immer neue Lagen fuer dich.</p>'
+        + 'Die Live Water Region laeuft weiter – Lucy hat immer neue Lagen für dich.</p>'
         + '<div class="result-actions"><button class="btn btn-gold" id="sc-live">🌊 Live Water Region</button>'
         + '<button class="btn btn-line" id="sc-menu">Menue</button></div></div>';
       var overlay = $('overlay-result');

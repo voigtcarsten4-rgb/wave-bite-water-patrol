@@ -21,10 +21,10 @@
       brief: 'Zeugin meldet ein verdaechtiges Boot am Nordsteg. Hinfahren, Lage checken, kontrollieren.' },
 
     { id: 'm_umwelt', type: 'eco', title: 'Umweltverstoss im Kanal', icon: '🛢',
-      objective: 'Verursacher aufspueren', desc: 'Oelspur im Hafenkanal. Folge der Spur durch den Verkehr zum Verursacher.',
+      objective: 'Verursacher aufspüren', desc: 'Ölspur im Hafenkanal. Folge der Spur durch den Verkehr zum Verursacher.',
       regionId: 'kanal', distance: 2300, timeLimit: 0, rewardCoins: 150, rewardXp: 105,
       unlockLevel: 2, difficulty: 2, briefChar: 'char_suspect_skipper_1', briefStation: 'station_suspicious_boat_1',
-      brief: 'Achtung: Oelspur im Kanal gemeldet. Verursacher aufspueren - dichter Bootsverkehr voraus.' },
+      brief: 'Achtung: Ölspur im Kanal gemeldet. Verursacher aufspüren - dichter Bootsverkehr voraus.' },
 
     { id: 'm_verfolgung', type: 'pursuit', title: 'Verfolgung: Schnellboot', icon: '🚨',
       objective: 'Schnellboot stellen', desc: 'Ein Schnellboot flieht Richtung Nordkanal. Dranbleiben - enge Durchfahrten, Zeit laeuft!',
@@ -33,10 +33,10 @@
       brief: 'Patrol One, Verfolgung! Verdaechtiges Schnellboot Richtung Nordkanal. Abstand halten, dranbleiben.' },
 
     { id: 'm_rettung', type: 'rescue', title: 'Rettungseinsatz Seenplatte', icon: '🛟',
-      objective: 'Person erreichen', desc: 'Person im Wasser gemeldet. Bei Wind und Wellen so schnell wie moeglich zur Position.',
+      objective: 'Person erreichen', desc: 'Person im Wasser gemeldet. Bei Wind und Wellen so schnell wie möglich zur Position.',
       regionId: 'seenplatte', distance: 2400, timeLimit: 50, rewardCoins: 260, rewardXp: 185,
       unlockLevel: 4, difficulty: 3, briefChar: 'char_radio_operator_1', briefStation: 'station_abandoned_jetty_1',
-      brief: 'Notruf! Person im Wasser auf der Seenplatte. Jede Sekunde zaehlt - volle Fahrt, Kurs halten.' },
+      brief: 'Notruf! Person im Wasser auf der Seenplatte. Jede Sekunde zählt - volle Fahrt, Kurs halten.' },
 
     { id: 'm_schmuggler', type: 'smuggler', title: 'Schmuggler an der Schleuse', icon: '🚔',
       objective: 'Schmuggler abfangen', desc: 'Das Schmugglernetzwerk ist an der Schleuse aktiv. Fang das Boot ab, bevor es durch ist.',

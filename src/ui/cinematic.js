@@ -1,7 +1,7 @@
 /* Wave Bite - Water Patrol - ui/cinematic.js
  * Cinematische Belohnungs-Sequenz: Letterbox, Rang-Insignie, Sterne, Gold-Partikel-Canvas.
  * Eased timing, outcome-spezifische Farbschemata (Erfolg / Befoerderung / Fail / Alarm).
- * Optionaler Video-Hintergrund (cfg.videoUrl), sonst Ken-Burns ueber Standbild.
+ * Optionaler Video-Hintergrund (cfg.videoUrl), sonst Ken-Burns über Standbild.
  * Skippable (Tap). onDone genau einmal. API-Signatur unveraendert. */
 (function (WB) {
   'use strict';

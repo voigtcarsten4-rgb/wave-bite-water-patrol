@@ -15,11 +15,11 @@
       ch({ idx:0, title:'Der leere Anleger', icon:'🔦', regionId:'bucht', station:'station_abandoned_jetty_1',
         distance:1500, timeLimit:0, minigame:null, rewardCoins:90, rewardXp:70,
         intro:[ {who:'Lucy',portrait:LUCY,text:'Patrol One, hier Lucy. Am Suedsteg fehlt eine komplette Ladung. Anleger ist leer - keiner will was gesehen haben.'},
-                {who:'Hafenmeister',portrait:HM,text:'Ich schwoere, gestern lag da noch alles. Ueber Nacht weg. Das war kein Zufall.'} ],
+                {who:'Hafenmeister',portrait:HM,text:'Ich schwoere, gestern lag da noch alles. Über Nacht weg. Das war kein Zufall.'} ],
         choice:{ text:'Wie gehst du es an?', options:[
           {label:'Erst Lage sichern', reply:{who:'Lucy',portrait:LUCY,text:'Vernuenftig. Fahr die Bucht ab, ich behalte den Funk im Auge.'}},
           {label:'Sofort Spur suchen', reply:{who:'Lucy',portrait:LUCY,text:'Forsch. Gut. Aber pass auf - wer das war, ist noch in der Naehe.'}} ] },
-        outro:{who:'Lucy',portrait:LUCY,text:'Sauber. Eine Schleifspur im Wasser fuehrt Richtung Hafen. Wir bleiben dran.'} }),
+        outro:{who:'Lucy',portrait:LUCY,text:'Sauber. Eine Schleifspur im Wasser führt Richtung Hafen. Wir bleiben dran.'} }),
 
       ch({ idx:1, title:'Funkstoerung am Hafen', icon:'📡', regionId:'bucht', station:'station_radio_room_1',
         distance:1800, timeLimit:0, minigame:'radar', rewardCoins:120, rewardXp:90,
@@ -50,10 +50,10 @@
 
       ch({ idx:4, title:'Umweltspur im Kanal', icon:'🛢', regionId:'kanal', station:'station_suspicious_boat_1',
         distance:2300, timeLimit:0, minigame:null, rewardCoins:170, rewardXp:120,
-        intro:[ {who:'Lucy',portrait:LUCY,text:'Oelschimmer im Kanal. Die Spur passt zu unserem Boot von gestern.'},
+        intro:[ {who:'Lucy',portrait:LUCY,text:'Ölschimmer im Kanal. Die Spur passt zu unserem Boot von gestern.'},
                 {who:'Hafenmeister',portrait:HM,text:'Die kippen was rein, um Verfolger abzuhaengen. Skrupellos.'} ],
         choice:{ text:'Prioritaet?', options:[
-          {label:'Spur folgen', reply:{who:'Lucy',portrait:LUCY,text:'Ja. Die Spur fuehrt zu ihrem Umschlagplatz.'}},
+          {label:'Spur folgen', reply:{who:'Lucy',portrait:LUCY,text:'Ja. Die Spur führt zu ihrem Umschlagplatz.'}},
           {label:'Beweise sichern', reply:{who:'Lucy',portrait:LUCY,text:'Auch wichtig - aber fahr trotzdem, sonst sind sie weg.'}} ] },
         outro:{who:'Lucy',portrait:LUCY,text:'Die Spur endet an der Schleuse. Da laeuft ihr Umschlag. Treffer.'} }),
 
@@ -64,7 +64,7 @@
         choice:{ text:'Letzte Worte vor dem Einsatz?', options:[
           {label:'Bin bereit', reply:{who:'Lucy',portrait:LUCY,text:'Das hoere ich gern. Los.'}},
           {label:'Deckung anfordern', reply:{who:'Lucy',portrait:LUCY,text:'Unterwegs - aber du bist zuerst da. Mach den Anfang.'}} ] },
-        outro:{who:'Thief',portrait:TH,text:'Du ahnst nicht, fuer wen ich fahre. Das hier ist groesser als du denkst.'} }),
+        outro:{who:'Thief',portrait:TH,text:'Du ahnst nicht, für wen ich fahre. Das hier ist groesser als du denkst.'} }),
 
       ch({ idx:6, title:'Der Schatten unter der Bruecke', icon:'🌑', regionId:'kanal', station:'station_radio_room_1',
         distance:2100, timeLimit:48, minigame:null, rewardCoins:240, rewardXp:170,
@@ -73,33 +73,33 @@
         choice:{ text:'Wie naeherst du dich?', options:[
           {label:'Lichter aus', reply:{who:'Lucy',portrait:LUCY,text:'Mutig. Ueberraschung ist alles.'}},
           {label:'Volle Beleuchtung', reply:{who:'Lucy',portrait:LUCY,text:'Praesenz zeigen. Vielleicht panikt jemand und macht einen Fehler.'}} ] },
-        outro:{who:'Lucy',portrait:LUCY,text:'Der Hintermann floh ueber den See. Wir haben sein Boot - und eine Spur zur Insel.'} }),
+        outro:{who:'Lucy',portrait:LUCY,text:'Der Hintermann floh über den See. Wir haben sein Boot - und eine Spur zur Insel.'} }),
 
       ch({ idx:7, title:'Nachtfahrt zur Insel', icon:'🛟', regionId:'seenplatte', station:'station_abandoned_jetty_1',
         distance:2500, timeLimit:52, minigame:null, rewardCoins:300, rewardXp:210,
-        intro:[ {who:'Lucy',portrait:LUCY,text:'Notruf von der Inselroute! Jemand ging ueber Bord - moeglich einer von ihnen.'},
-                {who:'Lucy',portrait:LUCY,text:'Egal wer - wir retten zuerst. Volle Fahrt, jede Sekunde zaehlt.'} ],
+        intro:[ {who:'Lucy',portrait:LUCY,text:'Notruf von der Inselroute! Jemand ging über Bord - möglich einer von ihnen.'},
+                {who:'Lucy',portrait:LUCY,text:'Egal wer - wir retten zuerst. Volle Fahrt, jede Sekunde zählt.'} ],
         choice:{ text:'Dein Grundsatz?', options:[
           {label:'Rettung zuerst', reply:{who:'Lucy',portrait:LUCY,text:'Deshalb traegst du das Steuer. Los.'}},
-          {label:'Vorsicht, Falle?', reply:{who:'Lucy',portrait:LUCY,text:'Moeglich. Aber wir lassen niemanden ertrinken. Fahr.'}} ] },
+          {label:'Vorsicht, Falle?', reply:{who:'Lucy',portrait:LUCY,text:'Möglich. Aber wir lassen niemanden ertrinken. Fahr.'}} ] },
         outro:{who:'Captain',portrait:CAP,text:'Du hast mich rausgezogen... ich rede. Ich sag dir, wer dahinter steckt.'} }),
 
       ch({ idx:8, title:'Gewittereinsatz', icon:'⛈', regionId:'seenplatte', station:'station_abandoned_jetty_1',
         distance:2400, timeLimit:50, minigame:null, rewardCoins:320, rewardXp:230,
-        intro:[ {who:'Lucy',portrait:LUCY,text:'Sturmwarnung! Und die Bande nutzt das Gewitter fuer den grossen Transport.'},
+        intro:[ {who:'Lucy',portrait:LUCY,text:'Sturmwarnung! Und die Bande nutzt das Gewitter für den großen Transport.'},
                 {who:'Lucy',portrait:LUCY,text:'Boeen, Wellen, schlechte Sicht. Ruhige Hand. Du schaffst das.'} ],
         choice:{ text:'Bei dem Wetter?', options:[
           {label:'Jetzt erst recht', reply:{who:'Lucy',portrait:LUCY,text:'Das ist der Captain, den die Region braucht.'}},
           {label:'Riskant, aber ja', reply:{who:'Lucy',portrait:LUCY,text:'Respekt vor dem Sturm ist gut. Aber wir fahren.'}} ] },
         outro:{who:'Lucy',portrait:LUCY,text:'Durchgehalten! Sie sind fast am Ziel - die Schleuse, letzte Etappe. Finale.'} }),
 
-      ch({ idx:9, title:'Finale: Jagd ueber den See', icon:'🏁', regionId:'schleuse', station:'station_event_deck_1',
+      ch({ idx:9, title:'Finale: Jagd über den See', icon:'🏁', regionId:'schleuse', station:'station_event_deck_1',
         distance:2800, timeLimit:46, minigame:null, rewardCoins:500, rewardXp:360,
         intro:[ {who:'Lucy',portrait:LUCY,text:'Das ist es, Captain. Das gesamte Netzwerk auf einem Boot - und sie wollen durch die Schleuse.'},
-                {who:'Lucy',portrait:LUCY,text:'Stell sie. Fuer den leeren Anleger, fuer alles. Ich bin bei dir auf dem Funk.'} ],
+                {who:'Lucy',portrait:LUCY,text:'Stell sie. Für den leeren Anleger, für alles. Ich bin bei dir auf dem Funk.'} ],
         choice:{ text:'Ein letztes Wort?', options:[
           {label:'Wir beenden das', reply:{who:'Lucy',portrait:LUCY,text:'Ja. Heute. Volle Fahrt!'}},
-          {label:'Fuer die Region', reply:{who:'Lucy',portrait:LUCY,text:'Fuer die Region. Los, Captain!'}} ] },
+          {label:'Für die Region', reply:{who:'Lucy',portrait:LUCY,text:'Für die Region. Los, Captain!'}} ] },
         outro:{who:'Lucy',portrait:LUCY,text:'Gestellt. Netzwerk zerschlagen. Du hast die Wave Region sicher gemacht, Captain. Legende.'} })
     ]
   };

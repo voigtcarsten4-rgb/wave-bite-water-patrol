@@ -36,20 +36,27 @@
       return !!(img && img.complete && img.naturalWidth > 0);
     },
 
-    // Mehrere vorladen; cb() wenn alle (geladen oder fehlgeschlagen) durch sind.
-    preload: function (ids, cb) {
-      var pending = 0, done = false;
-      function fin() { if (!done && pending === 0) { done = true; if (cb) cb(); } }
+    // Mehrere vorladen; cb() wenn alle durch sind. onProgress(loaded,total) optional.
+    preload: function (ids, cb, onProgress) {
+      var list = [];
       for (var k = 0; k < ids.length; k++) {
-        var src = resolve(ids[k]);
-        if (!src) continue;
+        if (!resolve(ids[k])) continue;
         if (this.ready(ids[k])) continue;
-        pending++;
-        var img = this.get(ids[k]);
-        img.addEventListener('load', function () { pending--; fin(); });
-        img.addEventListener('error', function () { pending--; fin(); });
+        list.push(ids[k]);
       }
-      fin();
+      var total = list.length, loaded = 0, done = false;
+      function tick() {
+        loaded++;
+        if (onProgress) onProgress(loaded, total);
+        if (!done && loaded >= total) { done = true; if (cb) cb(); }
+      }
+      if (total === 0) { if (onProgress) onProgress(0, 0); if (cb) cb(); return; }
+      for (var i = 0; i < list.length; i++) {
+        var img = this.get(list[i]);
+        if (img.complete && img.naturalWidth > 0) { tick(); continue; }
+        img.addEventListener('load', tick);
+        img.addEventListener('error', tick);
+      }
     }
   };
 

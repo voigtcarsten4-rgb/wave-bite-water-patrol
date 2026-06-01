@@ -1,7 +1,7 @@
 /* Wave Bite - Water Patrol · data/content.js
- * KI-kuratierte Content-Bibliothek fuer Lucy (KI-Dispatch) + Live Water Region.
+ * KI-kuratierte Content-Bibliothek für Lucy (KI-Dispatch) + Live Water Region.
  * Endless-Engine rekombiniert diese Bausteine -> unendliche, abwechslungsreiche Einsaetze.
- * (Architektur-Hook: spaeter live von einem Lucy-Backend generierbar - siehe WATER-PATROL-UNIVERSE.md) */
+ * (Architektur-Hook: später live von einem Lucy-Backend generierbar - siehe WATER-PATROL-UNIVERSE.md) */
 (function (WB) {
   'use strict';
   WB.data = WB.data || {};
@@ -16,7 +16,7 @@
     ],
     signoffs: [
       'Lucy out.', 'Halt die Spur. Lucy out.', 'Ich bleib auf Funk. Lucy.',
-      'Viel Erfolg da draussen. Lucy out.', 'Melde dich bei Sichtkontakt. Lucy.'
+      'Viel Erfolg da draußen. Lucy out.', 'Melde dich bei Sichtkontakt. Lucy.'
     ],
     streakLines: [
       'Sauber gefahren!', 'Stark - die Region ist ruhiger dank dir.', 'Beeindruckend, Captain.',
@@ -24,7 +24,7 @@
     ]
   };
 
-  // Event-Templates fuer den Endlosmodus. brief: mehrere Varianten -> Abwechslung.
+  // Event-Templates für den Endlosmodus. brief: mehrere Varianten -> Abwechslung.
   WB.data.eventTemplates = [
     { id: 'e_patrol', type: 'patrol', title: 'Streifenfahrt', icon: '⚓', regionId: 'bucht',
       objective: 'Revier sichern', distance: [1500, 2000], timeLimit: 0, minigame: null,
@@ -43,7 +43,7 @@
     { id: 'e_eco', type: 'eco', title: 'Umweltverstoss', icon: '🛢', regionId: 'kanal',
       objective: 'Verursacher finden', distance: [2000, 2600], timeLimit: 0, minigame: null,
       char: 'char_suspect_skipper_1', station: 'station_suspicious_boat_1',
-      brief: ['Oelschimmer im Kanal. Folge der Spur durch den Verkehr.',
+      brief: ['Ölschimmer im Kanal. Folge der Spur durch den Verkehr.',
               'Jemand kippt was rein. Find den Verursacher.',
               'Umweltalarm Kanal. Dicht dran bleiben, nicht abdr"angen lassen.'] },
 
@@ -57,7 +57,7 @@
     { id: 'e_rescue', type: 'rescue', title: 'Rettungseinsatz', icon: '🛟', regionId: 'seenplatte',
       objective: 'Person erreichen', distance: [2200, 2800], timeLimit: [46, 54], minigame: null,
       char: 'char_radio_operator_1', station: 'station_abandoned_jetty_1',
-      brief: ['Notruf! Person im Wasser - volle Fahrt, jede Sekunde zaehlt.',
+      brief: ['Notruf! Person im Wasser - volle Fahrt, jede Sekunde zählt.',
               'Wind frischt auf, Sicht schlecht. Schnell zur Position!',
               'Rettung Prioritaet. Kurs halten, Wellen nicht unterschaetzen.'] },
 
@@ -80,6 +80,6 @@
       char: 'char_radio_operator_1', station: 'station_radio_room_1',
       brief: ['Unklares Radarecho. Scanne es - irgendwas stimmt nicht.',
               'Geistersignal im Kanal. Lucy kriegt es nicht sauber - sieh nach.',
-              'Phantom auf dem Schirm. Erst Radar pruefen, dann hin.'] }
+              'Phantom auf dem Schirm. Erst Radar prüfen, dann hin.'] }
   ];
 })(window.WB = window.WB || {});
