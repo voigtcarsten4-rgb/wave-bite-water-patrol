@@ -1,8 +1,7 @@
 /* Wave Bite – Water Patrol · game/world.js
- * ONBOARD COCKPIT VIEW: Der Spieler schaut durch die Frontscheibe des Polizeiboots.
- * Die Welt füllt den GESAMTEN Bildschirm (Himmel→Horizont→Wasser bis fast zum unteren Rand),
- * davor liegt das Cockpit als fixer Vordergrund-Rahmen (Scheibenrahmen, A-Säulen, Armatur, Glasreflex).
- * Bootsbewegung: Rollen (Lenken), Nicken (Tempo/Boost), Schaukeln, Sturm-Wellengang. Welt neigt sich, Cockpit bleibt fix. */
+ * FORWARD PATROL VIEW: Cockpit-Perspektive – der Spieler fährt IN die Berlin-Brandenburg-Welt hinein.
+ * Master-Location als Horizont-Kulisse, Wasser perspektivisch, Verkehr kommt aus der Tiefe entgegen.
+ * Lenken = Welt parallaktisch verschieben; ausweichen, bremsen, boosten. Lebendig: Wasser, Nebel, Möwen. */
 (function (WB) {
   'use strict';
   var M = WB.math;
@@ -24,29 +23,24 @@
     this.bgId = BG[region.id] || 'loc_mueggelsee';
     this.cockpitId = COCKPIT;
     this._parts = null; this._lucyT = 0; this._wasBoost = false; this._zone = null; this._zoneEnd = 0;
-    this.roll = 0; this.pitch = 0;
-    this.storm = !!(mission && (mission.type === 'rescue' || (region && region.id === 'seenplatte'))) ;
   }
 
   World.prototype.layout = function (w, h) {
     this.w = w; this.h = h;
-    // Welt füllt den ganzen Bildschirm; Cockpit-Konsole liegt als Vordergrund über dem unteren Teil.
-    this.viewBottom = Math.round(h * 0.965);   // Wasser reicht fast bis zum unteren Rand
-    this.horizonY  = Math.round(h * 0.27);     // Horizont weiter oben -> mehr Welt/Tiefe
-    this.dashTop   = Math.round(h * 0.72);     // Oberkante der Cockpit-Konsole (Armaturen)
-    this.boat.reset(w / 2, this.viewBottom - 40);
-    this.gulls = [];
+    this.dashTop = Math.round(h * 0.62);
+    this.horizonY = Math.round(this.dashTop * 0.17);
+    this.boat.reset(w / 2, this.dashTop - 40);
     for (var i = 0; i < 4; i++) this.gulls.push({ x: M.rand(0, w), y: M.rand(this.horizonY * 0.3, this.horizonY * 1.2), s: M.rand(0.6, 1.2), v: M.rand(8, 20) * (Math.random() < 0.5 ? -1 : 1), ph: Math.random() * 6 });
     if (this.isChase && WB.Opponent) this.opp = new WB.Opponent(this, this.mission, this.region);
   };
 
   World.prototype.progressRatio = function () { return this.opp ? M.clamp(1 - this.opp.gap, 0, 1) : M.clamp(this.progress / this.mission.distance, 0, 1); };
 
-  // Perspektiv-Projektion: z (1 fern .. 0 nah) -> Bildschirm. Nahebene = viewBottom (unterer Rand).
+  // Perspektiv-Projektion: z (1 fern .. 0 nah) -> Bildschirm
   World.prototype._t = function (z) { var tt = 1 - M.clamp(z, 0, 1); return tt * tt; };
-  World.prototype._projY = function (z) { return this.horizonY + (this.viewBottom - this.horizonY) * this._t(z); };
-  World.prototype._laneHalf = function (z) { return M.lerp(this.w * 0.03, this.w * 0.62, this._t(z)); };
-  World.prototype._scale = function (z) { return M.lerp(0.12, 1.6, this._t(z)); };
+  World.prototype._projY = function (z) { return this.horizonY + (this.dashTop - this.horizonY) * this._t(z); };
+  World.prototype._laneHalf = function (z) { return M.lerp(this.w * 0.03, this.w * 0.60, this._t(z)); };
+  World.prototype._scale = function (z) { return M.lerp(0.12, 1.5, this._t(z)); };
   World.prototype._projX = function (lane, z) {
     var t = this._t(z);
     var shift = this.playerLane * M.lerp(this.w * 0.04, this.w * 0.46, t);
@@ -67,17 +61,12 @@
     if (this.flash > 0) this.flash = Math.max(0, this.flash - dt * 3.2);
     this.scroll += speed * dt;
 
+    // Spieler-Lenkung (boat.x -> lane -1..1)
     this.boat.update(dt, input, 0, this.w);
     var halfRange = (this.w / 2) - (this.boat.w / 2);
     this.playerLane = M.clamp((this.boat.x - this.w / 2) / (halfRange || 1), -1, 1);
 
-    // Bootsbewegung: Rollen (Lenken) + Nicken (Tempo/Boost) – sanft gedämpft, nicht seekrank.
-    var stormAmp = this.storm ? 1.0 : 0.45;
-    var targetRoll = -this.playerLane * 0.045 + Math.sin(this._lt = (this._lt||0) + dt) * 0 ; // base from steer
-    this.roll += (targetRoll - this.roll) * Math.min(1, dt * 4);
-    var targetPitch = (this.boat.boosting ? -0.012 : 0) + (speed/2600);
-    this.pitch += (targetPitch - this.pitch) * Math.min(1, dt * 3);
-
+    // Verkehr aus der Tiefe
     var zRate = speed / 520;
     this.spawnTimer -= dt;
     var base = 0.82 - this.region.difficulty * 0.08;
@@ -96,6 +85,7 @@
       if (o.dead) this.obstacles.splice(i, 1);
     }
 
+    // --- Lucy Live-Ansagen (gedrosselt): Verkehrswarnung + Boost-Quip ---
     this._lucyT -= dt;
     if (this._lucyT <= 0 && WB.LucyHUD && WB.LucyHUD.say) {
       var near = null;
@@ -106,6 +96,7 @@
     if (this.boat.boosting && !this._wasBoost && WB.LucyHUD && WB.LucyHUD.say) WB.LucyHUD.say('Boost! Achte auf den Verkehr.');
     this._wasBoost = this.boat.boosting;
 
+    // --- Tempozonen / Learning by Playing (nur Nicht-Verfolgung) ---
     if (!this.opp) {
       if (!this._zone && this.progress > 200 && (this.progress % 950) < 9) {
         this._zone = { viol: false }; this._zoneEnd = this.progress + 380;
@@ -121,8 +112,10 @@
       }
     }
 
+    // Möwen
     for (var g = 0; g < this.gulls.length; g++) { var gu = this.gulls[g]; gu.x += gu.v * dt; gu.ph += dt * 6; if (gu.x < -20) gu.x = this.w + 20; if (gu.x > this.w + 20) gu.x = -20; }
 
+    // Fortschritt / Ziel / Verfolgung
     if (this.opp) {
       this.progress += speed * dt;
       this.opp.update(dt, input, this.boat);
@@ -138,42 +131,44 @@
   };
 
   World.prototype._waterAndSky = function (ctx, t) {
-    var w = this.w, vb = this.viewBottom, hy = this.horizonY;
+    var w = this.w, dt = this.dashTop, hy = this.horizonY;
+    // Himmel/Kulisse (Master-Location), leichter Forward-Zoom + Lenk-Parallaxe
     var img = WB.Assets && WB.Assets.get(this.bgId);
     var zoom = 1.06 + 0.03 * Math.sin(t * 0.2);
-    var px = -this.playerLane * w * 0.05;
+    var px = -this.playerLane * w * 0.04;
     if (img && img.complete && img.naturalWidth) {
-      var bandH = hy + 28;
-      ctx.save(); ctx.beginPath(); ctx.rect(-w*0.2, -h0(this), w*1.4, bandH + h0(this)); ctx.clip();
-      var dw = w * zoom * 1.18, dh = (bandH) * zoom * 1.18;
-      WB.Assets.drawCover(ctx, img, (w - dw) / 2 + px, (bandH - dh) / 2 - 8, dw, dh);
+      var bandH = hy + 24;
+      ctx.save(); ctx.beginPath(); ctx.rect(0, 0, w, bandH); ctx.clip();
+      var dw = w * zoom, dh = bandH * zoom;
+      WB.Assets.drawCover(ctx, img, (w - dw) / 2 + px, (bandH - dh) / 2, dw, dh);
       ctx.restore();
       var hg = ctx.createLinearGradient(0, hy - 30, 0, hy + 20);
       hg.addColorStop(0, 'rgba(0,0,0,0)'); hg.addColorStop(1, this.region.waterTop);
-      ctx.fillStyle = hg; ctx.fillRect(-w*0.2, hy - 30, w*1.4, 50);
+      ctx.fillStyle = hg; ctx.fillRect(0, hy - 30, w, 50);
     } else {
       var sky = ctx.createLinearGradient(0, 0, 0, hy); sky.addColorStop(0, '#1b3a5e'); sky.addColorStop(1, this.region.waterTop);
-      ctx.fillStyle = sky; ctx.fillRect(-w*0.2, -h0(this), w*1.4, hy + h0(this));
+      ctx.fillStyle = sky; ctx.fillRect(0, 0, w, hy);
     }
-    var wg = ctx.createLinearGradient(0, hy, 0, vb);
+    // Wasser (perspektivisch) unter dem Horizont
+    var wg = ctx.createLinearGradient(0, hy, 0, dt);
     wg.addColorStop(0, this.region.waterTop); wg.addColorStop(1, this.region.waterBottom);
-    ctx.fillStyle = wg; ctx.fillRect(-w*0.2, hy, w*1.4, vb - hy + h0(this));
+    ctx.fillStyle = wg; ctx.fillRect(0, hy, w, dt - hy);
+    // animierte Tiefen-Linien zum Fluchtpunkt (Fahrtgefühl)
     ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,0.10)'; ctx.lineWidth = 1;
     var lanes = [-0.6,-0.3,0,0.3,0.6], i;
     for (i = 0; i < lanes.length; i++) {
-      ctx.beginPath(); ctx.moveTo(w/2 + lanes[i]*this._laneHalf(0) - this.playerLane*w*0.46, vb);
+      ctx.beginPath(); ctx.moveTo(w/2 + lanes[i]*this._laneHalf(0) - this.playerLane*w*0.46, dt);
       ctx.lineTo(w/2 + lanes[i]*this._laneHalf(1) - this.playerLane*w*0.04, hy); ctx.stroke();
     }
+    // Quer-Wellenlinien (scrollen) für Tempo
     ctx.strokeStyle = 'rgba(255,255,255,0.07)';
-    for (i = 0; i < 8; i++) {
-      var p = ((this.scroll * 0.004 + i / 8) % 1);
-      var yy = hy + (vb - hy) * (p * p);
-      ctx.beginPath(); ctx.moveTo(-w*0.2, yy); ctx.lineTo(w*1.2, yy); ctx.stroke();
+    for (i = 0; i < 7; i++) {
+      var p = ((this.scroll * 0.004 + i / 7) % 1);
+      var yy = hy + (dt - hy) * (p * p);
+      ctx.beginPath(); ctx.moveTo(0, yy); ctx.lineTo(w, yy); ctx.stroke();
     }
     ctx.restore();
   };
-  // kleine Überzeichnung nach unten/oben, damit beim Rollen keine Kanten sichtbar werden
-  function h0(self){ return Math.round(self.h * 0.12); }
 
   World.prototype._drawGulls = function (ctx) {
     ctx.save(); ctx.strokeStyle = 'rgba(20,30,45,0.5)'; ctx.lineWidth = 2;
@@ -187,12 +182,12 @@
   };
 
   World.prototype._waterGlints = function (ctx, t) {
-    var w = this.w, hy = this.horizonY, vb = this.viewBottom;
+    var w = this.w, hy = this.horizonY, dt = this.dashTop;
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
-    for (var i = 0; i < 6; i++) {
-      var p = ((t * 0.05 + i * 0.18) % 1), y = hy + (vb - hy) * (p * p);
+    for (var i = 0; i < 5; i++) {
+      var p = ((t * 0.05 + i * 0.21) % 1), y = hy + (dt - hy) * (p * p);
       var x = w / 2 + Math.sin(i * 2 + t * 0.3) * (this._laneHalf(1 - p) * 0.5) - this.playerLane * M.lerp(w * 0.04, w * 0.46, p * p);
-      var r = 2 + p * 10, g = ctx.createRadialGradient(x, y, 0, x, y, r * 3);
+      var r = 2 + p * 9, g = ctx.createRadialGradient(x, y, 0, x, y, r * 3);
       g.addColorStop(0, 'rgba(255,238,190,' + (0.22 * (1 - p)).toFixed(2) + ')'); g.addColorStop(1, 'rgba(255,238,190,0)');
       ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r * 3, 0, Math.PI * 2); ctx.fill();
     }
@@ -200,104 +195,43 @@
   };
 
   World.prototype._airLight = function (ctx, t) {
-    var w = this.w, vb = this.viewBottom, hy = this.horizonY;
-    if (!this._parts) { this._parts = []; for (var k = 0; k < 18; k++) this._parts.push({ x: Math.random() * w, y: Math.random() * vb, s: Math.random() * 1.4 + 0.5, vx: (Math.random() - 0.5) * 6, vy: -(Math.random() * 6 + 2) }); }
+    var w = this.w, dt = this.dashTop, hy = this.horizonY;
+    if (!this._parts) { this._parts = []; for (var k = 0; k < 16; k++) this._parts.push({ x: Math.random() * w, y: Math.random() * dt, s: Math.random() * 1.4 + 0.5, vx: (Math.random() - 0.5) * 6, vy: -(Math.random() * 6 + 2) }); }
     ctx.save();
-    for (var i = 0; i < this._parts.length; i++) { var pp = this._parts[i]; pp.x += pp.vx * 0.016; pp.y += pp.vy * 0.016; if (pp.y < 0) { pp.y = vb; pp.x = Math.random() * w; } ctx.fillStyle = 'rgba(255,245,210,0.20)'; ctx.beginPath(); ctx.arc(pp.x, pp.y, pp.s, 0, Math.PI * 2); ctx.fill(); }
+    for (var i = 0; i < this._parts.length; i++) { var pp = this._parts[i]; pp.x += pp.vx * 0.016; pp.y += pp.vy * 0.016; if (pp.y < 0) { pp.y = dt; pp.x = Math.random() * w; } ctx.fillStyle = 'rgba(255,245,210,0.22)'; ctx.beginPath(); ctx.arc(pp.x, pp.y, pp.s, 0, Math.PI * 2); ctx.fill(); }
     ctx.restore();
     var bl = document.getElementById('bluelight');
     if (bl && bl.classList.contains('on')) {
       var pulse = 0.5 + 0.5 * Math.sin(t * 8);
       ctx.save(); ctx.globalCompositeOperation = 'lighter';
-      var bg = ctx.createLinearGradient(0, hy, 0, vb); bg.addColorStop(0, 'rgba(60,140,255,' + (0.05 + pulse * 0.20).toFixed(2) + ')'); bg.addColorStop(1, 'rgba(60,140,255,0)');
-      ctx.fillStyle = bg; ctx.fillRect(0, hy, w, vb - hy); ctx.restore();
+      var bg = ctx.createLinearGradient(0, hy, 0, dt); bg.addColorStop(0, 'rgba(60,140,255,' + (0.05 + pulse * 0.18).toFixed(2) + ')'); bg.addColorStop(1, 'rgba(60,140,255,0)');
+      ctx.fillStyle = bg; ctx.fillRect(0, hy, w, dt - hy); ctx.restore();
     }
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
-    var lg = ctx.createRadialGradient(w * 0.5, hy * 0.5, 2, w * 0.5, hy * 0.5, hy * 1.6);
+    var lg = ctx.createRadialGradient(w * 0.5, hy * 0.45, 2, w * 0.5, hy * 0.45, hy * 1.5);
     lg.addColorStop(0, 'rgba(255,225,160,0.16)'); lg.addColorStop(1, 'rgba(255,225,160,0)');
-    ctx.fillStyle = lg; ctx.fillRect(0, 0, w, hy * 1.8); ctx.restore();
-  };
-
-  // ---------- Cockpit-Vordergrund (Scheibenrahmen, A-Säulen, Armatur, Glasreflex) ----------
-  World.prototype._drawCockpit = function (ctx, t) {
-    var w = this.w, h = this.h, dt = this.dashTop, hy = this.horizonY;
-    var headerH = Math.round(h * 0.055);
-    var pillarW = Math.round(w * 0.075);
-    var navy = '#0a1726';
-
-    // A-Säulen links/rechts (Scheibenrahmen)
-    var pl = ctx.createLinearGradient(0, 0, pillarW, 0);
-    pl.addColorStop(0, navy); pl.addColorStop(0.7, 'rgba(12,26,42,0.92)'); pl.addColorStop(1, 'rgba(12,26,42,0)');
-    ctx.fillStyle = pl; ctx.fillRect(0, 0, pillarW, dt);
-    var pr = ctx.createLinearGradient(w, 0, w - pillarW, 0);
-    pr.addColorStop(0, navy); pr.addColorStop(0.7, 'rgba(12,26,42,0.92)'); pr.addColorStop(1, 'rgba(12,26,42,0)');
-    ctx.fillStyle = pr; ctx.fillRect(w - pillarW, 0, pillarW, dt);
-    // Dachholm oben
-    var hd = ctx.createLinearGradient(0, 0, 0, headerH);
-    hd.addColorStop(0, navy); hd.addColorStop(0.6, 'rgba(12,26,42,0.9)'); hd.addColorStop(1, 'rgba(12,26,42,0)');
-    ctx.fillStyle = hd; ctx.fillRect(0, 0, w, headerH);
-    // dünne Gold-Kante am Scheibenrahmen
-    ctx.strokeStyle = 'rgba(201,162,75,0.30)'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(pillarW, headerH); ctx.lineTo(pillarW, dt); ctx.moveTo(w - pillarW, headerH); ctx.lineTo(w - pillarW, dt); ctx.moveTo(pillarW, headerH); ctx.lineTo(w - pillarW, headerH); ctx.stroke();
-
-    // Glasreflex (diagonaler Schein über der Scheibe)
-    ctx.save(); ctx.globalCompositeOperation = 'screen';
-    var gl = ctx.createLinearGradient(0, headerH, w * 0.8, dt);
-    gl.addColorStop(0, 'rgba(255,255,255,0.0)'); gl.addColorStop(0.45, 'rgba(200,225,255,0.06)'); gl.addColorStop(0.5, 'rgba(255,255,255,0.10)'); gl.addColorStop(0.56, 'rgba(200,225,255,0.04)'); gl.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.fillStyle = gl; ctx.fillRect(pillarW, headerH, w - 2 * pillarW, dt - headerH);
-    ctx.restore();
-
-    // Blaulicht-Reflexion auf der Scheibe
-    var bl = document.getElementById('bluelight');
-    if (bl && bl.classList.contains('on')) {
-      var pulse = 0.5 + 0.5 * Math.sin(t * 8);
-      ctx.save(); ctx.globalCompositeOperation = 'lighter';
-      var bgGlass = ctx.createLinearGradient(0, headerH, 0, dt * 0.7);
-      bgGlass.addColorStop(0, 'rgba(70,150,255,' + (0.06 + pulse * 0.10).toFixed(2) + ')'); bgGlass.addColorStop(1, 'rgba(70,150,255,0)');
-      ctx.fillStyle = bgGlass; ctx.fillRect(pillarW, headerH, w - 2 * pillarW, dt * 0.7); ctx.restore();
-    }
-
-    // Armaturenbrett (cockpit_bridge) als Vordergrund-Konsole unten
-    var dash = WB.Assets && WB.Assets.get(this.cockpitId);
-    if (dash && dash.complete && dash.naturalWidth) {
-      var syc = dash.naturalHeight * 0.46, shc = dash.naturalHeight * 0.54;
-      ctx.drawImage(dash, 0, syc, dash.naturalWidth, shc, 0, dt, w, h - dt);
-    } else {
-      var cg = ctx.createLinearGradient(0, dt, 0, h); cg.addColorStop(0, '#13233a'); cg.addColorStop(1, '#070f1a');
-      ctx.fillStyle = cg; ctx.fillRect(0, dt, w, h - dt);
-    }
-    // weicher Übergang Scheibe->Armatur + Gold-Kante
-    var em = ctx.createLinearGradient(0, dt - 26, 0, dt + 8);
-    em.addColorStop(0, 'rgba(7,15,26,0)'); em.addColorStop(1, 'rgba(7,15,26,0.55)');
-    ctx.fillStyle = em; ctx.fillRect(0, dt - 26, w, 34);
-    ctx.fillStyle = 'rgba(201,162,75,0.45)'; ctx.fillRect(0, dt - 2, w, 2);
+    ctx.fillStyle = lg; ctx.fillRect(0, 0, w, hy * 1.7); ctx.restore();
   };
 
   World.prototype.draw = function (ctx, t) {
-    var w = this.w, h = this.h, vb = this.viewBottom, hy = this.horizonY;
-
-    // ---------- WELT (durch die Scheibe) – neigt/rollt mit dem Boot ----------
+    var w = this.w, h = this.h, dt = this.dashTop, hy = this.horizonY;
     ctx.save();
-    ctx.beginPath(); ctx.rect(0, 0, w, vb); ctx.clip();
+    ctx.beginPath(); ctx.rect(0, 0, w, dt); ctx.clip();
     var sx = this.shake * 6 * (Math.sin(t * 53) + Math.sin(t * 31)) * 0.5;
     var sy = this.shake * 4 * (Math.cos(t * 47)) * 0.5;
-    var stormAmp = this.storm ? 1.0 : 0.5;
-    var bob = (Math.sin(t * 1.1) * 2.2 + Math.sin(t * 2.6) * 1.0) * stormAmp;
-    var rollA = this.roll + Math.sin(t * 0.9) * 0.006 * stormAmp;   // Rollen ums untere Zentrum
-    var pitchY = this.pitch * h;                                    // Nicken
-    // Rotation um (w/2, vb), damit der Horizont kippt, das Cockpit aber fix bleibt
-    ctx.translate(w / 2 + sx, vb + sy + bob + pitchY);
-    ctx.rotate(rollA);
-    ctx.translate(-w / 2, -vb);
+    var bob = Math.sin(t * 1.2) * 1.6 + Math.sin(t * 2.7) * 0.7;
+    ctx.translate(sx, sy + bob);
 
     this._waterAndSky(ctx, t);
     this._waterGlints(ctx, t);
     this._drawGulls(ctx);
 
-    var fog = ctx.createLinearGradient(0, hy - 18, 0, hy + 44);
+    // Nebel-Band am Horizont (leicht, nicht düster)
+    var fog = ctx.createLinearGradient(0, hy - 18, 0, hy + 40);
     fog.addColorStop(0, 'rgba(220,232,245,0.18)'); fog.addColorStop(1, 'rgba(220,232,245,0)');
-    ctx.fillStyle = fog; ctx.fillRect(-w*0.2, hy - 18, w*1.4, 64);
+    ctx.fillStyle = fog; ctx.fillRect(0, hy - 18, w, 60);
 
+    // Ziel-Hafen (kommt entgegen)
     if (this.harborActive) {
       var hyP = this._projY(this.harborZ), sc = this._scale(this.harborZ);
       ctx.fillStyle = 'rgba(201,162,75,0.9)'; ctx.fillRect(w/2 - 120*sc, hyP - 6*sc, 240*sc, 12*sc);
@@ -306,44 +240,54 @@
       ctx.fillText('⚓ ' + hn, w/2, hyP - 12*sc);
     }
 
+    // Verkehr: fern -> nah (Painter)
     var sorted = this.obstacles.slice().sort(function (a, b) { return b.z - a.z; });
     for (var i = 0; i < sorted.length; i++) {
       var o = sorted[i];
       o.drawAt(ctx, this._projX(o.lane, o.z), this._projY(o.z), this._scale(o.z));
     }
+
     if (this.opp) this.opp.draw(ctx, t);
     this._airLight(ctx, t);
 
-    // Bug-Spray unten mittig (am unteren Rand, „passiert unter dem Bug")
-    var bowY = vb - 4;
+    // POV: Bug + Bugspray unten mittig
+    var bowY = dt - 4;
     ctx.save(); ctx.globalAlpha = 0.5 + 0.3 * Math.min(1, this.curSpeed/260);
-    var spray = ctx.createRadialGradient(w/2, bowY, 4, w/2, bowY, 80);
+    var spray = ctx.createRadialGradient(w/2, bowY, 4, w/2, bowY, 70);
     spray.addColorStop(0,'rgba(255,255,255,0.5)'); spray.addColorStop(1,'rgba(255,255,255,0)');
-    ctx.fillStyle = spray; ctx.beginPath(); ctx.ellipse(w/2 + Math.sin(t*8)*4, bowY, 72, 26, 0, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = spray; ctx.beginPath(); ctx.ellipse(w/2 + Math.sin(t*8)*4, bowY, 60, 22, 0, 0, Math.PI*2); ctx.fill();
     ctx.restore();
 
+    // Boost-Tunnel
     if (this.boat.boosting) {
-      var bv = ctx.createRadialGradient(w/2, vb*0.5, vb*0.2, w/2, vb*0.5, vb*0.95);
+      var bv = ctx.createRadialGradient(w/2, dt*0.5, dt*0.2, w/2, dt*0.5, dt*0.9);
       bv.addColorStop(0,'rgba(201,162,75,0)'); bv.addColorStop(1,'rgba(201,162,75,0.2)');
-      ctx.fillStyle = bv; ctx.fillRect(-w*0.2,-h*0.12,w*1.4,vb+h*0.24);
+      ctx.fillStyle = bv; ctx.fillRect(0,0,w,dt);
     }
-    if (this.flash > 0) { ctx.save(); ctx.globalCompositeOperation='lighter'; ctx.fillStyle='rgba(201,70,47,'+(this.flash*0.5).toFixed(3)+')'; ctx.fillRect(-w*0.2,-h*0.12,w*1.4,vb+h*0.24); ctx.restore(); }
-    ctx.restore(); // Ende Welt-Rotation/Clip
+    // Treffer-Blitz
+    if (this.flash > 0) { ctx.save(); ctx.globalCompositeOperation='lighter'; ctx.fillStyle='rgba(201,70,47,'+(this.flash*0.5).toFixed(3)+')'; ctx.fillRect(0,0,w,dt); ctx.restore(); }
+    // Vignette + Windschutz-Reflex
+    var vig = ctx.createRadialGradient(w/2, dt*0.42, dt*0.34, w/2, dt*0.42, dt*0.95);
+    vig.addColorStop(0,'rgba(4,10,20,0)'); vig.addColorStop(0.7,'rgba(4,10,20,0)'); vig.addColorStop(1,'rgba(4,10,20,0.32)');
+    ctx.fillStyle = vig; ctx.fillRect(0,0,w,dt);
+    var refl = ctx.createLinearGradient(0,0,0,dt); refl.addColorStop(0,'rgba(255,255,255,0.05)'); refl.addColorStop(0.16,'rgba(255,255,255,0)');
+    ctx.fillStyle = refl; ctx.fillRect(0,0,w,dt);
+    ctx.restore();
 
-    // ---------- Tageszeit-Farbwelt über der Welt ----------
+    // Verbindliche Tageszeit-Farbwelt (Tag: warm · Abend: gold · Nacht: blau – nie düster)
     var hr = new Date().getHours(), tint;
     if (hr < 7 || hr >= 21) tint = 'rgba(50,95,175,0.12)';
     else if (hr >= 18) tint = 'rgba(255,180,95,0.12)';
     else tint = 'rgba(255,228,150,0.07)';
-    ctx.save(); ctx.globalCompositeOperation = 'soft-light'; ctx.fillStyle = tint; ctx.fillRect(0, 0, w, vb); ctx.restore();
+    ctx.save(); ctx.globalCompositeOperation = 'soft-light'; ctx.fillStyle = tint; ctx.fillRect(0, 0, w, dt); ctx.restore();
 
-    // Vignette über der ganzen Sicht (Tiefe)
-    var vig = ctx.createRadialGradient(w/2, vb*0.45, vb*0.36, w/2, vb*0.45, vb*1.02);
-    vig.addColorStop(0,'rgba(4,10,20,0)'); vig.addColorStop(0.7,'rgba(4,10,20,0)'); vig.addColorStop(1,'rgba(4,10,20,0.34)');
-    ctx.fillStyle = vig; ctx.fillRect(0,0,w,vb);
-
-    // ---------- Cockpit-Vordergrund (fix, bewegt sich NICHT mit der Welt) ----------
-    this._drawCockpit(ctx, t);
+    // Cockpit-Armaturenbrett (cockpit_bridge) unten
+    var dash = WB.Assets && WB.Assets.get(this.cockpitId);
+    if (dash && dash.complete && dash.naturalWidth) {
+      var syc = dash.naturalHeight * 0.5, shc = dash.naturalHeight * 0.5;
+      ctx.drawImage(dash, 0, syc, dash.naturalWidth, shc, 0, dt, w, h - dt);
+    } else { ctx.fillStyle = '#0a1622'; ctx.fillRect(0, dt, w, h - dt); }
+    ctx.fillStyle = 'rgba(201,162,75,0.55)'; ctx.fillRect(0, dt - 2, w, 3);
   };
 
   WB.World = World;
