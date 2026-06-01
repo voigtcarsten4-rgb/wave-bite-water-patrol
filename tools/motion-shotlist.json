@@ -1,0 +1,9 @@
+[
+  { "id": "clip_harbor", "src": "assets/backgrounds/bg_harbor_marina_1.png", "motionStrength": 4 },
+  { "id": "clip_night",  "src": "assets/cockpit/cockpit_night_1.png",        "motionStrength": 5 },
+  { "id": "clip_bay",    "src": "assets/backgrounds/bg_calm_bay_1.png",       "motionStrength": 3 },
+  { "id": "clip_crash",  "src": "assets/cockpit/cockpit_fog_1.png",           "motionStrength": 6 },
+  { "id": "clip_alarm",  "src": "assets/backgrounds/bg_lock_1.png",           "motionStrength": 6 },
+  { "id": "clip_intro",  "src": "assets/backgrounds/bg_night_lake_1.png",     "motionStrength": 4 },
+  { "id": "clip_patrol", "src": "assets/boats/boat_patrol_threequarter_1.png", "motionStrength": 5 }
+]

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0B1E3B" />
+<title>Wave Bite · Game & Wasserlage Tracking</title>
+<style>
+  :root{ --navy0:#081627; --navy1:#0B1E3B; --navy2:#123A63; --gold:#C9A24B; --gold2:#E7CE8B; --cream:#F5F0E1;
+    --txt:#EAF0F6; --muted:#9DB0C4; --good:#5BB98B; --warn:#D8A24B; --bad:#C9462F; --glass:rgba(255,255,255,.06); --line:rgba(201,162,75,.28); }
+  *{ box-sizing:border-box; }
+  body{ margin:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,system-ui,sans-serif; color:var(--txt);
+    background:radial-gradient(120% 80% at 50% -10%,#15406e 0%,var(--navy1) 45%,var(--navy0) 100%); min-height:100vh; }
+  .wrap{ max-width:1080px; margin:0 auto; padding:22px 18px 60px; }
+  header{ display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:8px; }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .mark{ width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg,var(--gold),var(--gold2)); display:grid; place-items:center; font-size:22px; color:var(--navy0); box-shadow:0 6px 18px rgba(201,162,75,.4); }
+  h1{ font-size:21px; margin:0; letter-spacing:.3px; }
+  .brand small{ color:var(--muted); display:block; font-size:12px; }
+  .status{ font-size:12px; color:var(--muted); }
+  .pill{ display:inline-block; padding:4px 10px; border-radius:999px; border:1px solid var(--line); background:var(--glass); font-size:12px; }
+  .pill.local{ color:var(--gold2); }
+  .controls{ display:flex; gap:8px; flex-wrap:wrap; margin:14px 0 18px; }
+  button{ font-family:inherit; cursor:pointer; border-radius:10px; border:1px solid var(--line); background:var(--glass); color:var(--txt); padding:8px 14px; font-size:13px; font-weight:600; }
+  button.gold{ background:linear-gradient(135deg,var(--gold),var(--gold2)); color:var(--navy0); border-color:transparent; }
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(168px,1fr)); gap:12px; margin-bottom:18px; }
+  .kpi{ background:var(--glass); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:14px; }
+  .kpi .label{ font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
+  .kpi .val{ font-size:28px; font-weight:800; margin-top:6px; }
+  .kpi .sub{ font-size:12px; color:var(--muted); margin-top:2px; }
+  .kpi .val.good{ color:var(--good);} .kpi .val.warn{ color:var(--warn);} .kpi .val.bad{ color:var(--bad);} .kpi .val.gold{ color:var(--gold2);}
+  .panel{ background:var(--glass); border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:16px 18px; margin-bottom:16px; }
+  .panel h2{ font-size:15px; margin:0 0 12px; letter-spacing:.3px; }
+  .cols{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media(max-width:720px){ .cols{ grid-template-columns:1fr; } }
+  .bar-row{ display:flex; align-items:center; gap:10px; margin:7px 0; font-size:13px; }
+  .bar-row .bn{ width:130px; color:var(--muted); flex:0 0 auto; }
+  .bar-track{ flex:1; height:10px; border-radius:99px; background:rgba(255,255,255,.08); overflow:hidden; }
+  .bar-fill{ height:100%; background:linear-gradient(90deg,var(--gold),var(--gold2)); border-radius:99px; }
+  .bar-row b{ width:46px; text-align:right; }
+  .funnel{ display:flex; flex-direction:column; gap:8px; }
+  .fn{ position:relative; background:rgba(201,162,75,.12); border:1px solid var(--line); border-radius:10px; padding:9px 12px; font-size:13px; display:flex; justify-content:space-between; }
+  .fn small{ color:var(--muted); }
+  .stars{ color:var(--gold); letter-spacing:2px; }
+  .log{ max-height:280px; overflow:auto; font-size:12px; }
+  .log .ev{ display:flex; justify-content:space-between; gap:10px; padding:6px 0; border-bottom:1px solid rgba(255,255,255,.05); }
+  .log .ev .e{ color:var(--gold2); }
+  .log .ev .t{ color:var(--muted); }
+  svg text{ fill:var(--muted); font-size:10px; }
+  .empty{ text-align:center; color:var(--muted); padding:30px; }
+  .note{ font-size:12px; color:var(--muted); margin-top:10px; line-height:1.5; }
+  footer{ text-align:center; color:var(--muted); font-size:12px; margin-top:24px; }
+  a{ color:var(--gold2); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><div class="mark">⚓</div>
+      <div><h1>Game &amp; Wasserlage Tracking</h1><small>Wave Bite · Water Patrol — Premium KPI-Dashboard</small></div>
+    </div>
+    <div class="status"><span class="pill local">● Lokale Gerätedaten</span> <span id="status-meta"></span></div>
+  </header>
+
+  <div class="controls">
+    <button class="gold" onclick="render()">⟳ Aktualisieren</button>
+    <button onclick="exportJSON()">⤓ Daten exportieren (JSON)</button>
+    <button onclick="if(confirm('Lokale Tracking-Daten löschen?')){localStorage.removeItem('wavebite.track.v1');render();}">🗑 Tracking zurücksetzen</button>
+  </div>
+
+  <div id="content"></div>
+
+  <footer>
+    Daten ausschließlich aus diesem Gerät/Browser (localStorage), keine Übertragung · Datenschutz‑konform ·
+    Für CEO‑weite Aggregation siehe <code>WAVE_BITE_GAME_TRACKING.md</code> (Backend‑Schritt).
+  </footer>
+</div>
+
+<script>
+(function(){
+  var TKEY='wavebite.track.v1', SKEY='wavebite.captainsrun.save';
+  function load(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }
+  function fmt(n){ return (n==null?0:n).toLocaleString('de-DE'); }
+  function pct(a,b){ return b>0? Math.round(a/b*100) : 0; }
+  function esc(s){ return String(s==null?'':s).replace(/[<>&]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c];}); }
+
+  window.exportJSON=function(){
+    var d=load(TKEY)||{}; var blob=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
+    var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='wavebite-tracking-'+new Date().toISOString().slice(0,10)+'.json'; a.click();
+  };
+
+  function kpi(label,val,cls,sub){ return '<div class="kpi"><div class="label">'+label+'</div><div class="val '+(cls||'')+'">'+val+'</div>'+(sub?'<div class="sub">'+sub+'</div>':'')+'</div>'; }
+  function barRow(name,v,max){ return '<div class="bar-row"><span class="bn">'+esc(name)+'</span><span class="bar-track"><span class="bar-fill" style="width:'+(max>0?(v/max*100):0)+'%"></span></span><b>'+fmt(v)+'</b></div>'; }
+
+  window.render=function(){
+    var d=load(TKEY), s=load(SKEY);
+    var content=document.getElementById('content');
+    document.getElementById('status-meta').textContent = d? ('Sessions: '+fmt(d.sessions)+' · '+ (d.days?d.days.length:0)+' Tage aktiv') : '';
+    if(!d || (!d.events||d.events.length===0) && (d.sessions||0)<=1 && (!s)){
+      content.innerHTML='<div class="panel empty"><h2>Noch keine Tracking-Daten</h2>'
+        +'<p class="note">Öffne und spiele das Spiel in <b>diesem</b> Browser (gleiche Origin) – Events erscheinen dann hier. '
+        +'Die Daten liegen nur lokal auf diesem Gerät.</p></div>'; return;
+    }
+    var c=d.counters||{};
+    var starsArr=[]; (d.events||[]).forEach(function(e){ if(e.e==='mission_complete'&&e.p&&typeof e.p.stars==='number') starsArr.push(e.p.stars); });
+    (d.ratings||[]).forEach(function(){});
+    var avgMissionStars = starsArr.length? (starsArr.reduce(function(a,b){return a+b;},0)/starsArr.length):0;
+    var ratings=d.ratings||[]; var avgRating = ratings.length? (ratings.reduce(function(a,r){return a+(r.s||0);},0)/ratings.length):0;
+
+    var gOpen=c.game_open||0, mStart=c.mission_start||0, mDone=c.mission_complete||0, mFail=c.mission_fail||0;
+    var pwaPrompt=c.pwa_prompt||0, pwaInst=c.pwa_installed||0, levelUp=c.level_up||0, rankUp=c.rank_up||0, rated=c.rating_submitted||0;
+    var compRate=pct(mDone,mStart), instRate=pct(pwaInst,pwaPrompt), rateConv=pct(rated,gOpen);
+
+    var html='';
+    // KPI-Karten
+    html+='<div class="grid">'
+      + kpi('Game-Starts', fmt(gOpen),'gold', fmt(d.sessions)+' Sessions')
+      + kpi('Einsätze gestartet', fmt(mStart))
+      + kpi('Einsätze abgeschlossen', fmt(mDone),'good', compRate+'% Quote')
+      + kpi('Gescheitert', fmt(mFail), mFail>mDone?'bad':'')
+      + kpi('Level-Ups', fmt(levelUp))
+      + kpi('Beförderungen', fmt(rankUp),'gold')
+      + kpi('PWA installiert', fmt(pwaInst),'', instRate+'% v. Prompts')
+      + kpi('Ø Sterne (Einsatz)', avgMissionStars? avgMissionStars.toFixed(2):'–','gold','3-Sterne-Logik')
+      + kpi('Bewertungen', fmt(ratings.length))
+      + kpi('Ø Bewertung', avgRating? avgRating.toFixed(2)+' ★':'–','gold')
+      + kpi('Tage aktiv', fmt(d.days?d.days.length:0),'', 'Retention-Proxy')
+      + kpi('Conv. Start→Bewertung', rateConv+'%')
+      +'</div>';
+
+    // Funnel + Mission-Typen
+    html+='<div class="cols">';
+    html+='<div class="panel"><h2>Funnel</h2><div class="funnel">'
+      + '<div class="fn"><span>Game geöffnet</span><b>'+fmt(gOpen)+'</b></div>'
+      + '<div class="fn"><span>Einsatz gestartet</span><b>'+fmt(mStart)+' <small>('+pct(mStart,gOpen)+'%)</small></b></div>'
+      + '<div class="fn"><span>Einsatz abgeschlossen</span><b>'+fmt(mDone)+' <small>('+pct(mDone,gOpen)+'%)</small></b></div>'
+      + '<div class="fn"><span>Bewertung abgegeben</span><b>'+fmt(rated)+' <small>('+pct(rated,gOpen)+'%)</small></b></div>'
+      + '</div></div>';
+    // Mission-Typen aus mission_start props.type
+    var types={}; (d.events||[]).forEach(function(e){ if(e.e==='mission_start'&&e.p&&e.p.type){ types[e.p.type]=(types[e.p.type]||0)+1; } });
+    var tkeys=Object.keys(types).sort(function(a,b){return types[b]-types[a];}); var tmax=tkeys.reduce(function(m,k){return Math.max(m,types[k]);},0);
+    var tb=tkeys.length? tkeys.map(function(k){return barRow(k,types[k],tmax);}).join('') : '<p class="note">Noch keine Einsätze gefahren.</p>';
+    html+='<div class="panel"><h2>Beliebteste Einsatztypen</h2>'+tb+'</div>';
+    html+='</div>';
+
+    // Aktivität pro Tag (SVG sparkline)
+    var byDay={}; (d.events||[]).forEach(function(e){ var day=new Date(e.t).toISOString().slice(0,10); byDay[day]=(byDay[day]||0)+1; });
+    var days=Object.keys(byDay).sort();
+    if(days.length){
+      var maxd=days.reduce(function(m,k){return Math.max(m,byDay[k]);},1);
+      var W=720,H=120,pad=24, step=days.length>1?(W-pad*2)/(days.length-1):0;
+      var pts=days.map(function(k,i){ var x=pad+i*step, y=H-pad-(byDay[k]/maxd)*(H-pad*2); return x.toFixed(1)+','+y.toFixed(1); }).join(' ');
+      var dots=days.map(function(k,i){ var x=pad+i*step, y=H-pad-(byDay[k]/maxd)*(H-pad*2); return '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3" fill="#E7CE8B"/>'; }).join('');
+      html+='<div class="panel"><h2>Aktivität pro Tag (Events)</h2><svg viewBox="0 0 '+W+' '+H+'" width="100%" height="140" preserveAspectRatio="none">'
+        +'<polyline points="'+pts+'" fill="none" stroke="#C9A24B" stroke-width="2"/>'+dots
+        +'<text x="'+pad+'" y="'+(H-6)+'">'+days[0]+'</text><text x="'+(W-pad)+'" y="'+(H-6)+'" text-anchor="end">'+days[days.length-1]+'</text>'
+        +'</svg></div>';
+    }
+
+    // Bewertungs-Kommentare + Event-Log
+    html+='<div class="cols">';
+    var rc = ratings.filter(function(r){return r.c;}).slice(-8).reverse();
+    var rcHtml = rc.length? rc.map(function(r){ return '<div class="ev"><span class="stars">'+('★'.repeat(r.s)+'☆'.repeat(5-r.s))+'</span><span>'+esc(r.c)+'</span></div>'; }).join('') : '<p class="note">Noch keine Kommentare.</p>';
+    html+='<div class="panel"><h2>Feedback-Kommentare</h2><div class="log">'+rcHtml+'</div></div>';
+    var evs=(d.events||[]).slice(-40).reverse();
+    var evHtml = evs.map(function(e){ return '<div class="ev"><span class="e">'+esc(e.e)+ (e.p?' <span class="t">'+esc(JSON.stringify(e.p))+'</span>':'') +'</span><span class="t">'+new Date(e.t).toLocaleString('de-DE')+'</span></div>'; }).join('');
+    html+='<div class="panel"><h2>Event-Log (letzte 40)</h2><div class="log">'+(evHtml||'<p class="note">—</p>')+'</div></div>';
+    html+='</div>';
+
+    // Datenschutzstatus
+    var trackingOff = s && s.settings && s.settings.tracking===false;
+    html+='<div class="panel"><h2>Datenschutz-Status</h2>'
+      +'<p class="note">Speicherung: <b>nur lokal (localStorage)</b>, keine Übertragung, keine Cookies. '
+      +'Tracking aktuell: <b>'+(trackingOff?'deaktiviert (Opt-out aktiv)':'aktiv (lokal)')+'</b>. '
+      +'Aggregation über mehrere Nutzer/Geräte erfordert ein Backend mit Consent – siehe Handover-Doc.</p></div>';
+
+    content.innerHTML=html;
+  };
+  render();
+})();
+</script>
+</body>
+</html>

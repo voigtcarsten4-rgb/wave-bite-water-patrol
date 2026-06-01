@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0B1E3B" />
+  <meta name="description" content="Wave Bite – Captain's Run: maritimes Premium-Liefer-Game. Steuere dein Boot, erfülle Missionen, schalte Boote & Häfen frei." />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Wave Bite" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="assets/icons/icon.svg" />
+  <link rel="icon" type="image/svg+xml" href="assets/icons/icon.svg" />
+  <link rel="stylesheet" href="styles/main.css" />
+  <title>Wave Bite – Captain's Run</title>
+</head>
+<body>
+  <div id="app">
+
+    <!-- Topbar (Menü-Screens) -->
+    <header id="topbar">
+      <div class="brand">
+        <span class="mark">⚓</span>
+        <span>WAVE BITE<small>Captain's Run</small></span>
+      </div>
+      <div class="top-stats">
+        <span class="chip gold">🪙 <span id="top-coins">0</span></span>
+        <span class="chip"><span id="top-level">Lvl 1</span></span>
+      </div>
+    </header>
+
+    <!-- START -->
+    <section id="screen-start" class="screen active">
+      <div id="start-hero-bg"></div>
+      <div class="hero">
+        <div class="hero-mark">⚓</div>
+        <h1>WAVE BITE</h1>
+        <div class="sub">Captain's Run</div>
+        <p>Steuere dein Boot durch ruhige Reviere, erfülle Versorgungsmissionen und werde zum Captain der Wave-Bite-Flotte.</p>
+      </div>
+      <nav class="menu">
+        <button id="btn-story" class="btn btn-gold btn-big">📖 Story-Kampagne</button>
+        <button id="btn-live" class="btn btn-line btn-big">🌊 Live Water Region</button>
+        <button id="btn-quickstart" class="btn btn-line btn-big">▶ Einzeleinsatz</button>
+        <div class="menu-grid">
+          <button id="btn-goto-missions" class="btn btn-line">📋 Missionen</button>
+          <button id="btn-goto-boats" class="btn btn-line">🚤 Boote</button>
+          <button id="btn-goto-progress" class="btn btn-line">📈 Fortschritt</button>
+          <button id="btn-goto-settings" class="btn btn-line">⚙ Einstellungen</button>
+        </div>
+      </nav>
+    </section>
+
+    <!-- MISSIONEN -->
+    <section id="screen-missions" class="screen">
+      <div class="screen-head">
+        <button id="back-missions" class="icon-btn">‹</button>
+        <h2>Missionen</h2>
+      </div>
+      <div class="scroll"><div id="missions-list"></div></div>
+    </section>
+
+    <!-- BOOTE -->
+    <section id="screen-boats" class="screen">
+      <div class="screen-head">
+        <button id="back-boats" class="icon-btn">‹</button>
+        <h2>Boote & Upgrades</h2>
+      </div>
+      <div class="scroll"><div id="boats-list"></div></div>
+    </section>
+
+    <!-- FORTSCHRITT -->
+    <section id="screen-progress" class="screen">
+      <div class="screen-head">
+        <button id="back-progress" class="icon-btn">‹</button>
+        <h2>Fortschritt</h2>
+      </div>
+      <div class="scroll"><div id="progress-content"></div></div>
+    </section>
+
+    <!-- EINSTELLUNGEN -->
+    <section id="screen-settings" class="screen">
+      <div class="screen-head">
+        <button id="back-settings" class="icon-btn">‹</button>
+        <h2>Einstellungen</h2>
+      </div>
+      <div class="scroll"><div id="settings-content"></div></div>
+    </section>
+
+    <!-- GAME -->
+    <section id="screen-game" class="screen">
+      <div class="game-wrap">
+        <canvas id="game-canvas"></canvas>
+
+        <!-- Blaulicht-Overlay -->
+        <div id="bluelight" class="bluelight"></div>
+
+        <!-- Kapitän (wer steuert) -->
+        <div class="hud-captain">
+          <div class="hc-port" id="hc-port"></div>
+          <div class="hc-meta"><b id="hc-name">Kapitän</b><span id="hc-rank">Deckhand</span></div>
+        </div>
+
+        <!-- HUD oben -->
+        <div class="hud-top">
+          <div class="hud-pill hud-mission">
+            <span class="mi" id="hud-mission-icon">📦</span>
+            <div><div class="mt" id="hud-mission-title">Mission</div><div class="ml">Aktuelle Mission</div></div>
+          </div>
+          <div class="hud-right">
+            <div class="hud-row">
+              <span class="hud-pill hud-mini gold">🪙 <span id="hud-coins">0</span></span>
+              <span class="hud-pill hud-mini" id="hud-level">Lvl 1</span>
+              <button id="btn-pause" aria-label="Pause">❚❚</button>
+            </div>
+            <div class="hud-pill" id="hud-timer" style="display:none">⏱ <span id="hud-timer-val">0s</span></div>
+            <div class="hud-pill hud-bar-wrap">
+              <span class="hud-bar-label">Boost</span>
+              <span class="hud-bar"><span id="hud-boost-fill"></span></span>
+            </div>
+            <div class="hud-pill hud-bar-wrap">
+              <span class="hud-bar-label">Hülle</span>
+              <span class="hud-bar"><span id="hud-integrity-fill"></span></span>
+            </div>
+            <div class="hud-pill hud-bar-wrap">
+              <span class="hud-bar-label">Treibstoff</span>
+              <span class="hud-bar"><span id="hud-fuel-fill"></span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Zielentfernung -->
+        <div class="hud-progress">
+          <div class="lbl">🧭 Zielentfernung</div>
+          <span class="hud-bar"><span id="hud-progress-fill"></span></span>
+        </div>
+
+        <!-- Polizei-Aktionen -->
+        <div class="actions-bar">
+          <button class="act" id="act-blaulicht">🚨<small>Blaulicht</small></button>
+          <button class="act" id="act-sirene">📢<small>Sirene</small></button>
+          <button class="act" id="act-funk">📻<small>Funk</small></button>
+          <button class="act" id="act-spotlight">🔦<small>Spotlight</small></button>
+        </div>
+
+        <!-- Touch-Steuerung -->
+        <div class="controls">
+          <div class="ctrl-cluster">
+            <button id="btn-left" class="ctrl" aria-label="Links">◀</button>
+            <button id="btn-right" class="ctrl" aria-label="Rechts">▶</button>
+          </div>
+          <div class="ctrl-right">
+            <button id="btn-boost" class="ctrl boost" aria-label="Boost">BOOST</button>
+            <button id="btn-throttle" class="ctrl gas" aria-label="Gas">⚡</button>
+          </div>
+        </div>
+
+        <!-- Pause-Overlay -->
+        <div id="overlay-pause" class="overlay">
+          <div class="panel">
+            <h2>Pause</h2>
+            <div class="row">
+              <button id="btn-resume" class="btn btn-gold">Fortsetzen</button>
+              <button id="btn-quit" class="btn btn-line">Zum Menü</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Einsatz-Briefing-Overlay -->
+    <div id="overlay-briefing" class="overlay"></div>
+
+    <!-- Ergebnis-Overlay -->
+    <div id="overlay-result" class="overlay"></div>
+
+    <!-- Cinematische Belohnungs-Sequenz -->
+    <div id="cinematic" class="cine-overlay"></div>
+
+    <!-- WOW-Intro -->
+    <div id="intro" class="cine-overlay"></div>
+
+    <!-- Minispiel-Overlay -->
+    <div id="minigame" class="mg-overlay"></div>
+
+    <!-- Story-Dialog-Overlay -->
+    <div id="overlay-dialogue" class="overlay"></div>
+
+    <!-- Bewertung (Zwischenfunk-Feedback) -->
+    <div id="overlay-rating" class="overlay"></div>
+
+    <!-- Rechtliches / Onboarding / Hinweis -->
+    <div id="overlay-legal" class="overlay"></div>
+
+    <!-- Lade-Anzeige -->
+    <div id="boot-loader"><div class="spinner"></div></div>
+  </div>
+
+  <!-- Scripts (klassisch, in Abhängigkeitsreihenfolge → läuft auch lokal) -->
+  <script src="src/utils/math.js"></script>
+  <script src="src/utils/storage.js"></script>
+  <script src="src/data/models.js"></script>
+  <script src="src/data/boats.js"></script>
+  <script src="src/data/upgrades.js"></script>
+  <script src="src/data/regions.js"></script>
+  <script src="src/data/missions.js"></script>
+  <script src="src/data/achievements.js"></script>
+  <script src="src/data/content.js"></script>
+  <script src="src/data/legal.js"></script>
+  <script src="src/data/story.js"></script>
+  <script src="src/data/ranks.js"></script>
+  <script src="src/data/asset-manifest.js"></script>
+  <script src="src/systems/save.js"></script>
+  <script src="src/systems/progression.js"></script>
+  <script src="src/systems/rank.js"></script>
+  <script src="src/systems/assets.js"></script>
+  <script src="src/systems/track.js"></script>
+  <script src="src/systems/endless.js"></script>
+  <script src="src/systems/story.js"></script>
+  <script src="src/systems/audio.js"></script>
+  <script src="src/systems/input.js"></script>
+  <script src="src/core/water.js"></script>
+  <script src="src/core/engine.js"></script>
+  <script src="src/game/boat.js"></script>
+  <script src="src/game/obstacle.js"></script>
+  <script src="src/game/world.js"></script>
+  <script src="src/game/mission.js"></script>
+  <script src="src/game/game.js"></script>
+  <script src="src/game/minigame-radar.js"></script>
+  <script src="src/ui/hud.js"></script>
+  <script src="src/ui/screens.js"></script>
+  <script src="src/ui/cinematic.js"></script>
+  <script src="src/ui/dialogue.js"></script>
+  <script src="src/ui/intro.js"></script>
+  <script src="src/ui/rating.js"></script>
+  <script src="src/main.js"></script>
+</body>
+</html>

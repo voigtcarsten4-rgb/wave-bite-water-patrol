@@ -1,0 +1,21 @@
+{
+  "name": "Wave Bite – Captain's Run",
+  "short_name": "Wave Bite",
+  "description": "Maritimes Premium-Liefer-Game. Steuere dein Boot, erfülle Missionen, schalte Boote & Häfen frei.",
+  "lang": "de",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#081627",
+  "theme_color": "#0B1E3B",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    {
+      "src": "assets/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
