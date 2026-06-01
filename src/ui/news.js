@@ -41,7 +41,7 @@
           + '<div class="nw-note">Keine Sorge – du hast nichts verloren. Die Welt ist nur weitergelaufen.</div></div>';
       }
 
-      var LOCMAP = { fest:'loc_hafenfest', regatta:'loc_regatta', sturmwoche:'loc_storm', razzia:'loc_industriehafen', vermisst:'loc_dahme', nebelwoche:'loc_seddinsee' };
+      var LOCMAP = { fest:'loc_hafenfest', regatta:'loc_gruenau', sturmwoche:'loc_storm', razzia:'loc_industriehafen', vermisst:'loc_dahme', nebelwoche:'loc_seddinsee' };
       var locId = LOCMAP[w.special.id]; var locUrl = (locId && WB.Assets) ? WB.Assets.url(locId) : null;
       var banner = locUrl ? '<div class="nw-banner" style="background-image:url(\''+locUrl+'\')"></div>' : '';
       host.innerHTML = '<div class="panel nw-panel">'

@@ -519,6 +519,66 @@
       "category": "character",
       "src": "assets/leo/char_sven.webp",
       "status": "ready"
+    },
+    {
+      "id": "loc_glienicker",
+      "category": "location",
+      "src": "assets/leo/loc_glienicker.webp",
+      "status": "ready"
+    },
+    {
+      "id": "loc_wannsee",
+      "category": "location",
+      "src": "assets/leo/loc_wannsee.webp",
+      "status": "ready"
+    },
+    {
+      "id": "loc_havel",
+      "category": "location",
+      "src": "assets/leo/loc_havel.webp",
+      "status": "ready"
+    },
+    {
+      "id": "loc_werder",
+      "category": "location",
+      "src": "assets/leo/loc_werder.webp",
+      "status": "ready"
+    },
+    {
+      "id": "loc_caputh",
+      "category": "location",
+      "src": "assets/leo/loc_caputh.webp",
+      "status": "ready"
+    },
+    {
+      "id": "loc_rummelsburg",
+      "category": "location",
+      "src": "assets/leo/loc_rummelsburg.webp",
+      "status": "ready"
+    },
+    {
+      "id": "loc_koepenick",
+      "category": "location",
+      "src": "assets/leo/loc_koepenick.webp",
+      "status": "ready"
+    },
+    {
+      "id": "loc_gruenau",
+      "category": "location",
+      "src": "assets/leo/loc_gruenau.webp",
+      "status": "ready"
+    },
+    {
+      "id": "loc_babelsberg",
+      "category": "location",
+      "src": "assets/leo/loc_babelsberg.webp",
+      "status": "ready"
+    },
+    {
+      "id": "loc_regierungsviertel",
+      "category": "location",
+      "src": "assets/leo/loc_regierungsviertel.webp",
+      "status": "ready"
     }
   ]
 }
