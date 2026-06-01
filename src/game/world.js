@@ -91,7 +91,7 @@
       var near = null;
       for (var n = 0; n < this.obstacles.length; n++) { var oo = this.obstacles[n]; if (oo.z < 0.55 && oo.z > 0.18 && Math.abs(oo.lane - this.playerLane) < 0.3) { near = oo; break; } }
       if (near) { var NM = { buoy:'Boje', sail:'Segler', motor:'Motorboot', sup:'SUP-Fahrer', houseboat:'Hausboot', swimmer:'Schwimmer', ferry:'Fähre', rock:'Felsen', log:'Treibholz' };
-        WB.LucyHUD.say((near.lane < this.playerLane ? '◀ ' : '▶ ') + (NM[near.kind] || 'Hindernis') + ' voraus – ausweichen!'); this._lucyT = 3.0; }
+        WB.LucyHUD.say((near.lane < this.playerLane ? '◀ ' : '▶ ') + (NM[near.kind] || 'Hindernis') + ' voraus – ausweichen!'); this._lucyT = 3.0; if (WB.Audio) WB.Audio.danger(); }
     }
     if (this.boat.boosting && !this._wasBoost && WB.LucyHUD && WB.LucyHUD.say) WB.LucyHUD.say('Boost! Achte auf den Verkehr.');
     this._wasBoost = this.boat.boosting;

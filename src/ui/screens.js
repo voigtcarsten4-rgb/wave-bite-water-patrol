@@ -299,10 +299,10 @@
       on('btn-quit', function () { WB.Game.quit(); });
 
       // Polizei-Aktionen (Blaulicht/Sirene/Funk/Spotlight)
-      on('act-blaulicht', function () { var b = $('bluelight'); if (b) b.classList.toggle('on'); });
-      on('act-sirene', function () { WB.Audio.boost(); });
-      on('act-funk', function () { WB.Audio.click(); });
-      on('act-spotlight', function () { var g = document.querySelector('.game-wrap'); if (g) g.classList.toggle('spot'); });
+      on('act-blaulicht', function () { var b = $('bluelight'); if (b) b.classList.toggle('on'); if (WB.Audio) WB.Audio.blaulicht(); });
+      on('act-sirene', function () { if (WB.Audio) WB.Audio.siren(); });
+      on('act-funk', function () { if (WB.Audio) WB.Audio.radio(); });
+      on('act-spotlight', function () { var g = document.querySelector('.game-wrap'); if (g) g.classList.toggle('spot'); if (WB.Audio) WB.Audio.blaulicht(); });
 
       this.refreshTopbar();
     },

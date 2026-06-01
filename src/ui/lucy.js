@@ -30,6 +30,7 @@
     say: function (text, ms) {
       var el = $('lucy-callout'); if (!el) return;
       el.textContent = text; el.classList.add('show');
+      if (WB.Audio && WB.Audio.lucy) WB.Audio.lucy();
       clearTimeout(this._sayT); this._sayT = setTimeout(function () { el.classList.remove('show'); }, ms || 2800);
     },
     buildLines: function () {

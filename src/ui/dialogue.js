@@ -14,7 +14,7 @@
       seq = (seq || []).slice();
       var i = 0;
       var bg = (ctx.station && WB.Assets) ? WB.Assets.url(ctx.station) : null;
-      if (WB.Audio) WB.Audio.unlock();
+      if (WB.Audio) { WB.Audio.unlock(); WB.Audio.radio(); }
 
       function done() { host.onclick = null; host.classList.remove('show'); setTimeout(function () { host.innerHTML = ''; if (onDone) onDone(); }, 220); }
 

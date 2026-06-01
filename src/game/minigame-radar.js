@@ -61,7 +61,7 @@
       spawnT = setInterval(spawn, 640);
       tickT = setInterval(function () { var p = 1 - (Date.now() - t0) / dur; if (tf) tf.style.width = Math.max(0, p) * 100 + '%'; }, 100);
       endT = setTimeout(finish, dur);
-      if (WB.Audio) WB.Audio.unlock();
+      if (WB.Audio) { WB.Audio.unlock(); WB.Audio.radar(); }
     }
   };
 })(window.WB = window.WB || {});

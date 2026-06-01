@@ -36,6 +36,7 @@
         WB.Screens.showGame(mission);
         if (WB.Engine._resize) WB.Engine._resize();   // Canvas erst messen, wenn der Game-Screen sichtbar ist
         self.world.layout(WB.Engine.w, WB.Engine.h);   // Welt mit gültigen Maßen einrichten (Fix gegen 0×0-Schwarzbild)
+        if (WB.Audio) { WB.Audio.unlock(); WB.Audio.startAmbience(); }
         WB.Engine.start(function (dt) { self._tick(dt); });
       };
       // Kino-Einspieler vor dem Einsatz (kurz, per Tap überspringbar).
@@ -96,6 +97,7 @@
       if (this.state === 'playing') {
         this.world.update(dt, WB.Input.state);
         this.runtime.tick(dt);
+        if (WB.Audio && WB.Audio.setEngine && this.world.boat && this.world.boat.forwardSpeed) WB.Audio.setEngine(this.world.boat.forwardSpeed() / 130);
 
         if (this.world.delivered) { this._end(true); }
         else if (this.world.failed) { this._end(false, this.world.failReason || 'wrecked'); }
@@ -129,6 +131,7 @@
 
     quit: function () {
       WB.Engine.stop();
+      if (WB.Audio) WB.Audio.stopAmbience();
       WB.Input.reset();
       this.mode = 'single';
       if (WB.Endless) WB.Endless.active = false;
@@ -141,6 +144,7 @@
 
     _end: function (success, reason) {
       WB.Engine.stop();
+      if (WB.Audio) WB.Audio.stopAmbience();
       WB.Input.reset();
       this.state = 'result';
       if (success) {
