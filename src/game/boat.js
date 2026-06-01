@@ -31,13 +31,16 @@
   };
 
   // Forward-Speed (Scroll px/s) abhängig von Stats, Gas, Boost, Treibstoff.
-  Boat.prototype.forwardSpeed = function (input) {
+  Boat.prototype.targetSpeed = function (input) {
     var cruise = 95 + this.stats.speed * 11;
-    var speed = cruise;
-    var hasFuel = this.fuel > 0.02;
-    if (input.throttle && hasFuel) speed = cruise * 1.55;
-    if (this.boosting) speed *= 1.7;
-    return speed;
+    var t = cruise * 0.82;                       // Leerlauf-Gleiten (Trägheit)
+    if (input.throttle && this.fuel > 0.02) t = cruise * 1.55;
+    if (this.boosting) t *= 1.7;
+    return t;
+  };
+  Boat.prototype.forwardSpeed = function () {
+    if (this.speed == null) this.speed = 95 + this.stats.speed * 11;
+    return this.speed;                            // geglättete Fahrt (siehe update)
   };
 
   Boat.prototype.update = function (dt, input, worldLeft, worldRight) {
@@ -54,6 +57,12 @@
     var burn = 0; if (input.throttle) burn += 0.045; if (this.boosting) burn += 0.075;
     if (burn > 0) { this.fuel -= burn * dt; if (this.fuel < 0) this.fuel = 0; }
     else { this.fuel += 0.02 * dt; if (this.fuel > 1) this.fuel = 1; }
+
+    // Beschleunigung / Bremsen mit Trägheit – Fahrtgefühl
+    if (this.speed == null) this.speed = 95 + this.stats.speed * 11;
+    var tgt = this.targetSpeed(input);
+    var arate = (tgt > this.speed ? (1.5 + this.stats.boost * 0.08) : 2.8);
+    this.speed += (tgt - this.speed) * Math.min(1, arate * dt);
 
     // Laterale Steuerung
     var maxLat = 95 + this.stats.handling * 15;
