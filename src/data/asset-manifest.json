@@ -387,6 +387,66 @@
       "category": "video",
       "src": "assets/video/cine_reward.mp4",
       "status": "ready"
+    },
+    {
+      "id": "loc_mueggelsee",
+      "category": "location",
+      "src": "assets/leo/loc_mueggelsee.webp",
+      "status": "ready"
+    },
+    {
+      "id": "loc_spree",
+      "category": "location",
+      "src": "assets/leo/loc_spree.webp",
+      "status": "ready"
+    },
+    {
+      "id": "cockpit_bridge",
+      "category": "cockpit",
+      "src": "assets/leo/cockpit_bridge.webp",
+      "status": "ready"
+    },
+    {
+      "id": "char_lucy",
+      "category": "character",
+      "src": "assets/leo/char_lucy.webp",
+      "status": "ready"
+    },
+    {
+      "id": "cine_pursuit_hero",
+      "category": "cinematic",
+      "src": "assets/leo/cine_pursuit_hero.webp",
+      "status": "ready"
+    },
+    {
+      "id": "char_lotse",
+      "category": "character",
+      "src": "assets/leo/char_lotse.webp",
+      "status": "ready"
+    },
+    {
+      "id": "loc_storm",
+      "category": "location",
+      "src": "assets/leo/loc_storm.webp",
+      "status": "ready"
+    },
+    {
+      "id": "cine_night_hero",
+      "category": "cinematic",
+      "src": "assets/leo/cine_night_hero.webp",
+      "status": "ready"
+    },
+    {
+      "id": "loc_lock",
+      "category": "location",
+      "src": "assets/leo/loc_lock.webp",
+      "status": "ready"
+    },
+    {
+      "id": "cine_rescue_hero",
+      "category": "cinematic",
+      "src": "assets/leo/cine_rescue_hero.webp",
+      "status": "ready"
     }
   ]
 }

@@ -316,12 +316,13 @@
     showStart: function () {
       this.refreshTopbar();
       var hero = document.getElementById('start-hero-bg');
-      if (hero && WB.Assets && WB.Assets.url('cockpit_day_1')) {
-        hero.style.backgroundImage = "url('" + WB.Assets.url('cockpit_day_1') + "')";
+      if (hero && WB.Assets && (WB.Assets.url('loc_mueggelsee') || WB.Assets.url('cockpit_day_1'))) {
+        hero.style.backgroundImage = "url('" + (WB.Assets.url('loc_mueggelsee') || WB.Assets.url('cockpit_day_1')) + "')";
         hero.classList.add('on');
       }
       var strip = document.getElementById('world-strip');
       if (strip && WB.News) { strip.innerHTML = WB.News.statusStrip(); strip.onclick = function () { WB.News.showBriefing(null); }; }
+      if (WB.LucyHUD) WB.LucyHUD.mount();
       show('screen-start');
     },
 

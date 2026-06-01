@@ -5,8 +5,8 @@
   'use strict';
   var M = WB.math;
 
-  var COCKPIT = { bucht: 'cockpit_day_1', kanal: 'cockpit_day_1', seenplatte: 'cockpit_night_1', schleuse: 'cockpit_fog_1' };
-  var BG = { bucht: 'bg_calm_bay_1', kanal: 'bg_harbor_marina_1', seenplatte: 'bg_night_lake_1', schleuse: 'bg_lock_1' };
+  var COCKPIT = { bucht: 'cockpit_bridge', kanal: 'cockpit_bridge', seenplatte: 'cockpit_bridge', schleuse: 'cockpit_bridge' };
+  var BG = { bucht: 'loc_mueggelsee', kanal: 'loc_spree', seenplatte: 'loc_mueggelsee', schleuse: 'loc_lock' };
 
   function World(boat, region, mission) {
     this.boat = boat; this.region = region; this.mission = mission;
