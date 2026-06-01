@@ -670,7 +670,8 @@
       var rank = WB.Rank.current().rank;
       var region = WB.data.regionById(ev.regionId);
       var timeTag = ev.timeLimit > 0 ? '<span class="bf-tag warn">⏱ ' + ev.timeLimit + 's</span>' : '';
-      var mgTag = ev.minigame ? '<span class="bf-tag">📡 Radar-Scan</span>' : '';
+      var mgLabels = { radar: '📡 Radar-Scan', lock: '🎚 Schleusen-Timing', search: '🔍 Hafen-Suche' };
+      var mgTag = ev.minigame ? '<span class="bf-tag">' + (mgLabels[ev.minigame] || '🎮 Minispiel') + '</span>' : '';
       var html = '<div class="briefing">'
         + (station ? '<div class="bf-bg" style="background-image:url(\'' + station + '\')"></div>' : '')
         + '<div class="bf-scrim"></div>'
