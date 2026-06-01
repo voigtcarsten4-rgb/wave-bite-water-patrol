@@ -747,6 +747,66 @@
       "category": "immersion",
       "src": "assets/leo/im_bootshaus_verein.webp",
       "status": "ready"
+    },
+    {
+      "id": "im_strandbad_mueggelsee",
+      "category": "immersion",
+      "src": "assets/leo/im_strandbad_mueggelsee.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_strandbad_wannsee",
+      "category": "immersion",
+      "src": "assets/leo/im_strandbad_wannsee.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_wasserrettung_dlrg",
+      "category": "immersion",
+      "src": "assets/leo/im_wasserrettung_dlrg.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_hafenmeisterei",
+      "category": "immersion",
+      "src": "assets/leo/im_hafenmeisterei.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_tankstelle_nacht",
+      "category": "immersion",
+      "src": "assets/leo/im_tankstelle_nacht.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_winterlager_kran",
+      "category": "immersion",
+      "src": "assets/leo/im_winterlager_kran.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_seebruecke_promenade",
+      "category": "immersion",
+      "src": "assets/leo/im_seebruecke_promenade.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_flossverleih",
+      "category": "immersion",
+      "src": "assets/leo/im_flossverleih.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_spreewaldkahn",
+      "category": "immersion",
+      "src": "assets/leo/im_spreewaldkahn.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_strandbar_wasser",
+      "category": "immersion",
+      "src": "assets/leo/im_strandbar_wasser.webp",
+      "status": "ready"
     }
   ]
 }
