@@ -138,36 +138,43 @@
   };
 
   World.prototype._waterAndSky = function (ctx, t) {
-    var w = this.w, vb = this.viewBottom, hy = this.horizonY;
+    var w = this.w, vb = this.viewBottom, hy = this.horizonY, dt = this.dashTop, oh = h0(this);
     var img = WB.Assets && WB.Assets.get(this.bgId);
-    var zoom = 1.06 + 0.03 * Math.sin(t * 0.2);
-    var px = -this.playerLane * w * 0.05;
+    var zoom = 1.04 + 0.03 * Math.sin(t * 0.2);
+    var px = -this.playerLane * w * 0.06;
+    // Berlin-Brandenburg-Kulisse füllt die GANZE Scheibe (man fährt darauf zu)
     if (img && img.complete && img.naturalWidth) {
-      var bandH = hy + 28;
-      ctx.save(); ctx.beginPath(); ctx.rect(-w*0.2, -h0(this), w*1.4, bandH + h0(this)); ctx.clip();
-      var dw = w * zoom * 1.18, dh = (bandH) * zoom * 1.18;
-      WB.Assets.drawCover(ctx, img, (w - dw) / 2 + px, (bandH - dh) / 2 - 8, dw, dh);
+      ctx.save(); ctx.beginPath(); ctx.rect(-w*0.2, -oh, w*1.4, vb + oh); ctx.clip();
+      var dw = w * zoom * 1.22, dh = (vb) * zoom * 1.0;
+      WB.Assets.drawCover(ctx, img, (w - dw) / 2 + px, -oh*0.4, dw, dh);
       ctx.restore();
-      var hg = ctx.createLinearGradient(0, hy - 30, 0, hy + 20);
-      hg.addColorStop(0, 'rgba(0,0,0,0)'); hg.addColorStop(1, this.region.waterTop);
-      ctx.fillStyle = hg; ctx.fillRect(-w*0.2, hy - 30, w*1.4, 50);
     } else {
-      var sky = ctx.createLinearGradient(0, 0, 0, hy); sky.addColorStop(0, '#1b3a5e'); sky.addColorStop(1, this.region.waterTop);
-      ctx.fillStyle = sky; ctx.fillRect(-w*0.2, -h0(this), w*1.4, hy + h0(this));
+      var sky = ctx.createLinearGradient(0, 0, 0, vb); sky.addColorStop(0, '#2b557e'); sky.addColorStop(0.5, '#1b3a5e'); sky.addColorStop(1, this.region.waterBottom);
+      ctx.fillStyle = sky; ctx.fillRect(-w*0.2, -oh, w*1.4, vb + oh);
     }
+    // Wasser blendet über der Kulisse ein: am Horizont durchsichtig -> unten voll (Fahrwasser)
     var wg = ctx.createLinearGradient(0, hy, 0, vb);
-    wg.addColorStop(0, this.region.waterTop); wg.addColorStop(1, this.region.waterBottom);
-    ctx.fillStyle = wg; ctx.fillRect(-w*0.2, hy, w*1.4, vb - hy + h0(this));
+    wg.addColorStop(0, 'rgba(22,64,100,0.0)');
+    wg.addColorStop(0.30, 'rgba(18,56,90,0.55)');
+    wg.addColorStop(0.65, 'rgba(13,42,70,0.92)');
+    wg.addColorStop(1, 'rgba(8,26,44,1)');
+    ctx.fillStyle = wg; ctx.fillRect(-w*0.2, hy, w*1.4, vb - hy + oh);
+    // sanftes Glanzband direkt unter dem Horizont (Sonnen-/Lichtspiegelung)
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    var gl = ctx.createLinearGradient(0, hy - 6, 0, hy + 70);
+    gl.addColorStop(0, 'rgba(255,236,190,0.0)'); gl.addColorStop(0.4, 'rgba(255,236,190,0.16)'); gl.addColorStop(1, 'rgba(255,236,190,0)');
+    ctx.fillStyle = gl; ctx.fillRect(0, hy - 6, w, 76); ctx.restore();
+    // Tiefen-/Fahrlinien zum Fluchtpunkt (nur im unteren, voll deckenden Wasserbereich)
     ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,0.10)'; ctx.lineWidth = 1;
-    var lanes = [-0.6,-0.3,0,0.3,0.6], i;
+    var lanes = [-0.6,-0.3,0,0.3,0.6], i, midY = hy + (vb - hy) * 0.34;
     for (i = 0; i < lanes.length; i++) {
       ctx.beginPath(); ctx.moveTo(w/2 + lanes[i]*this._laneHalf(0) - this.playerLane*w*0.46, vb);
-      ctx.lineTo(w/2 + lanes[i]*this._laneHalf(1) - this.playerLane*w*0.04, hy); ctx.stroke();
+      ctx.lineTo(w/2 + lanes[i]*0.28*this._laneHalf(1) - this.playerLane*w*0.12, midY); ctx.stroke();
     }
-    ctx.strokeStyle = 'rgba(255,255,255,0.07)';
-    for (i = 0; i < 8; i++) {
-      var p = ((this.scroll * 0.004 + i / 8) % 1);
-      var yy = hy + (vb - hy) * (p * p);
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    for (i = 0; i < 7; i++) {
+      var p = ((this.scroll * 0.004 + i / 7) % 1);
+      var yy = midY + (vb - midY) * (p * p);
       ctx.beginPath(); ctx.moveTo(-w*0.2, yy); ctx.lineTo(w*1.2, yy); ctx.stroke();
     }
     ctx.restore();
@@ -260,10 +267,20 @@
     // Armaturenbrett (cockpit_bridge) als Vordergrund-Konsole unten
     var dash = WB.Assets && WB.Assets.get(this.cockpitId);
     if (dash && dash.complete && dash.naturalWidth) {
-      var syc = dash.naturalHeight * 0.46, shc = dash.naturalHeight * 0.54;
+      var syc = dash.naturalHeight * 0.40, shc = dash.naturalHeight * 0.60;
       ctx.drawImage(dash, 0, syc, dash.naturalWidth, shc, 0, dt, w, h - dt);
+      // Armatur sichtbar aufhellen (Vorlage bleibt, nur Belichtung angehoben)
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      var lift = ctx.createLinearGradient(0, dt, 0, h);
+      lift.addColorStop(0, 'rgba(70,110,150,0.22)'); lift.addColorStop(0.5, 'rgba(40,70,105,0.16)'); lift.addColorStop(1, 'rgba(20,40,65,0.10)');
+      ctx.fillStyle = lift; ctx.fillRect(0, dt, w, h - dt);
+      // Instrumenten-Glow (Mitte: Displays/Kompass)
+      var ig = ctx.createRadialGradient(w*0.5, dt + (h-dt)*0.42, 4, w*0.5, dt + (h-dt)*0.42, (h-dt)*0.9);
+      ig.addColorStop(0, 'rgba(90,170,210,0.18)'); ig.addColorStop(1, 'rgba(90,170,210,0)');
+      ctx.fillStyle = ig; ctx.fillRect(0, dt, w, h - dt);
+      ctx.restore();
     } else {
-      var cg = ctx.createLinearGradient(0, dt, 0, h); cg.addColorStop(0, '#13233a'); cg.addColorStop(1, '#070f1a');
+      var cg = ctx.createLinearGradient(0, dt, 0, h); cg.addColorStop(0, '#1c3450'); cg.addColorStop(1, '#0b1828');
       ctx.fillStyle = cg; ctx.fillRect(0, dt, w, h - dt);
     }
     // weicher Übergang Scheibe->Armatur + Gold-Kante
