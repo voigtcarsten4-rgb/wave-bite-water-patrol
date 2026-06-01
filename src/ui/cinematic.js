@@ -202,8 +202,12 @@
 
       el.innerHTML = '<div class="cine-stage' + (fail ? ' fail' : '') + '">'
         + bgEl
+        + '<div class="cine-haze"></div>'
+        + '<div class="cine-godray"></div>'
         + shimmerHtml
         + '<div class="cine-grade"></div>'
+        + '<div class="cine-vignette"></div>'
+        + '<div class="cine-grain"></div>'
         + '<div id="cine-top-bar" class="cine-bar top" style="height:0;"></div>'
         + '<div id="cine-bot-bar" class="cine-bar bottom" style="height:0;"></div>'
         + '<div class="cine-particles">' + buildParticles(fail ? 12 : 20, fail) + '</div>'

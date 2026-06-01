@@ -31,6 +31,8 @@
       var el = $('lucy-callout'); if (!el) return;
       el.textContent = text; el.classList.add('show');
       if (WB.Audio && WB.Audio.lucy) WB.Audio.lucy();
+      var av = document.querySelector('#lucy-hud .lucy-av');
+      if (av) { av.classList.remove('speaking'); void av.offsetWidth; av.classList.add('speaking'); }
       clearTimeout(this._sayT); this._sayT = setTimeout(function () { el.classList.remove('show'); }, ms || 2800);
     },
     buildLines: function () {

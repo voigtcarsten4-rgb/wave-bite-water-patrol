@@ -621,3 +621,37 @@ body {
 /* Weiche Screen-Übergänge (Polish) */
 .screen.active{animation:screenFade .32s ease both}
 @keyframes screenFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ============ CGI ILLUSION PASS (Final) ============ */
+/* Tiefe & Atmosphäre auf Cinematics: drift-Nebel (Parallax), God-Rays, Vignette, Film-Grain, Focus-Pull */
+.cine-bg { animation: kenburns 5.2s ease-out forwards, cineFocus 1.1s ease-out forwards; }
+@keyframes cineFocus { from { filter: blur(7px) saturate(.7); } to { filter: blur(0) saturate(1.05); } }
+.cine-haze { position:absolute; inset:-12%; z-index:1; pointer-events:none;
+  background: radial-gradient(60% 50% at 30% 35%, rgba(150,190,230,.10), transparent 60%),
+              radial-gradient(70% 60% at 75% 70%, rgba(255,210,140,.08), transparent 65%);
+  mix-blend-mode: screen; opacity:.0; animation: hazeIn 1.4s ease forwards, hazeDrift 22s ease-in-out infinite alternate; }
+@keyframes hazeIn { to { opacity:.9; } }
+@keyframes hazeDrift { from { transform: translate(0,0) scale(1.05);} to { transform: translate(-3%,-2%) scale(1.14);} }
+.cine-godray { position:absolute; inset:0; z-index:1; pointer-events:none; mix-blend-mode:screen; opacity:.5;
+  background: conic-gradient(from 210deg at 78% 18%, rgba(255,225,150,.16), transparent 16%, transparent 84%, rgba(255,225,150,.12));
+  animation: rayBreath 9s ease-in-out infinite alternate; }
+@keyframes rayBreath { from { opacity:.28; } to { opacity:.6; } }
+.cine-vignette { position:absolute; inset:0; z-index:3; pointer-events:none;
+  background: radial-gradient(120% 90% at 50% 42%, transparent 52%, rgba(4,10,18,.55) 100%);
+  box-shadow: inset 0 0 140px 30px rgba(4,10,18,.45); }
+.cine-grain { position:absolute; inset:0; z-index:4; pointer-events:none; opacity:.06; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:180px 180px; animation: grainShift .5s steps(3) infinite; }
+@keyframes grainShift { 0%{background-position:0 0;} 33%{background-position:-90px 40px;} 66%{background-position:60px -70px;} 100%{background-position:0 0;} }
+/* Dialog-Hintergründe bekommen ebenfalls Vignette-Tiefe */
+.dlg-bg::after { content:''; position:absolute; inset:0; background: radial-gradient(120% 100% at 50% 40%, transparent 55%, rgba(4,10,18,.5) 100%); }
+/* Gameplay-Frame: filmische Vignette + dezenter Tiefen-Falloff (kein Canvas-Eingriff) */
+#screen-game::after { content:''; position:absolute; inset:0; z-index:6; pointer-events:none;
+  background: radial-gradient(130% 100% at 50% 38%, transparent 58%, rgba(5,12,22,.40) 100%); }
+/* Lucy Bord-KI: sichtbare Reaktion beim Sprechen + dezenter Idle-Puls */
+.lucy-av .lucy-ring { animation: lucyIdle 3.4s ease-in-out infinite; }
+@keyframes lucyIdle { 0%,100%{ box-shadow:0 0 0 0 rgba(124,224,163,.0);} 50%{ box-shadow:0 0 10px 2px rgba(124,224,163,.25);} }
+.lucy-av.speaking { animation: lucySpeak .5s ease; }
+.lucy-av.speaking .lucy-scan { animation: lucyScan .5s ease 2; }
+@keyframes lucySpeak { 0%{ transform:scale(1);} 35%{ transform:scale(1.07); filter:brightness(1.18);} 100%{ transform:scale(1);} }
+@keyframes lucyScan { from{ opacity:.0; transform:translateY(-60%);} 50%{opacity:.8;} to{ opacity:0; transform:translateY(60%);} }
