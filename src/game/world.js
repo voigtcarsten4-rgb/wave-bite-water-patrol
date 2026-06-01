@@ -22,6 +22,7 @@
     this.failReason = null; this.opp = null;
     this.bgId = BG[region.id] || 'loc_mueggelsee';
     this.cockpitId = COCKPIT;
+    this._parts = null; this._lucyT = 0; this._wasBoost = false; this._zone = null; this._zoneEnd = 0;
   }
 
   World.prototype.layout = function (w, h) {
@@ -68,8 +69,8 @@
     // Verkehr aus der Tiefe
     var zRate = speed / 520;
     this.spawnTimer -= dt;
-    var base = 1.15 - this.region.difficulty * 0.11;
-    if (this.spawnTimer <= 0) { this._spawn(); this.spawnTimer = M.clamp(base + M.rand(-0.2, 0.4), 0.4, 1.5); }
+    var base = 0.82 - this.region.difficulty * 0.08;
+    if (this.spawnTimer <= 0) { this._spawn(); if (Math.random() < 0.35) this._spawn(); this.spawnTimer = M.clamp(base + M.rand(-0.18, 0.32), 0.32, 1.1); }
 
     for (var i = this.obstacles.length - 1; i >= 0; i--) {
       var o = this.obstacles[i];
@@ -82,6 +83,33 @@
         }
       }
       if (o.dead) this.obstacles.splice(i, 1);
+    }
+
+    // --- Lucy Live-Ansagen (gedrosselt): Verkehrswarnung + Boost-Quip ---
+    this._lucyT -= dt;
+    if (this._lucyT <= 0 && WB.LucyHUD && WB.LucyHUD.say) {
+      var near = null;
+      for (var n = 0; n < this.obstacles.length; n++) { var oo = this.obstacles[n]; if (oo.z < 0.55 && oo.z > 0.18 && Math.abs(oo.lane - this.playerLane) < 0.3) { near = oo; break; } }
+      if (near) { var NM = { buoy:'Boje', sail:'Segler', motor:'Motorboot', sup:'SUP-Fahrer', houseboat:'Hausboot', swimmer:'Schwimmer', ferry:'Fähre', rock:'Felsen', log:'Treibholz' };
+        WB.LucyHUD.say((near.lane < this.playerLane ? '◀ ' : '▶ ') + (NM[near.kind] || 'Hindernis') + ' voraus – ausweichen!'); this._lucyT = 3.0; }
+    }
+    if (this.boat.boosting && !this._wasBoost && WB.LucyHUD && WB.LucyHUD.say) WB.LucyHUD.say('Boost! Achte auf den Verkehr.');
+    this._wasBoost = this.boat.boosting;
+
+    // --- Tempozonen / Learning by Playing (nur Nicht-Verfolgung) ---
+    if (!this.opp) {
+      if (!this._zone && this.progress > 200 && (this.progress % 950) < 9) {
+        this._zone = { viol: false }; this._zoneEnd = this.progress + 380;
+        if (WB.LucyHUD && WB.LucyHUD.say) WB.LucyHUD.say('🐢 Schutzzone – bitte Tempo drosseln!');
+      }
+      if (this._zone) {
+        if (input.boost || input.throttle) this._zone.viol = true;
+        if (this.progress >= this._zoneEnd) {
+          if (!this._zone.viol) { WB.Save.data.coins += 25; if (WB.Screens && WB.Screens.refreshTopbar) WB.Screens.refreshTopbar(); if (WB.LucyHUD && WB.LucyHUD.say) WB.LucyHUD.say('Vorbildlich gefahren. +25 🪙'); }
+          else if (WB.LucyHUD && WB.LucyHUD.say) WB.LucyHUD.say('Zu schnell in der Schutzzone!');
+          this._zone = null;
+        }
+      }
     }
 
     // Möwen
@@ -153,15 +181,49 @@
     ctx.restore();
   };
 
+  World.prototype._waterGlints = function (ctx, t) {
+    var w = this.w, hy = this.horizonY, dt = this.dashTop;
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    for (var i = 0; i < 5; i++) {
+      var p = ((t * 0.05 + i * 0.21) % 1), y = hy + (dt - hy) * (p * p);
+      var x = w / 2 + Math.sin(i * 2 + t * 0.3) * (this._laneHalf(1 - p) * 0.5) - this.playerLane * M.lerp(w * 0.04, w * 0.46, p * p);
+      var r = 2 + p * 9, g = ctx.createRadialGradient(x, y, 0, x, y, r * 3);
+      g.addColorStop(0, 'rgba(255,238,190,' + (0.22 * (1 - p)).toFixed(2) + ')'); g.addColorStop(1, 'rgba(255,238,190,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r * 3, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.restore();
+  };
+
+  World.prototype._airLight = function (ctx, t) {
+    var w = this.w, dt = this.dashTop, hy = this.horizonY;
+    if (!this._parts) { this._parts = []; for (var k = 0; k < 16; k++) this._parts.push({ x: Math.random() * w, y: Math.random() * dt, s: Math.random() * 1.4 + 0.5, vx: (Math.random() - 0.5) * 6, vy: -(Math.random() * 6 + 2) }); }
+    ctx.save();
+    for (var i = 0; i < this._parts.length; i++) { var pp = this._parts[i]; pp.x += pp.vx * 0.016; pp.y += pp.vy * 0.016; if (pp.y < 0) { pp.y = dt; pp.x = Math.random() * w; } ctx.fillStyle = 'rgba(255,245,210,0.22)'; ctx.beginPath(); ctx.arc(pp.x, pp.y, pp.s, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+    var bl = document.getElementById('bluelight');
+    if (bl && bl.classList.contains('on')) {
+      var pulse = 0.5 + 0.5 * Math.sin(t * 8);
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      var bg = ctx.createLinearGradient(0, hy, 0, dt); bg.addColorStop(0, 'rgba(60,140,255,' + (0.05 + pulse * 0.18).toFixed(2) + ')'); bg.addColorStop(1, 'rgba(60,140,255,0)');
+      ctx.fillStyle = bg; ctx.fillRect(0, hy, w, dt - hy); ctx.restore();
+    }
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    var lg = ctx.createRadialGradient(w * 0.5, hy * 0.45, 2, w * 0.5, hy * 0.45, hy * 1.5);
+    lg.addColorStop(0, 'rgba(255,225,160,0.16)'); lg.addColorStop(1, 'rgba(255,225,160,0)');
+    ctx.fillStyle = lg; ctx.fillRect(0, 0, w, hy * 1.7); ctx.restore();
+  };
+
   World.prototype.draw = function (ctx, t) {
     var w = this.w, h = this.h, dt = this.dashTop, hy = this.horizonY;
     ctx.save();
     ctx.beginPath(); ctx.rect(0, 0, w, dt); ctx.clip();
     var sx = this.shake * 6 * (Math.sin(t * 53) + Math.sin(t * 31)) * 0.5;
     var sy = this.shake * 4 * (Math.cos(t * 47)) * 0.5;
-    ctx.translate(sx, sy);
+    var bob = Math.sin(t * 1.2) * 1.6 + Math.sin(t * 2.7) * 0.7;
+    ctx.translate(sx, sy + bob);
 
     this._waterAndSky(ctx, t);
+    this._waterGlints(ctx, t);
     this._drawGulls(ctx);
 
     // Nebel-Band am Horizont (leicht, nicht düster)
@@ -186,6 +248,7 @@
     }
 
     if (this.opp) this.opp.draw(ctx, t);
+    this._airLight(ctx, t);
 
     // POV: Bug + Bugspray unten mittig
     var bowY = dt - 4;

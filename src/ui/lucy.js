@@ -27,6 +27,11 @@
       var t = $('lucy-text'); if (!t || !this._lines.length) return;
       t.textContent = this._lines[this._i % this._lines.length];
     },
+    say: function (text, ms) {
+      var el = $('lucy-callout'); if (!el) return;
+      el.textContent = text; el.classList.add('show');
+      clearTimeout(this._sayT); this._sayT = setTimeout(function () { el.classList.remove('show'); }, ms || 2800);
+    },
     buildLines: function () {
       var L = [], h = new Date().getHours();
       L.push(h < 11 ? 'Systeme bereit. Guten Morgen, Kapitän.'
