@@ -7,7 +7,7 @@
   var M = WB.math;
 
   var COCKPIT = 'cockpit_bridge';
-  var BG = { bucht: 'loc_mueggelsee', kanal: 'loc_spree', seenplatte: 'loc_mueggelsee', schleuse: 'loc_lock' };
+  var BG = { bucht: 'loc_mueggelsee', kanal: 'loc_spree', seenplatte: 'loc_dahme', schleuse: 'loc_lock' };
   var TRAFFIC = ['buoy','sail','motor','sup','houseboat','swimmer','ferry','rock','log'];
 
   function World(boat, region, mission) {

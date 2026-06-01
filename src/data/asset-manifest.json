@@ -447,6 +447,54 @@
       "category": "cinematic",
       "src": "assets/leo/cine_rescue_hero.webp",
       "status": "ready"
+    },
+    {
+      "id": "loc_dahme",
+      "category": "location",
+      "src": "assets/leo/loc_dahme.webp",
+      "status": "ready"
+    },
+    {
+      "id": "loc_wolziger",
+      "category": "location",
+      "src": "assets/leo/loc_wolziger.webp",
+      "status": "ready"
+    },
+    {
+      "id": "loc_seddinsee",
+      "category": "location",
+      "src": "assets/leo/loc_seddinsee.webp",
+      "status": "ready"
+    },
+    {
+      "id": "loc_spree_day",
+      "category": "location",
+      "src": "assets/leo/loc_spree_day.webp",
+      "status": "ready"
+    },
+    {
+      "id": "loc_hafenfest",
+      "category": "location",
+      "src": "assets/leo/loc_hafenfest.webp",
+      "status": "ready"
+    },
+    {
+      "id": "loc_regatta",
+      "category": "location",
+      "src": "assets/leo/loc_regatta.webp",
+      "status": "ready"
+    },
+    {
+      "id": "loc_industriehafen",
+      "category": "location",
+      "src": "assets/leo/loc_industriehafen.webp",
+      "status": "ready"
+    },
+    {
+      "id": "loc_winter",
+      "category": "location",
+      "src": "assets/leo/loc_winter.webp",
+      "status": "ready"
     }
   ]
 }
