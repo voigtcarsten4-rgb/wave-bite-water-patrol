@@ -627,6 +627,66 @@
       "category": "cinematic",
       "src": "assets/leo/cine_geistersignal.webp",
       "status": "ready"
+    },
+    {
+      "id": "im_marina_wannsee",
+      "category": "immersion",
+      "src": "assets/leo/im_marina_wannsee.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_steg_mueggelsee",
+      "category": "immersion",
+      "src": "assets/leo/im_steg_mueggelsee.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_sup_spree",
+      "category": "immersion",
+      "src": "assets/leo/im_sup_spree.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_hausboot_havel",
+      "category": "immersion",
+      "src": "assets/leo/im_hausboot_havel.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_segelverein_dahme",
+      "category": "immersion",
+      "src": "assets/leo/im_segelverein_dahme.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_wasserrestaurant_rummelsburg",
+      "category": "immersion",
+      "src": "assets/leo/im_wasserrestaurant_rummelsburg.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_schleusenbetrieb_wernsdorf",
+      "category": "immersion",
+      "src": "assets/leo/im_schleusenbetrieb_wernsdorf.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_fischer_seddinsee",
+      "category": "immersion",
+      "src": "assets/leo/im_fischer_seddinsee.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_ankerplatz_werder",
+      "category": "immersion",
+      "src": "assets/leo/im_ankerplatz_werder.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_werft_koepenick",
+      "category": "immersion",
+      "src": "assets/leo/im_werft_koepenick.webp",
+      "status": "ready"
     }
   ]
 }

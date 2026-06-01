@@ -41,8 +41,14 @@
           + '<div class="nw-note">Keine Sorge – du hast nichts verloren. Die Welt ist nur weitergelaufen.</div></div>';
       }
 
-      var LOCMAP = { fest:'loc_hafenfest', regatta:'loc_gruenau', sturmwoche:'loc_storm', razzia:'loc_industriehafen', vermisst:'loc_dahme', nebelwoche:'loc_seddinsee' };
-      var locId = LOCMAP[w.special.id]; var locUrl = (locId && WB.Assets) ? WB.Assets.url(locId) : null;
+      var LOCMAP = { fest:'loc_hafenfest', regatta:'im_segelverein_dahme', sturmwoche:'loc_storm', razzia:'loc_industriehafen', vermisst:'loc_dahme', nebelwoche:'im_fischer_seddinsee',
+        marina:'im_marina_wannsee', sport:'im_sup_spree', hausboot:'im_hausboot_havel', schleuse:'im_schleusenbetrieb_wernsdorf', werft:'im_werft_koepenick', anker:'im_ankerplatz_werder' };
+      var locId = LOCMAP[w.special.id];
+      if (!locId) { // allgemeine Tagesnews: rotierende Immersion-Kulisse
+        var amb = ['im_marina_wannsee','im_steg_mueggelsee','im_sup_spree','im_hausboot_havel','im_wasserrestaurant_rummelsburg','im_ankerplatz_werder'];
+        locId = amb[(WB.LivingWorld.dayIndex ? WB.LivingWorld.dayIndex() : 0) % amb.length];
+      }
+      var locUrl = (locId && WB.Assets) ? WB.Assets.url(locId) : null;
       var banner = locUrl ? '<div class="nw-banner" style="background-image:url(\''+locUrl+'\')"></div>' : '';
       host.innerHTML = '<div class="panel nw-panel">'
         + banner

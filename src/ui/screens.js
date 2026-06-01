@@ -313,12 +313,37 @@
       var l = $('top-level'); if (l) l.textContent = 'Lvl ' + s.captainLevel + ' · ' + WB.Rank.current().rank.short;
     },
 
+    // Kuratierter Welt-Pool fürs Menü (Immersion + Hero-Locations) – lässt die Welt leben.
+    _ambientPool: function () {
+      var byRegion = {
+        bucht: ['im_steg_mueggelsee', 'im_marina_wannsee', 'loc_mueggelsee'],
+        kanal: ['im_sup_spree', 'im_wasserrestaurant_rummelsburg', 'im_werft_koepenick', 'loc_spree'],
+        seenplatte: ['im_segelverein_dahme', 'im_fischer_seddinsee', 'im_ankerplatz_werder', 'loc_dahme'],
+        schleuse: ['im_schleusenbetrieb_wernsdorf', 'im_hausboot_havel', 'loc_lock']
+      };
+      var last = WB._bootLastPlayed && WB._bootLastPlayed.regionId;
+      var pool = [];
+      if (last && byRegion[last]) pool = pool.concat(byRegion[last]);
+      var all = ['im_marina_wannsee','im_steg_mueggelsee','im_sup_spree','im_hausboot_havel','im_segelverein_dahme','im_wasserrestaurant_rummelsburg','im_schleusenbetrieb_wernsdorf','im_fischer_seddinsee','im_ankerplatz_werder','im_werft_koepenick'];
+      for (var i = 0; i < all.length; i++) if (pool.indexOf(all[i]) < 0) pool.push(all[i]);
+      var avail = [];
+      for (var k = 0; k < pool.length; k++) if (WB.Assets && WB.Assets.url(pool[k])) avail.push(pool[k]);
+      return avail.length ? avail : ['loc_mueggelsee'];
+    },
+
     showStart: function () {
       this.refreshTopbar();
       var hero = document.getElementById('start-hero-bg');
-      if (hero && WB.Assets && (WB.Assets.url('loc_mueggelsee') || WB.Assets.url('cockpit_day_1'))) {
-        hero.style.backgroundImage = "url('" + (WB.Assets.url('loc_mueggelsee') || WB.Assets.url('cockpit_day_1')) + "')";
-        hero.classList.add('on');
+      if (hero && WB.Assets) {
+        var pool = this._ambientPool();
+        // täglich wechselnd + leichte Rotation pro Aufruf -> Menü wirkt lebendig
+        var day = (WB.LivingWorld && WB.LivingWorld.dayIndex) ? WB.LivingWorld.dayIndex() : Math.floor(Date.now() / 864e5);
+        this._heroIdx = (this._heroIdx == null) ? (day % pool.length) : (this._heroIdx + 1) % pool.length;
+        var url = WB.Assets.url(pool[this._heroIdx]) || WB.Assets.url('loc_mueggelsee') || WB.Assets.url('cockpit_day_1');
+        if (url) {
+          hero.style.backgroundImage = "url('" + url + "')";
+          hero.classList.add('on');
+        }
       }
       var strip = document.getElementById('world-strip');
       if (strip && WB.News) { strip.innerHTML = WB.News.statusStrip(); strip.onclick = function () { WB.News.showBriefing(null); }; }
