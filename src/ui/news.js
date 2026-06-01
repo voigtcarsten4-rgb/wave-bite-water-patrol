@@ -45,7 +45,7 @@
         marina:'im_marina_wannsee', sport:'im_sup_spree', hausboot:'im_hausboot_havel', schleuse:'im_schleusenbetrieb_wernsdorf', werft:'im_werft_koepenick', anker:'im_ankerplatz_werder' };
       var locId = LOCMAP[w.special.id];
       if (!locId) { // allgemeine Tagesnews: rotierende Immersion-Kulisse
-        var amb = ['im_marina_wannsee','im_steg_mueggelsee','im_sup_spree','im_hausboot_havel','im_wasserrestaurant_rummelsburg','im_ankerplatz_werder'];
+        var amb = ['im_marina_wannsee','im_steg_mueggelsee','im_sup_spree','im_hausboot_havel','im_wasserrestaurant_rummelsburg','im_ankerplatz_werder','im_marina_potsdam','im_regattastrecke_gruenau','im_camping_wasser','im_bootshaus_verein','im_wasserwanderer_rast','im_fahrgastschiff_anleger'];
         locId = amb[(WB.LivingWorld.dayIndex ? WB.LivingWorld.dayIndex() : 0) % amb.length];
       }
       var locUrl = (locId && WB.Assets) ? WB.Assets.url(locId) : null;

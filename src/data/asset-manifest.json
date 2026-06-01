@@ -687,6 +687,66 @@
       "category": "immersion",
       "src": "assets/leo/im_werft_koepenick.webp",
       "status": "ready"
+    },
+    {
+      "id": "im_wassertankstelle_havel",
+      "category": "immersion",
+      "src": "assets/leo/im_wassertankstelle_havel.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_bootsservice_slip",
+      "category": "immersion",
+      "src": "assets/leo/im_bootsservice_slip.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_camping_wasser",
+      "category": "immersion",
+      "src": "assets/leo/im_camping_wasser.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_wasserwanderer_rast",
+      "category": "immersion",
+      "src": "assets/leo/im_wasserwanderer_rast.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_regattastrecke_gruenau",
+      "category": "immersion",
+      "src": "assets/leo/im_regattastrecke_gruenau.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_marina_potsdam",
+      "category": "immersion",
+      "src": "assets/leo/im_marina_potsdam.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_yachthafen_zeuthen",
+      "category": "immersion",
+      "src": "assets/leo/im_yachthafen_zeuthen.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_anleger_treptow_molecule",
+      "category": "immersion",
+      "src": "assets/leo/im_anleger_treptow_molecule.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_fahrgastschiff_anleger",
+      "category": "immersion",
+      "src": "assets/leo/im_fahrgastschiff_anleger.webp",
+      "status": "ready"
+    },
+    {
+      "id": "im_bootshaus_verein",
+      "category": "immersion",
+      "src": "assets/leo/im_bootshaus_verein.webp",
+      "status": "ready"
     }
   ]
 }

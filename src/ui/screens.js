@@ -316,15 +316,15 @@
     // Kuratierter Welt-Pool fürs Menü (Immersion + Hero-Locations) – lässt die Welt leben.
     _ambientPool: function () {
       var byRegion = {
-        bucht: ['im_steg_mueggelsee', 'im_marina_wannsee', 'loc_mueggelsee'],
-        kanal: ['im_sup_spree', 'im_wasserrestaurant_rummelsburg', 'im_werft_koepenick', 'loc_spree'],
-        seenplatte: ['im_segelverein_dahme', 'im_fischer_seddinsee', 'im_ankerplatz_werder', 'loc_dahme'],
-        schleuse: ['im_schleusenbetrieb_wernsdorf', 'im_hausboot_havel', 'loc_lock']
+        bucht: ['im_steg_mueggelsee', 'im_marina_wannsee', 'im_bootshaus_verein', 'loc_mueggelsee'],
+        kanal: ['im_sup_spree', 'im_wasserrestaurant_rummelsburg', 'im_werft_koepenick', 'im_anleger_treptow_molecule', 'im_fahrgastschiff_anleger', 'loc_spree'],
+        seenplatte: ['im_segelverein_dahme', 'im_fischer_seddinsee', 'im_ankerplatz_werder', 'im_regattastrecke_gruenau', 'im_yachthafen_zeuthen', 'im_camping_wasser', 'im_wasserwanderer_rast', 'im_bootsservice_slip', 'loc_dahme'],
+        schleuse: ['im_schleusenbetrieb_wernsdorf', 'im_hausboot_havel', 'im_marina_potsdam', 'im_wassertankstelle_havel', 'loc_lock']
       };
       var last = WB._bootLastPlayed && WB._bootLastPlayed.regionId;
       var pool = [];
       if (last && byRegion[last]) pool = pool.concat(byRegion[last]);
-      var all = ['im_marina_wannsee','im_steg_mueggelsee','im_sup_spree','im_hausboot_havel','im_segelverein_dahme','im_wasserrestaurant_rummelsburg','im_schleusenbetrieb_wernsdorf','im_fischer_seddinsee','im_ankerplatz_werder','im_werft_koepenick'];
+      var all = ['im_marina_wannsee','im_steg_mueggelsee','im_sup_spree','im_hausboot_havel','im_segelverein_dahme','im_wasserrestaurant_rummelsburg','im_schleusenbetrieb_wernsdorf','im_fischer_seddinsee','im_ankerplatz_werder','im_werft_koepenick','im_marina_potsdam','im_regattastrecke_gruenau','im_yachthafen_zeuthen','im_wassertankstelle_havel','im_anleger_treptow_molecule','im_fahrgastschiff_anleger','im_bootshaus_verein','im_camping_wasser','im_wasserwanderer_rast','im_bootsservice_slip'];
       for (var i = 0; i < all.length; i++) if (pool.indexOf(all[i]) < 0) pool.push(all[i]);
       var avail = [];
       for (var k = 0; k < pool.length; k++) if (WB.Assets && WB.Assets.url(pool[k])) avail.push(pool[k]);
