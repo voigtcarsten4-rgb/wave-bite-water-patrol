@@ -315,6 +315,78 @@
       "category": "video",
       "src": "assets/video/clip_patrol.mp4",
       "status": "ready"
+    },
+    {
+      "id": "cine_bay",
+      "category": "video",
+      "src": "assets/video/cine_bay.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "cine_harbor2",
+      "category": "video",
+      "src": "assets/video/cine_harbor2.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "cine_canal",
+      "category": "video",
+      "src": "assets/video/cine_canal.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "cine_lock",
+      "category": "video",
+      "src": "assets/video/cine_lock.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "cine_nightlake",
+      "category": "video",
+      "src": "assets/video/cine_nightlake.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "cine_fog",
+      "category": "video",
+      "src": "assets/video/cine_fog.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "cine_boat_hero",
+      "category": "video",
+      "src": "assets/video/cine_boat_hero.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "cine_pursuit",
+      "category": "video",
+      "src": "assets/video/cine_pursuit.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "cine_event",
+      "category": "video",
+      "src": "assets/video/cine_event.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "cine_radio",
+      "category": "video",
+      "src": "assets/video/cine_radio.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "cine_rankup",
+      "category": "video",
+      "src": "assets/video/cine_rankup.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "cine_reward",
+      "category": "video",
+      "src": "assets/video/cine_reward.mp4",
+      "status": "ready"
     }
   ]
 }

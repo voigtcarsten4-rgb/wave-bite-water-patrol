@@ -31,9 +31,31 @@
       this.state = 'playing';
       WB.Input.reset();
       if (WB.Track) WB.Track.log('mission_start', { mode: this.mode, id: mission.id, type: mission.type });
-      WB.Screens.showGame(mission);
       var self = this;
-      WB.Engine.start(function (dt) { self._tick(dt); });
+      var begin = function () {
+        WB.Screens.showGame(mission);
+        WB.Engine.start(function (dt) { self._tick(dt); });
+      };
+      // Kino-Einspieler vor dem Einsatz (kurz, per Tap überspringbar).
+      var clip = WB.Game._missionClip(mission);
+      var clipUrl = (WB.Assets && clip) ? WB.Assets.url(clip) : null;
+      if (WB.Cinematic && clipUrl) {
+        WB.Cinematic.play({
+          kicker: '● EINSATZ · ' + (WB.data.rankUnit || 'WATER PATROL'),
+          title: mission.title, subtitle: mission.objective || '',
+          videoUrl: clipUrl, duration: 2600
+        }, begin);
+      } else { begin(); }
+    },
+
+    // Wählt einen Kino-Clip passend zu Missionstyp/Revier.
+    _missionClip: function (mission) {
+      var byType = { pursuit: 'cine_pursuit', smuggler: 'cine_lock', rescue: 'cine_nightlake',
+        eco: 'cine_fog', control: 'cine_radio', patrol: 'cine_bay', story: 'cine_boat_hero' };
+      var byRegion = { bucht: 'cine_bay', kanal: 'cine_canal', seenplatte: 'cine_nightlake', schleuse: 'cine_lock' };
+      var id = byType[mission.type] || byRegion[mission.regionId] || 'cine_boat_hero';
+      if (WB.Assets && WB.Assets.has(id)) return id;
+      return null;
     },
 
     _tick: function (dt) {
@@ -102,7 +124,7 @@
         var cfg = {
           kicker: '● FUNK · ' + WB.data.rankUnit,
           bgUrl: (WB.Assets && mission.briefStation) ? WB.Assets.url(mission.briefStation) : null,
-          videoUrl: WB.Assets ? WB.Assets.url(promoted ? 'clip_night' : 'clip_harbor') : null,
+          videoUrl: WB.Assets ? WB.Assets.url(promoted ? 'cine_boat_hero' : 'cine_reward') : null,
           title: promoted ? 'BEFÖRDERT' : 'EINSATZ ERFOLGREICH',
           subtitle: promoted ? promoted.name : ('🪙 +' + res.coins + '   ✦ +' + res.xp + ' XP'),
           stars: res.stars,
