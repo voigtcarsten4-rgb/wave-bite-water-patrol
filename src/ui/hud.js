@@ -14,6 +14,10 @@
       setW('hud-integrity-fill', d.integrity);
       setW('hud-fuel-fill', d.fuel);
       setW('hud-progress-fill', d.progress);
+      var plbl = $('hud-progress-lbl');
+      if (plbl) plbl.textContent = d.chase ? '🎯 Sichtkontakt · Abstand' : '🧭 Zielentfernung';
+      var pFill = $('hud-progress-fill');
+      if (pFill) pFill.style.background = d.chase ? 'linear-gradient(90deg,#C9462F,#E7CE8B)' : 'linear-gradient(90deg,#C9A24B,#E7CE8B)';
 
       var boostFill = $('hud-boost-fill');
       if (boostFill) boostFill.style.background = d.boost < 0.2 ? '#C9462F' : 'linear-gradient(90deg,#C9A24B,#E7CE8B)';

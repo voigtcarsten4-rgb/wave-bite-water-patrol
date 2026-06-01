@@ -15,6 +15,8 @@
     this.scroll = 0; this.progress = 0; this.spawnTimer = 0.8;
     this.harborActive = false; this.harborY = -160;
     this.delivered = false; this.failed = false; this.collisions = 0;
+    this.isChase = !!({ control:1, eco:1, pursuit:1, rescue:1, smuggler:1 })[mission.type];
+    this.failReason = null; this.opp = null;
     this.curSpeed = 120; this.sway = 0; this.shake = 0; this.flash = 0;
     this.cockpitId = COCKPIT[region.id] || 'cockpit_day_1';
     this.bgId = BG[region.id] || 'bg_calm_bay_1';
@@ -25,9 +27,10 @@
     this.dashTop = Math.round(h * 0.64);
     this.left = this.margin; this.right = w - this.margin;
     this.boat.reset(w / 2, this.dashTop - 54);
+    if (this.isChase && WB.Opponent) this.opp = new WB.Opponent(this, this.mission, this.region);
   };
 
-  World.prototype.progressRatio = function () { return M.clamp(this.progress / this.mission.distance, 0, 1); };
+  World.prototype.progressRatio = function () { return this.opp ? M.clamp(1 - this.opp.gap, 0, 1) : M.clamp(this.progress / this.mission.distance, 0, 1); };
 
   World.prototype._spawn = function () {
     var kind = M.pick(this.region.obstacleMix);
@@ -49,11 +52,18 @@
     this.scroll += speed * dt;
     this.sway = M.lerp(this.sway, (this.boat.vx || 0) * 0.06, 1 - Math.pow(0.001, dt));
 
-    if (!this.harborActive) {
+    // Hindernisse spawnen immer – auch während einer Verfolgung.
+    this.spawnTimer -= dt;
+    var base = 1.25 - this.region.difficulty * 0.12;
+    if (this.spawnTimer <= 0) { this._spawn(); this.spawnTimer = M.clamp(base + M.rand(-0.25, 0.35), 0.45, 1.6); }
+
+    if (this.opp) {
       this.progress += speed * dt;
-      this.spawnTimer -= dt;
-      var base = 1.25 - this.region.difficulty * 0.12;
-      if (this.spawnTimer <= 0) { this._spawn(); this.spawnTimer = M.clamp(base + M.rand(-0.25, 0.35), 0.45, 1.6); }
+      this.opp.update(dt, input, this.boat);
+      if (this.opp.caught) this.delivered = true;
+      else if (this.opp.escaped) { this.failed = true; this.failReason = 'escaped'; }
+    } else if (!this.harborActive) {
+      this.progress += speed * dt;
       if (this.progress >= this.mission.distance) { this.harborActive = true; this.harborY = -160; }
     } else {
       this.harborY += speed * dt;
@@ -137,6 +147,7 @@
       ctx.fillText('⚓ ' + harbor, w / 2, hy - 10);
     }
 
+    if (this.opp) this.opp.draw(ctx, t);
     this.boat.drawWake(ctx, t);
     this.boat.draw(ctx, t);
     this._speedLines(ctx, t);

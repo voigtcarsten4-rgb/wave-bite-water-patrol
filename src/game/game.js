@@ -45,7 +45,7 @@
         this.runtime.tick(dt);
 
         if (this.world.delivered) { this._end(true); }
-        else if (this.world.failed) { this._end(false, 'wrecked'); }
+        else if (this.world.failed) { this._end(false, this.world.failReason || 'wrecked'); }
         else if (this.runtime.timeUp && !this.world.delivered) { this._end(false, 'time'); }
       }
 
@@ -62,7 +62,8 @@
         boost: this.world.boat.boostMeter,
         integrity: this.world.boat.integrity,
         fuel: this.world.boat.fuel,
-        progress: this.world.progressRatio()
+        progress: this.world.progressRatio(),
+        chase: !!this.world.opp
       });
     },
 
@@ -125,10 +126,10 @@
         if (WB.Track) WB.Track.log('mission_fail', { reason: reason, mode: this.mode });
         var failCfg = {
           fail: true, kicker: '● FUNK · ' + WB.data.rankUnit,
-          videoUrl: WB.Assets ? WB.Assets.url(reason === 'time' ? 'clip_alarm' : 'clip_crash') : null,
+          videoUrl: WB.Assets ? WB.Assets.url((reason === 'time' || reason === 'escaped') ? 'clip_alarm' : 'clip_crash') : null,
           bgUrl: (WB.Assets && missionF.briefStation) ? WB.Assets.url(missionF.briefStation) : null,
-          title: reason === 'time' ? 'ZIEL ENTKOMMEN' : 'KOLLISION',
-          subtitle: reason === 'time' ? 'Zeit abgelaufen – der Verdächtige ist weg.' : 'Boot zu stark beschädigt.',
+          title: (reason === 'time' || reason === 'escaped') ? 'ZIEL ENTKOMMEN' : 'KOLLISION',
+          subtitle: reason === 'time' ? 'Zeit abgelaufen – der Verdächtige ist weg.' : (reason === 'escaped' ? 'Zu viel Abstand – das Boot ist entkommen.' : 'Boot zu stark beschädigt.'),
           duration: 3000
         };
         var showFail = function () { WB.Screens.showResult({ success: false, reason: reasonF, mission: missionF, mode: modeF, event: missionF }); };
