@@ -34,6 +34,8 @@
       var self = this;
       var begin = function () {
         WB.Screens.showGame(mission);
+        if (WB.Engine._resize) WB.Engine._resize();   // Canvas erst messen, wenn der Game-Screen sichtbar ist
+        self.world.layout(WB.Engine.w, WB.Engine.h);   // Welt mit gültigen Maßen einrichten (Fix gegen 0×0-Schwarzbild)
         WB.Engine.start(function (dt) { self._tick(dt); });
       };
       // Kino-Einspieler vor dem Einsatz (kurz, per Tap überspringbar).
