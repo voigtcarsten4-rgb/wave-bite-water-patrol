@@ -287,7 +287,8 @@ body {
 /* ---- Cockpit-Hero auf dem Startscreen ---- */
 #start-hero-bg { position: absolute; inset: 0; z-index: 0; background-size: cover; background-position: center;
   opacity: 0; transition: opacity 1s ease; }
-#start-hero-bg.on { opacity: .6; }
+#start-hero-bg.on { opacity: .6; animation: heroDrift 26s ease-in-out infinite alternate; }
+@keyframes heroDrift { from { transform: scale(1.08) translate(0,0); } to { transform: scale(1.16) translate(-2.2%, -2.4%); } }
 #start-hero-bg::after { content: ''; position: absolute; inset: 0;
   background: linear-gradient(180deg, rgba(8,18,30,.30) 0%, rgba(11,30,59,.72) 52%, rgba(8,18,30,.97) 100%); }
 #screen-start .hero, #screen-start .menu { position: relative; z-index: 1; }
@@ -615,7 +616,7 @@ body {
 #screen-start .lucy-hud .lucy-av{width:44px;height:44px}
 
 /* Living-World Briefing: Location-Banner */
-.nw-banner{height:120px;border-radius:12px;background-size:cover;background-position:center;margin-bottom:12px;
+.nw-banner{height:120px;border-radius:12px;background-size:cover;background-position:center;margin-bottom:12px;animation:kenburns 14s ease-out forwards;
   box-shadow:inset 0 -40px 60px -20px rgba(9,22,39,.9);border:1px solid rgba(201,162,75,.2)}
 /* Weiche Screen-Übergänge (Polish) */
 .screen.active{animation:screenFade .32s ease both}

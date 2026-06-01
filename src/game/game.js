@@ -55,13 +55,28 @@
       } else { begin(); }
     },
 
-    // Premium-Hero-Still je Einsatztyp (Wave-2-Heroes). null => Kurz-Clip nutzen.
+    // Premium-Cinematic-Still je Einsatz (Wave-3). Spezifisch per ID, sonst per Typ.
     _missionHero: function (mission) {
-      var byId = { m_vip: 'cine_vip' };
-      var byType = { pursuit: 'cine_first_pursuit', rescue: 'cine_rescue_big',
-        smuggler: 'cine_sonder', eco: 'cine_stroemung' };
+      var byId = {
+        m_streife: 'wow_sunrise_einsatz', m_kontrolle: 'ctrl_marina_docs', m_umwelt: 'myst_stroemung_hinweis',
+        m_verfolgung: 'chase_dahme', m_rettung: 'rescue_dlrg_koop', m_schmuggler: 'ctrl_schleuse',
+        m_speed: 'ctrl_tempo', m_diebstahl: 'chase_schnellboot', m_vip: 'wow_glienicker',
+        m_nacht: 'ctrl_funk_nacht', m_funk: 'myst_funksignal', m_beweis: 'myst_geheimtreffen_steg',
+        m_vermisst: 'rescue_nebel', m_razzia: 'chase_finale', m_sturm: 'rescue_gewitter'
+      };
+      var byType = { pursuit: 'chase_highspeed', rescue: 'rescue_sup', smuggler: 'myst_schmuggleruebergabe',
+        eco: 'myst_stroemung_hinweis', control: 'ctrl_motorboot', patrol: 'wow_sunrise_einsatz' };
       var id = byId[mission.id] || byType[mission.type] || null;
       return (id && WB.Assets && WB.Assets.has(id)) ? id : null;
+    },
+
+    // Belohnungs-/Beförderungs-Hero (Wow). Rotierend für Abwechslung.
+    _rewardHero: function (promoted) {
+      var pool = promoted ? ['wow_elite_aufstieg', 'wow_auszeichnung_wolff', 'wow_hero_shot']
+                          : ['wow_hero_shot', 'wow_berlin_skyline', 'wow_abschlussoperation'];
+      var lvl = (WB.Save.data && WB.Save.data.captainLevel) || 0;
+      var id = pool[lvl % pool.length];
+      return (WB.Assets && WB.Assets.has(id)) ? id : null;
     },
 
     // Wählt einen Kino-Clip passend zu Missionstyp/Revier.
@@ -139,10 +154,8 @@
         this._ratingPending = !!promoted;
         var cfg = {
           kicker: '● FUNK · ' + WB.data.rankUnit,
-          bgUrl: (WB.Assets && promoted && WB.Assets.has('cine_elite')) ? WB.Assets.url('cine_elite')
-                 : ((WB.Assets && mission.briefStation) ? WB.Assets.url(mission.briefStation) : null),
-          videoUrl: (promoted && WB.Assets && WB.Assets.has('cine_elite')) ? null
-                    : (WB.Assets ? WB.Assets.url(promoted ? 'cine_boat_hero' : 'cine_reward') : null),
+          bgUrl: (function(){ var h=WB.Game._rewardHero(promoted); return (h&&WB.Assets)?WB.Assets.url(h):((WB.Assets&&mission.briefStation)?WB.Assets.url(mission.briefStation):null); })(),
+          videoUrl: (WB.Game._rewardHero(promoted)) ? null : (WB.Assets ? WB.Assets.url(promoted ? 'cine_boat_hero' : 'cine_reward') : null),
           title: promoted ? 'BEFÖRDERT' : 'EINSATZ ERFOLGREICH',
           subtitle: promoted ? promoted.name : ('🪙 +' + res.coins + '   ✦ +' + res.xp + ' XP'),
           stars: res.stars,

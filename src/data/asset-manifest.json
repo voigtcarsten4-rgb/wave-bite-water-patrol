@@ -807,6 +807,306 @@
       "category": "immersion",
       "src": "assets/leo/im_strandbar_wasser.webp",
       "status": "ready"
+    },
+    {
+      "id": "ctrl_motorboot",
+      "category": "cinematic",
+      "src": "assets/leo/ctrl_motorboot.webp",
+      "status": "ready"
+    },
+    {
+      "id": "ctrl_marina_docs",
+      "category": "cinematic",
+      "src": "assets/leo/ctrl_marina_docs.webp",
+      "status": "ready"
+    },
+    {
+      "id": "ctrl_tempo",
+      "category": "cinematic",
+      "src": "assets/leo/ctrl_tempo.webp",
+      "status": "ready"
+    },
+    {
+      "id": "ctrl_hausboot",
+      "category": "cinematic",
+      "src": "assets/leo/ctrl_hausboot.webp",
+      "status": "ready"
+    },
+    {
+      "id": "ctrl_jetski",
+      "category": "cinematic",
+      "src": "assets/leo/ctrl_jetski.webp",
+      "status": "ready"
+    },
+    {
+      "id": "ctrl_schleuse",
+      "category": "cinematic",
+      "src": "assets/leo/ctrl_schleuse.webp",
+      "status": "ready"
+    },
+    {
+      "id": "ctrl_regatta",
+      "category": "cinematic",
+      "src": "assets/leo/ctrl_regatta.webp",
+      "status": "ready"
+    },
+    {
+      "id": "ctrl_event_security",
+      "category": "cinematic",
+      "src": "assets/leo/ctrl_event_security.webp",
+      "status": "ready"
+    },
+    {
+      "id": "ctrl_blaulicht_hafen",
+      "category": "cinematic",
+      "src": "assets/leo/ctrl_blaulicht_hafen.webp",
+      "status": "ready"
+    },
+    {
+      "id": "ctrl_funk_nacht",
+      "category": "cinematic",
+      "src": "assets/leo/ctrl_funk_nacht.webp",
+      "status": "ready"
+    },
+    {
+      "id": "chase_dahme",
+      "category": "cinematic",
+      "src": "assets/leo/chase_dahme.webp",
+      "status": "ready"
+    },
+    {
+      "id": "chase_schnellboot",
+      "category": "cinematic",
+      "src": "assets/leo/chase_schnellboot.webp",
+      "status": "ready"
+    },
+    {
+      "id": "chase_kanal_eng",
+      "category": "cinematic",
+      "src": "assets/leo/chase_kanal_eng.webp",
+      "status": "ready"
+    },
+    {
+      "id": "chase_nacht",
+      "category": "cinematic",
+      "src": "assets/leo/chase_nacht.webp",
+      "status": "ready"
+    },
+    {
+      "id": "chase_hafen",
+      "category": "cinematic",
+      "src": "assets/leo/chase_hafen.webp",
+      "status": "ready"
+    },
+    {
+      "id": "chase_gewitter",
+      "category": "cinematic",
+      "src": "assets/leo/chase_gewitter.webp",
+      "status": "ready"
+    },
+    {
+      "id": "chase_richtung_berlin",
+      "category": "cinematic",
+      "src": "assets/leo/chase_richtung_berlin.webp",
+      "status": "ready"
+    },
+    {
+      "id": "chase_bojenfeld",
+      "category": "cinematic",
+      "src": "assets/leo/chase_bojenfeld.webp",
+      "status": "ready"
+    },
+    {
+      "id": "chase_highspeed",
+      "category": "cinematic",
+      "src": "assets/leo/chase_highspeed.webp",
+      "status": "ready"
+    },
+    {
+      "id": "chase_finale",
+      "category": "cinematic",
+      "src": "assets/leo/chase_finale.webp",
+      "status": "ready"
+    },
+    {
+      "id": "myst_geistersignal",
+      "category": "cinematic",
+      "src": "assets/leo/myst_geistersignal.webp",
+      "status": "ready"
+    },
+    {
+      "id": "myst_verlassenes_boot",
+      "category": "cinematic",
+      "src": "assets/leo/myst_verlassenes_boot.webp",
+      "status": "ready"
+    },
+    {
+      "id": "myst_geheimtreffen_steg",
+      "category": "cinematic",
+      "src": "assets/leo/myst_geheimtreffen_steg.webp",
+      "status": "ready"
+    },
+    {
+      "id": "myst_versteckter_anleger",
+      "category": "cinematic",
+      "src": "assets/leo/myst_versteckter_anleger.webp",
+      "status": "ready"
+    },
+    {
+      "id": "myst_schmuggleruebergabe",
+      "category": "cinematic",
+      "src": "assets/leo/myst_schmuggleruebergabe.webp",
+      "status": "ready"
+    },
+    {
+      "id": "myst_funksignal",
+      "category": "cinematic",
+      "src": "assets/leo/myst_funksignal.webp",
+      "status": "ready"
+    },
+    {
+      "id": "myst_stroemung_hinweis",
+      "category": "cinematic",
+      "src": "assets/leo/myst_stroemung_hinweis.webp",
+      "status": "ready"
+    },
+    {
+      "id": "myst_lotse_distanz",
+      "category": "cinematic",
+      "src": "assets/leo/myst_lotse_distanz.webp",
+      "status": "ready"
+    },
+    {
+      "id": "myst_geheimer_hafen",
+      "category": "cinematic",
+      "src": "assets/leo/myst_geheimer_hafen.webp",
+      "status": "ready"
+    },
+    {
+      "id": "myst_enthuellung",
+      "category": "cinematic",
+      "src": "assets/leo/myst_enthuellung.webp",
+      "status": "ready"
+    },
+    {
+      "id": "wow_sunrise_einsatz",
+      "category": "cinematic",
+      "src": "assets/leo/wow_sunrise_einsatz.webp",
+      "status": "ready"
+    },
+    {
+      "id": "wow_berlin_skyline",
+      "category": "cinematic",
+      "src": "assets/leo/wow_berlin_skyline.webp",
+      "status": "ready"
+    },
+    {
+      "id": "wow_glienicker",
+      "category": "cinematic",
+      "src": "assets/leo/wow_glienicker.webp",
+      "status": "ready"
+    },
+    {
+      "id": "wow_hafenfest_polizei",
+      "category": "cinematic",
+      "src": "assets/leo/wow_hafenfest_polizei.webp",
+      "status": "ready"
+    },
+    {
+      "id": "wow_regatta_grosseinsatz",
+      "category": "cinematic",
+      "src": "assets/leo/wow_regatta_grosseinsatz.webp",
+      "status": "ready"
+    },
+    {
+      "id": "wow_blaulicht_nachtnebel",
+      "category": "cinematic",
+      "src": "assets/leo/wow_blaulicht_nachtnebel.webp",
+      "status": "ready"
+    },
+    {
+      "id": "wow_elite_aufstieg",
+      "category": "cinematic",
+      "src": "assets/leo/wow_elite_aufstieg.webp",
+      "status": "ready"
+    },
+    {
+      "id": "wow_auszeichnung_wolff",
+      "category": "cinematic",
+      "src": "assets/leo/wow_auszeichnung_wolff.webp",
+      "status": "ready"
+    },
+    {
+      "id": "wow_abschlussoperation",
+      "category": "cinematic",
+      "src": "assets/leo/wow_abschlussoperation.webp",
+      "status": "ready"
+    },
+    {
+      "id": "wow_hero_shot",
+      "category": "cinematic",
+      "src": "assets/leo/wow_hero_shot.webp",
+      "status": "ready"
+    },
+    {
+      "id": "rescue_sup",
+      "category": "cinematic",
+      "src": "assets/leo/rescue_sup.webp",
+      "status": "ready"
+    },
+    {
+      "id": "rescue_kentern",
+      "category": "cinematic",
+      "src": "assets/leo/rescue_kentern.webp",
+      "status": "ready"
+    },
+    {
+      "id": "rescue_ring",
+      "category": "cinematic",
+      "src": "assets/leo/rescue_ring.webp",
+      "status": "ready"
+    },
+    {
+      "id": "rescue_dlrg_koop",
+      "category": "cinematic",
+      "src": "assets/leo/rescue_dlrg_koop.webp",
+      "status": "ready"
+    },
+    {
+      "id": "rescue_schleuse",
+      "category": "cinematic",
+      "src": "assets/leo/rescue_schleuse.webp",
+      "status": "ready"
+    },
+    {
+      "id": "rescue_kind_schlauchboot",
+      "category": "cinematic",
+      "src": "assets/leo/rescue_kind_schlauchboot.webp",
+      "status": "ready"
+    },
+    {
+      "id": "rescue_medical",
+      "category": "cinematic",
+      "src": "assets/leo/rescue_medical.webp",
+      "status": "ready"
+    },
+    {
+      "id": "rescue_mob",
+      "category": "cinematic",
+      "src": "assets/leo/rescue_mob.webp",
+      "status": "ready"
+    },
+    {
+      "id": "rescue_nebel",
+      "category": "cinematic",
+      "src": "assets/leo/rescue_nebel.webp",
+      "status": "ready"
+    },
+    {
+      "id": "rescue_gewitter",
+      "category": "cinematic",
+      "src": "assets/leo/rescue_gewitter.webp",
+      "status": "ready"
     }
   ]
 }
