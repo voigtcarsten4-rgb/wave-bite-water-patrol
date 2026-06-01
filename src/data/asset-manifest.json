@@ -579,6 +579,54 @@
       "category": "location",
       "src": "assets/leo/loc_regierungsviertel.webp",
       "status": "ready"
+    },
+    {
+      "id": "cine_rescue_big",
+      "category": "cinematic",
+      "src": "assets/leo/cine_rescue_big.webp",
+      "status": "ready"
+    },
+    {
+      "id": "cine_first_pursuit",
+      "category": "cinematic",
+      "src": "assets/leo/cine_first_pursuit.webp",
+      "status": "ready"
+    },
+    {
+      "id": "cine_elite",
+      "category": "cinematic",
+      "src": "assets/leo/cine_elite.webp",
+      "status": "ready"
+    },
+    {
+      "id": "cine_lotse",
+      "category": "cinematic",
+      "src": "assets/leo/cine_lotse.webp",
+      "status": "ready"
+    },
+    {
+      "id": "cine_stroemung",
+      "category": "cinematic",
+      "src": "assets/leo/cine_stroemung.webp",
+      "status": "ready"
+    },
+    {
+      "id": "cine_sonder",
+      "category": "cinematic",
+      "src": "assets/leo/cine_sonder.webp",
+      "status": "ready"
+    },
+    {
+      "id": "cine_vip",
+      "category": "cinematic",
+      "src": "assets/leo/cine_vip.webp",
+      "status": "ready"
+    },
+    {
+      "id": "cine_geistersignal",
+      "category": "cinematic",
+      "src": "assets/leo/cine_geistersignal.webp",
+      "status": "ready"
     }
   ]
 }

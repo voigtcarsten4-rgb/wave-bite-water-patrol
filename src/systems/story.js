@@ -15,7 +15,12 @@
       var ch = chs[i], seq = [], self = this;
       ch.intro.forEach(function (l) { seq.push({ type: 'line', who: l.who, portrait: l.portrait, text: l.text }); });
       if (ch.choice) seq.push({ type: 'choice', text: ch.choice.text, options: ch.choice.options });
-      WB.Dialogue.play(seq, { station: ch.station }, function () { self.beginDrive(ch); });
+      var runDialogue = function () { WB.Dialogue.play(seq, { station: ch.station }, function () { self.beginDrive(ch); }); };
+      // Kapitel-Einspieler: Premium-Hero-Still (Wave-2), per Tap überspringbar.
+      var heroUrl = (ch.cine && WB.Assets && WB.Assets.has(ch.cine)) ? WB.Assets.url(ch.cine) : null;
+      if (heroUrl && WB.Cinematic) {
+        WB.Cinematic.play({ kicker: '● KAPITEL ' + (i + 1), title: ch.title, subtitle: '', bgUrl: heroUrl, duration: 3000 }, runDialogue);
+      } else { runDialogue(); }
     },
 
     missionFor: function (ch) {

@@ -39,15 +39,29 @@
         WB.Engine.start(function (dt) { self._tick(dt); });
       };
       // Kino-Einspieler vor dem Einsatz (kurz, per Tap überspringbar).
+      // Premium-Still (Asset-4-Niveau) hat Vorrang; sonst Kurz-Clip.
+      var hero = WB.Game._missionHero(mission);
+      var heroUrl = (WB.Assets && hero) ? WB.Assets.url(hero) : null;
       var clip = WB.Game._missionClip(mission);
       var clipUrl = (WB.Assets && clip) ? WB.Assets.url(clip) : null;
-      if (WB.Cinematic && clipUrl) {
+      if (WB.Cinematic && (heroUrl || clipUrl)) {
         WB.Cinematic.play({
           kicker: '● EINSATZ · ' + (WB.data.rankUnit || 'WATER PATROL'),
           title: mission.title, subtitle: mission.objective || '',
-          videoUrl: clipUrl, duration: 2600
+          bgUrl: heroUrl,
+          videoUrl: heroUrl ? null : clipUrl,
+          duration: heroUrl ? 3000 : 2600
         }, begin);
       } else { begin(); }
+    },
+
+    // Premium-Hero-Still je Einsatztyp (Wave-2-Heroes). null => Kurz-Clip nutzen.
+    _missionHero: function (mission) {
+      var byId = { m_vip: 'cine_vip' };
+      var byType = { pursuit: 'cine_first_pursuit', rescue: 'cine_rescue_big',
+        smuggler: 'cine_sonder', eco: 'cine_stroemung' };
+      var id = byId[mission.id] || byType[mission.type] || null;
+      return (id && WB.Assets && WB.Assets.has(id)) ? id : null;
     },
 
     // Wählt einen Kino-Clip passend zu Missionstyp/Revier.
@@ -125,8 +139,10 @@
         this._ratingPending = !!promoted;
         var cfg = {
           kicker: '● FUNK · ' + WB.data.rankUnit,
-          bgUrl: (WB.Assets && mission.briefStation) ? WB.Assets.url(mission.briefStation) : null,
-          videoUrl: WB.Assets ? WB.Assets.url(promoted ? 'cine_boat_hero' : 'cine_reward') : null,
+          bgUrl: (WB.Assets && promoted && WB.Assets.has('cine_elite')) ? WB.Assets.url('cine_elite')
+                 : ((WB.Assets && mission.briefStation) ? WB.Assets.url(mission.briefStation) : null),
+          videoUrl: (promoted && WB.Assets && WB.Assets.has('cine_elite')) ? null
+                    : (WB.Assets ? WB.Assets.url(promoted ? 'cine_boat_hero' : 'cine_reward') : null),
           title: promoted ? 'BEFÖRDERT' : 'EINSATZ ERFOLGREICH',
           subtitle: promoted ? promoted.name : ('🪙 +' + res.coins + '   ✦ +' + res.xp + ' XP'),
           stars: res.stars,
