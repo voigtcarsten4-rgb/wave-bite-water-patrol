@@ -1,12 +1,12 @@
 /* Wave Bite – Captain's Run · service-worker.js
  * App-Shell-Precache → offline spielbar. Stale-While-Revalidate für Updates. */
-var CACHE = 'wavebite-captainsrun-v16';
+var CACHE = 'wavebite-captainsrun-v17';
 
 var ASSETS = [
   '.',
   'index.html',
   'manifest.json',
-  'styles/main.css?v=16',
+  'styles/main.css?v=17',
   'assets/icons/icon.svg',
   'src/utils/math.js',
   'src/utils/storage.js',

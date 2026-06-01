@@ -510,3 +510,52 @@ body {
 #boot-loader .bl-fill{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#C9A24B,#E7CE8B);transition:width .25s ease;box-shadow:0 0 12px rgba(201,162,75,.6)}
 #boot-loader .bl-pct{font-size:12px;font-weight:700;color:var(--gold-2);letter-spacing:.08em}
 #boot-loader .bl-hint{font-size:11px;color:rgba(245,240,225,.55);letter-spacing:.05em}
+
+/* ===== MARVEL-ACTION-INTRO (Boot als Held) ===== */
+.intro-stage.mv{position:absolute;inset:0;overflow:hidden;background:#04080f}
+.mv-boat{position:absolute;inset:-8%;background-size:cover;background-position:center 42%;transform:scale(1.18);animation:mvKen 13s ease-out forwards;will-change:transform;z-index:0}
+.mv-boat.fallback{background:radial-gradient(120% 100% at 50% 35%,#15406e,#081627)}
+@keyframes mvKen{to{transform:scale(1.0)}}
+.mv-rays{position:absolute;inset:-30%;z-index:1;mix-blend-mode:screen;opacity:.6;pointer-events:none;
+  background:repeating-conic-gradient(from 92deg at 50% 14%,rgba(150,200,255,.07) 0deg,rgba(150,200,255,0) 5deg,rgba(150,200,255,0) 13deg);
+  animation:mvRays 18s linear infinite}
+@keyframes mvRays{0%{transform:rotate(-4deg)}50%{opacity:.85}100%{transform:rotate(4deg)}}
+.mv-fog{position:absolute;inset:-22%;z-index:1;filter:blur(10px);mix-blend-mode:screen;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(185,210,235,.12),rgba(185,210,235,0) 70%)}
+.mv-fog.f1{opacity:.5;animation:mvFog1 26s linear infinite}
+.mv-fog.f2{opacity:.34;animation:mvFog2 34s linear infinite}
+@keyframes mvFog1{0%{transform:translate(-16%,0)}100%{transform:translate(16%,-5%)}}
+@keyframes mvFog2{0%{transform:translate(18%,2%)}100%{transform:translate(-18%,-3%)}}
+.mv-grade{position:absolute;inset:0;z-index:2;pointer-events:none;background:
+  radial-gradient(120% 90% at 50% 28%,rgba(8,18,30,0) 20%,rgba(6,14,26,.82) 100%),
+  linear-gradient(180deg,rgba(6,14,26,.5),rgba(4,8,15,.12) 36%,rgba(3,7,14,.96))}
+.mv-beacon{position:absolute;left:50%;top:30%;width:46%;height:20%;transform:translate(-50%,-50%);z-index:2;
+  background:radial-gradient(closest-side,rgba(70,150,255,.6),rgba(70,150,255,0) 70%);
+  mix-blend-mode:screen;filter:blur(3px);animation:mvBeacon 1.5s ease-in-out infinite}
+@keyframes mvBeacon{0%,100%{opacity:.22;transform:translate(-50%,-50%) scale(.9)}50%{opacity:.95;transform:translate(-50%,-50%) scale(1.12)}}
+.mv-bluewash{position:absolute;inset:0;z-index:2;mix-blend-mode:screen;pointer-events:none;opacity:0;
+  background:radial-gradient(120% 80% at 50% 24%,rgba(60,140,255,.4),rgba(60,140,255,0) 60%);animation:mvWash 3.1s linear infinite}
+@keyframes mvWash{0%,9%,18%,100%{opacity:0}3%{opacity:.65}13%{opacity:.4}}
+.mv-water{position:absolute;left:0;right:0;bottom:0;height:36%;z-index:2;pointer-events:none;
+  background:linear-gradient(180deg,rgba(8,20,38,0),rgba(6,16,32,.55))}
+.mv-scan{position:absolute;left:0;right:0;height:2px;top:0;z-index:3;pointer-events:none;opacity:.45;
+  background:linear-gradient(90deg,transparent,rgba(150,200,255,.55),transparent);animation:mvScan 6s linear infinite}
+@keyframes mvScan{0%{top:-2%}100%{top:102%}}
+.mv-titles{position:absolute;left:0;right:0;top:14%;text-align:center;z-index:6;padding:0 16px}
+.mv-kicker{font-size:11px;letter-spacing:.5em;color:var(--gold-2);text-transform:uppercase;opacity:0;transform:translateY(8px);transition:opacity .6s ease,transform .6s ease}
+.mv-kicker.in{opacity:.9;transform:none}
+.mv-title{font-size:clamp(34px,11vw,52px);font-weight:800;letter-spacing:.05em;line-height:1;margin-top:10px;opacity:0;transform:scale(1.6);filter:blur(12px);transition:opacity .5s ease,transform .65s cubic-bezier(.16,.8,.3,1),filter .6s ease;text-shadow:0 10px 46px rgba(60,120,220,.45)}
+.mv-title.in{opacity:1;transform:scale(1);filter:blur(0)}
+.mv-shine{background:linear-gradient(90deg,#E7CE8B 0%,#FBF1D2 28%,#C9A24B 58%,#E7CE8B 100%);-webkit-background-clip:text;background-clip:text;color:transparent;background-size:220% 100%;background-position:120% 0}
+.mv-shine.go{animation:mvShine 1.15s ease forwards}
+@keyframes mvShine{to{background-position:-20% 0}}
+.mv-rule{width:0;height:3px;margin:12px auto 0;border-radius:2px;background:linear-gradient(90deg,rgba(201,162,75,0),#E7CE8B,rgba(201,162,75,0));transition:width .85s ease}
+.mv-rule.in{width:min(220px,60vw)}
+.mv-sub{margin-top:10px;font-size:14px;font-weight:700;letter-spacing:.42em;color:var(--gold-2);opacity:0;transform:translateY(8px);transition:opacity .6s ease,transform .6s ease}
+.mv-sub.in{opacity:1;transform:none}
+.mv-tag{margin-top:14px;font-size:11px;letter-spacing:.3em;color:rgba(245,240,225,.72);opacity:0;transition:opacity .9s ease}
+.mv-tag.in{opacity:1}
+.mv-disp{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.mv-disp.in{opacity:1;transform:none}
+.intro-stage.mv .intro-go{animation:none;opacity:0;transform:translateY(12px);transition:opacity .5s ease,transform .5s ease}
+.intro-stage.mv .intro-go.in{opacity:1;transform:none}

@@ -28,15 +28,15 @@
       if (loaderEl) { loaderEl.classList.add('done'); setTimeout(function () { loaderEl.style.display = 'none'; }, 420); }
       WB.Screens.showStart();
       var st = WB.Save.data.settings;
+      var afterIntro = function () {
+        if (!st.onboarded) WB.Screens.showOnboarding(function () { st.onboarded = true; WB.Save.save(); });
+      };
+      // Intro bei JEDEM Spielstart abspielen (skippbar per Tap).
+      var playIntroThen = function () { if (WB.Intro) WB.Intro.play(afterIntro); else afterIntro(); };
       if (!st.legalAck) {
-        WB.Screens.showLegalNotice(function () {
-          st.legalAck = true; WB.Save.save();
-          var afterIntro = function () {
-            if (!st.onboarded) WB.Screens.showOnboarding(function () { st.onboarded = true; WB.Save.save(); });
-          };
-          if (WB.Intro && !st.introSeen) { st.introSeen = true; WB.Save.save(); WB.Intro.play(afterIntro); }
-          else afterIntro();
-        });
+        WB.Screens.showLegalNotice(function () { st.legalAck = true; WB.Save.save(); playIntroThen(); });
+      } else {
+        playIntroThen();
       }
     }
 
