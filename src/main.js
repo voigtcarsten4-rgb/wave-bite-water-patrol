@@ -4,6 +4,7 @@
 
   function boot() {
     WB.Save.load();
+    WB._bootLastPlayed = WB.Save.data.lastPlayed;
     WB.Meta.ensureDaily();
     WB.Meta.ensureWeekly();
     if (WB.Track) { WB.Track.init(); WB.Track.log('game_open'); }
@@ -29,7 +30,8 @@
       WB.Screens.showStart();
       var st = WB.Save.data.settings;
       var afterIntro = function () {
-        if (!st.onboarded) WB.Screens.showOnboarding(function () { st.onboarded = true; WB.Save.save(); });
+        if (!st.onboarded) WB.Screens.showOnboarding(function () { st.onboarded = true; WB.Save.save(); if (WB.News) WB.News.maybeShow(); });
+        else if (WB.News) WB.News.maybeShow();
       };
       // Intro bei JEDEM Spielstart abspielen (skippbar per Tap).
       var playIntroThen = function () { if (WB.Intro) WB.Intro.play(afterIntro); else afterIntro(); };

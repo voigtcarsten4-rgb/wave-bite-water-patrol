@@ -37,7 +37,7 @@
       host.innerHTML = '<div class="panel rate-panel">'
         + '<div class="rate-head">'
         + (port ? '<div class="rate-port" style="background-image:url(\'' + port + '\')"></div>' : '')
-        + '<div><div class="bf-funk">● Zwischenfunk · Lucy</div>'
+        + '<div><div class="bf-funk">● Zwischenfunk · Lena</div>'
         + '<h3>Wie schlägt sich unser Simulator?</h3></div></div>'
         + '<p class="muted">Kurzer Funkcheck, Kapitän – deine ehrliche Einschätzung hilft der Crew.</p>'
         + '<div class="rate-stars" id="rate-stars">'

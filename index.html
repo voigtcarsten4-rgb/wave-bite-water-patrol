@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="assets/icons/icon.svg" />
   <link rel="icon" type="image/svg+xml" href="assets/icons/icon.svg" />
-  <link rel="stylesheet" href="styles/main.css?v=18" />
+  <link rel="stylesheet" href="styles/main.css?v=19" />
   <title>Wave Bite – Captain's Run</title>
 </head>
 <body>
@@ -38,6 +38,7 @@
         <div class="sub">Captain's Run</div>
         <p>Steuere dein Boot durch ruhige Reviere, erfülle Versorgungsmissionen und werde zum Captain der Wave-Bite-Flotte.</p>
       </div>
+      <div id="world-strip" class="world-strip"></div>
       <nav class="menu">
         <button id="btn-story" class="btn btn-gold btn-big">📖 Story-Kampagne</button>
         <button id="btn-live" class="btn btn-line btn-big">🌊 Live Water Region</button>
@@ -168,6 +169,9 @@
       </div>
     </section>
 
+    <!-- Living-World Nachrichten-Overlay (Lena) -->
+    <div id="overlay-news" class="overlay"></div>
+
     <!-- Einsatz-Briefing-Overlay -->
     <div id="overlay-briefing" class="overlay"></div>
 
@@ -216,6 +220,7 @@
   <script src="src/data/story.js"></script>
   <script src="src/data/ranks.js"></script>
   <script src="src/data/asset-manifest.js"></script>
+  <script src="src/systems/worldstate.js"></script>
   <script src="src/systems/save.js"></script>
   <script src="src/systems/progression.js"></script>
   <script src="src/systems/rank.js"></script>
@@ -238,6 +243,7 @@
   <script src="src/game/mission.js"></script>
   <script src="src/game/game.js"></script>
   <script src="src/game/minigame-radar.js"></script>
+  <script src="src/ui/news.js"></script>
   <script src="src/ui/hud.js"></script>
   <script src="src/ui/screens.js"></script>
   <script src="src/ui/cinematic.js"></script>

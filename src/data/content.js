@@ -1,22 +1,22 @@
 /* Wave Bite - Water Patrol · data/content.js
- * KI-kuratierte Content-Bibliothek für Lucy (KI-Dispatch) + Live Water Region.
+ * KI-kuratierte Content-Bibliothek für Lena (KI-Dispatch) + Live Water Region.
  * Endless-Engine rekombiniert diese Bausteine -> unendliche, abwechslungsreiche Einsaetze.
- * (Architektur-Hook: später live von einem Lucy-Backend generierbar - siehe WATER-PATROL-UNIVERSE.md) */
+ * (Architektur-Hook: später live von einem Lena-Backend generierbar - siehe WATER-PATROL-UNIVERSE.md) */
 (function (WB) {
   'use strict';
   WB.data = WB.data || {};
 
   WB.data.lucy = {
-    name: 'Lucy',
+    name: 'Lena',
     role: 'KI-Dispatch · Maritime Patrol Unit',
     portrait: 'char_radio_operator_1',
     openers: [
-      'Lucy an Patrol One.', 'Hier Lucy, Lagezentrum.', 'Patrol One, Lucy auf dem Kanal.',
-      'Lucy hier - neue Lage.', 'Zentrale Lucy an Bord.', 'Patrol One, kommen. Lucy spricht.'
+      'Lena an Patrol One.', 'Hier Lena, Lagezentrum.', 'Patrol One, Lena auf dem Kanal.',
+      'Lena hier - neue Lage.', 'Zentrale Lena an Bord.', 'Patrol One, kommen. Lena spricht.'
     ],
     signoffs: [
-      'Lucy out.', 'Halt die Spur. Lucy out.', 'Ich bleib auf Funk. Lucy.',
-      'Viel Erfolg da draußen. Lucy out.', 'Melde dich bei Sichtkontakt. Lucy.'
+      'Lena out.', 'Halt die Spur. Lena out.', 'Ich bleib auf Funk. Lena.',
+      'Viel Erfolg da draußen. Lena out.', 'Melde dich bei Sichtkontakt. Lena.'
     ],
     streakLines: [
       'Sauber gefahren!', 'Stark - die Region ist ruhiger dank dir.', 'Beeindruckend, Captain.',
@@ -79,7 +79,7 @@
       objective: 'Signal aufklaeren', distance: [1800, 2300], timeLimit: 0, minigame: 'radar',
       char: 'char_radio_operator_1', station: 'station_radio_room_1',
       brief: ['Unklares Radarecho. Scanne es - irgendwas stimmt nicht.',
-              'Geistersignal im Kanal. Lucy kriegt es nicht sauber - sieh nach.',
+              'Geistersignal im Kanal. Lena kriegt es nicht sauber - sieh nach.',
               'Phantom auf dem Schirm. Erst Radar prüfen, dann hin.'] }
   ];
 })(window.WB = window.WB || {});

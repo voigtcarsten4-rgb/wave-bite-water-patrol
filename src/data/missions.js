@@ -72,7 +72,7 @@
       objective: 'Signalquelle aufklären', desc: 'Ein unklares Radarecho geistert durch den Kanal. Spür die Quelle auf und kontrolliere sie.',
       regionId: 'kanal', distance: 2000, timeLimit: 0, rewardCoins: 160, rewardXp: 120,
       unlockLevel: 6, difficulty: 3, briefChar: 'char_radio_operator_1', briefStation: 'station_radio_room_1',
-      brief: 'Phantom auf dem Schirm, Patrol One. Lucy kriegt es nicht sauber – fahr hin und klär das Signal.' },
+      brief: 'Phantom auf dem Schirm, Patrol One. Lena kriegt es nicht sauber – fahr hin und klär das Signal.' },
 
     { id: 'm_beweis', type: 'eco', title: 'Beweissicherung am Wrack', icon: '🔍',
       objective: 'Spur zum Verursacher', desc: 'An einem alten Wrack tritt Treibstoff aus. Folge der frischen Spur zum Verursacher.',

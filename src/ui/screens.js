@@ -320,6 +320,8 @@
         hero.style.backgroundImage = "url('" + WB.Assets.url('cockpit_day_1') + "')";
         hero.classList.add('on');
       }
+      var strip = document.getElementById('world-strip');
+      if (strip && WB.News) { strip.innerHTML = WB.News.statusStrip(); strip.onclick = function () { WB.News.showBriefing(null); }; }
       show('screen-start');
     },
 
@@ -607,7 +609,7 @@
         + '<span class="bf-funk">● ' + L.name + ' · KI-Dispatch</span>'
         + '<h3>Willkommen, Captain.</h3>'
         + '<p class="muted">Du steuerst dein Patrouillenboot aus der Brücke. <b>◄ ►</b> lenken, <b>⚡ Gas</b> beschleunigt, <b>Boost</b> gibt den Extra-Schub. Weiche Hindernissen aus und erreiche dein Ziel – bei Zeiteinsätzen tickt die Uhr.</p>'
-        + '<p class="muted">Starte mit einem <b>Einzeleinsatz</b> oder geh direkt in die <b>Live Water Region</b> – Lucy funkt dir laufend neue Lagen.</p>'
+        + '<p class="muted">Starte mit einem <b>Einzeleinsatz</b> oder geh direkt in die <b>Live Water Region</b> – Lena funkt dir laufend neue Lagen.</p>'
         + '<button class="btn btn-gold" id="onb-go">Los geht\'s</button></div>';
       $('overlay-legal').classList.add('show');
       WB.Audio.unlock(); WB.Audio.boost();
@@ -647,7 +649,7 @@
         + '<div class="streak-badge">🏁 Kampagne abgeschlossen</div>'
         + '<div class="result-icon">🏆</div><h2>Die Spur endet hier.</h2>'
         + '<p class="muted">Du hast das Schmugglernetzwerk zerschlagen und die Wave Region sicher gemacht. '
-        + 'Die Live Water Region laeuft weiter – Lucy hat immer neue Lagen für dich.</p>'
+        + 'Die Live Water Region laeuft weiter – Lena hat immer neue Lagen für dich.</p>'
         + '<div class="result-actions"><button class="btn btn-gold" id="sc-live">🌊 Live Water Region</button>'
         + '<button class="btn btn-line" id="sc-menu">Menue</button></div></div>';
       var overlay = $('overlay-result');
@@ -662,8 +664,8 @@
       on('sc-menu', function () { var ov = $('overlay-result'); if (ov) ov.classList.remove('show'); WB.Game.quit(); });
     },
 
-    // ---- Lucy KI-Dispatch (Live Water Region) ------------------------------
-    showLucyBriefing: function (ev, onStart) {
+    // ---- Lena KI-Dispatch (Live Water Region) ------------------------------
+    showLenaBriefing: function (ev, onStart) {
       var L = WB.data.lucy;
       var portrait = WB.Assets ? WB.Assets.url(L.portrait) : null;
       var station = (WB.Assets && ev.briefStation) ? WB.Assets.url(ev.briefStation) : null;

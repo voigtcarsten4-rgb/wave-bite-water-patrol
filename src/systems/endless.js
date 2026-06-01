@@ -1,5 +1,5 @@
 /* Wave Bite - Water Patrol · systems/endless.js
- * Live Water Region: Lucy (KI-Dispatch) generiert endlos abwechslungsreiche Einsaetze,
+ * Live Water Region: Lena (KI-Dispatch) generiert endlos abwechslungsreiche Einsaetze,
  * skaliert mit dem Rang, optional mit Radar-Minispiel. Streak-getrieben. */
 (function (WB) {
   'use strict';
@@ -36,7 +36,7 @@
     next: function () {
       if (!this.active) return;
       var ev = this.currentEvent = this.buildEvent();
-      WB.Screens.showLucyBriefing(ev, function () {
+      WB.Screens.showLenaBriefing(ev, function () {
         if (ev.minigame && WB.Minigame) {
           WB.Minigame.play(ev.minigame, null, function (r) {
             ev._miniBonus = (r && r.score ? r.score * 12 : 0);
