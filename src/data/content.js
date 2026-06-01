@@ -34,7 +34,7 @@
               'Streife angesetzt. Augen offen, Kurs ruhig.'] },
 
     { id: 'e_control', type: 'control', title: 'Bootskontrolle', icon: '🔦', regionId: 'bucht',
-      objective: 'Boot kontrollieren', distance: [1700, 2200], timeLimit: 0, minigame: 'radar',
+      objective: 'Boot kontrollieren', distance: [1700, 2200], timeLimit: 0, minigame: 'search',
       char: 'char_witness_1', station: 'station_witness_pier_1',
       brief: ['Gemeldetes Boot am Steg - erst Radar-Scan, dann hinfahren.',
               'Verdaechtige Bewegung. Scanne die Signale, dann Kontrolle.',
@@ -62,7 +62,7 @@
               'Rettung Prioritaet. Kurs halten, Wellen nicht unterschaetzen.'] },
 
     { id: 'e_smuggler', type: 'smuggler', title: 'Schmuggler abfangen', icon: '🚔', regionId: 'schleuse',
-      objective: 'Boot abfangen', distance: [2300, 2800], timeLimit: [40, 46], minigame: 'radar',
+      objective: 'Boot abfangen', distance: [2300, 2800], timeLimit: [40, 46], minigame: 'lock',
       char: 'char_thief_1', station: 'station_event_deck_1',
       brief: ['Schmugglerboot an der Schleuse. Erst Radar, dann abfangen!',
               'Sie wollen durch die Schleuse. Stell sie vorher.',

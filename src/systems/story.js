@@ -27,7 +27,7 @@
 
     beginDrive: function (ch) {
       var m = this.missionFor(ch);
-      if (ch.minigame === 'radar' && WB.MiniRadar) WB.MiniRadar.play({ need: 5, duration: 12000 }, function () { WB.Game.startStory(m); });
+      if (ch.minigame && WB.Minigame) WB.Minigame.play(ch.minigame, null, function () { WB.Game.startStory(m); });
       else WB.Game.startStory(m);
     },
 

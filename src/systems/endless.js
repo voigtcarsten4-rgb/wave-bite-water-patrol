@@ -37,8 +37,8 @@
       if (!this.active) return;
       var ev = this.currentEvent = this.buildEvent();
       WB.Screens.showLucyBriefing(ev, function () {
-        if (ev.minigame === 'radar' && WB.MiniRadar) {
-          WB.MiniRadar.play({ need: 5, duration: 12000 }, function (r) {
+        if (ev.minigame && WB.Minigame) {
+          WB.Minigame.play(ev.minigame, null, function (r) {
             ev._miniBonus = (r && r.score ? r.score * 12 : 0);
             WB.Game.startEndless(ev);
           });
