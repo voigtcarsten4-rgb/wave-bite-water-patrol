@@ -613,3 +613,10 @@ body {
 /* Lucy-HUD an den oberen Hero-Bereich (nicht über Menübuttons) */
 #screen-start .lucy-hud{bottom:auto;top:62px;left:10px;max-width:60%}
 #screen-start .lucy-hud .lucy-av{width:44px;height:44px}
+
+/* Living-World Briefing: Location-Banner */
+.nw-banner{height:120px;border-radius:12px;background-size:cover;background-position:center;margin-bottom:12px;
+  box-shadow:inset 0 -40px 60px -20px rgba(9,22,39,.9);border:1px solid rgba(201,162,75,.2)}
+/* Weiche Screen-Übergänge (Polish) */
+.screen.active{animation:screenFade .32s ease both}
+@keyframes screenFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
