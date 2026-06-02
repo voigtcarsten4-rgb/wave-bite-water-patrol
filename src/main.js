@@ -30,9 +30,12 @@
       WB.Screens.showStart();
       var st = WB.Save.data.settings;
       var afterIntro = function () {
-        if (!st.onboarded) WB.Screens.showOnboarding(function () { st.onboarded = true; WB.Save.save(); if (WB.News) WB.News.maybeShow(); });
-        else if (WB.News) WB.News.maybeShow();
-        if (WB.Retention) WB.Retention.greetReturn();
+        var cont = function () {
+          if (!st.onboarded) WB.Screens.showOnboarding(function () { st.onboarded = true; WB.Save.save(); if (WB.News) WB.News.maybeShow(); });
+          else if (WB.News) WB.News.maybeShow();
+          if (WB.Retention) WB.Retention.greetReturn();
+        };
+        if (WB.Skipper && WB.Skipper.firstRun) WB.Skipper.firstRun(cont); else cont();
       };
       // Intro bei JEDEM Spielstart abspielen (skippbar per Tap).
       var playIntroThen = function () { if (WB.Intro && WB.Intro.playSignature) WB.Intro.playSignature(afterIntro); else if (WB.Intro) WB.Intro.play(afterIntro); else afterIntro(); };
