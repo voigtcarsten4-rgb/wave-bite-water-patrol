@@ -100,7 +100,7 @@
 
   // ============================ SCHLEUSE ============================
   WB.MiniSchleuse = { play: function(cfg, onDone){
-    cfg=cfg||{}, done=false; var dur=cfg.duration||16000, t0=Date.now();
+    cfg=cfg||{}; var done=false; var dur=cfg.duration||16000, t0=Date.now();
     var ui=Frame('🚦','SCHLEUSE WERNSDORF','Halte Tempo in der grünen Zone. Fahre erst bei GRÜN ein.');
     ui.body.innerHTML='<div class="schl"><div class="schl-lights" id="slz"><span class="sl r on"></span><span class="sl y"></span><span class="sl g"></span></div>'
       +'<div class="schl-meter"><div class="schl-green"></div><div class="schl-needle" id="sln"></div></div>'
