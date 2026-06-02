@@ -1,5 +1,5 @@
 /* Wave Bite - Captain's Run * ui/screens.js
- * Screen-Navigation + dynamische Inhalte für alle Menues und Overlays. */
+ * Screen-Navigation + dynamische Inhalte für alle Menüs und Overlays. */
 (function (WB) {
   'use strict';
   function $(id) { return document.getElementById(id); }
@@ -346,7 +346,7 @@
           hero.classList.add('on');
         }
       }
-      // RC2.0: Menue-Hero-Video je Tageszeit/Wetter (Standbild bleibt Fallback darunter)
+      // RC2.0: Menü-Hero-Video je Tageszeit/Wetter (Standbild bleibt Fallback darunter)
       try {
         var vEl = document.getElementById('start-hero-vid');
         if (vEl && WB.Assets) {
@@ -635,7 +635,7 @@
       var L = WB.data.legal;
       $('overlay-legal').innerHTML = '<div class="panel legal-panel">'
         + '<div class="legal-scroll">' + L.disclaimer + L.datenschutz + L.impressum + '</div>'
-        + '<button class="btn btn-gold" id="legal-close">Schliessen</button></div>';
+        + '<button class="btn btn-gold" id="legal-close">Schließen</button></div>';
       $('overlay-legal').classList.add('show');
       on('legal-close', function () { $('overlay-legal').classList.remove('show'); });
     },
@@ -700,7 +700,7 @@
         + '<p class="muted">Du hast das Schmugglernetzwerk zerschlagen und die Wave Region sicher gemacht. '
         + 'Die Live Water Region laeuft weiter – Lena hat immer neue Lagen für dich.</p>'
         + '<div class="result-actions"><button class="btn btn-gold" id="sc-live">🌊 Live Water Region</button>'
-        + '<button class="btn btn-line" id="sc-menu">Menue</button></div></div>';
+        + '<button class="btn btn-line" id="sc-menu">Menü</button></div></div>';
       var overlay = $('overlay-result');
       if (overlay) {
         overlay.innerHTML = html;
@@ -727,7 +727,7 @@
         + (station ? '<div class="bf-bg" style="background-image:url(\'' + station + '\')"></div>' : '')
         + '<div class="bf-scrim"></div>'
         + '<div class="bf-panel">'
-        + '<div class="bf-head"><span class="bf-funk">● LIVE · ' + L.name + ' · KI-Dispatch</span><span class="bf-rank">' + rank.short + ' · ' + (WB.Skipper ? WB.Skipper.esc(WB.Skipper.display()) : 'Kapitaen') + '</span></div>'
+        + '<div class="bf-head"><span class="bf-funk">● LIVE · ' + L.name + ' · KI-Dispatch</span><span class="bf-rank">' + rank.short + ' · ' + (WB.Skipper ? WB.Skipper.esc(WB.Skipper.display()) : 'Kapitän') + '</span></div>'
         + '<div class="bf-row">'
         + (portrait ? '<div class="bf-port" style="background-image:url(\'' + portrait + '\')"></div>' : '')
         + '<div class="bf-msg"><div class="bf-title">' + ev.icon + ' ' + esc(ev.title) + '</div>'
@@ -766,7 +766,7 @@
         + rewardSpan('✶ +', r.xp, ' XP')
         + '</div>'
         + '<div class="wb-promo-slot"></div>'
-        + '<div class="result-actions"><button class="btn btn-gold" id="el-next">Naechster Einsatz</button>'
+        + '<div class="result-actions"><button class="btn btn-gold" id="el-next">Nächster Einsatz</button>'
         + '<button class="btn btn-line" id="el-stop">Beenden</button></div></div>';
 
       var overlay = $('overlay-result');
@@ -807,7 +807,7 @@
         + (station ? '<div class="bf-bg" style="background-image:url(\'' + station + '\')"></div>' : '')
         + '<div class="bf-scrim"></div>'
         + '<div class="bf-panel">'
-        + '<div class="bf-head"><span class="bf-funk">● FUNK · ' + WB.data.rankUnit + '</span><span class="bf-rank">' + rank.short + ' · ' + (WB.Skipper ? WB.Skipper.esc(WB.Skipper.display()) : 'Kapitaen') + '</span></div>'
+        + '<div class="bf-head"><span class="bf-funk">● FUNK · ' + WB.data.rankUnit + '</span><span class="bf-rank">' + rank.short + ' · ' + (WB.Skipper ? WB.Skipper.esc(WB.Skipper.display()) : 'Kapitän') + '</span></div>'
         + '<div class="bf-row">'
         + (portrait ? '<div class="bf-port" style="background-image:url(\'' + portrait + '\')"></div>' : '')
         + '<div class="bf-msg"><div class="bf-title">' + mission.icon + ' ' + esc(mission.title) + '</div>'
@@ -858,7 +858,7 @@
 
         html = '<div class="result-card win" style="position:relative">'
           + '<div class="result-icon">' + data.mission.icon + '</div>'
-          + '<h2>Sauber gefahren, ' + (WB.Skipper ? WB.Skipper.esc(WB.Skipper.display()) : 'Kapitaen') + '!</h2>'
+          + '<h2>Sauber gefahren, ' + (WB.Skipper ? WB.Skipper.esc(WB.Skipper.display()) : 'Kapitän') + '!</h2>'
           + starsAnimated(r.stars)
           + '<div class="rewards">'
           + rewardSpan('🪙 +', r.coins)
@@ -867,7 +867,7 @@
           + '<div class="wb-promo-slot"></div>'
           + lvlNote + ach
           + '<div class="result-actions"><button class="btn btn-gold" id="res-again">Nochmal</button>'
-          + '<button class="btn btn-line" id="res-menu">Menue</button></div></div>';
+          + '<button class="btn btn-line" id="res-menu">Menü</button></div></div>';
 
         var overlay = $('overlay-result');
         if (overlay) {
@@ -895,7 +895,7 @@
           + '<div class="result-icon">🌊</div>'
           + '<h2>' + headTxt + '</h2>' + motiv
           + '<div class="result-actions"><button class="btn btn-gold" id="res-again">Nochmal – jetzt klappt\'s</button>'
-          + '<button class="btn btn-line" id="res-menu">Menue</button></div></div>';
+          + '<button class="btn btn-line" id="res-menu">Menü</button></div></div>';
         var overlay2 = $('overlay-result');
         if (overlay2) {
           overlay2.innerHTML = html;

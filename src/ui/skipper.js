@@ -1,11 +1,11 @@
 /* Wave Bite – Water Patrol · ui/skipper.js
- * RS5: Persoenliche Spieler-Identitaet (Funkname). Story-Onboarding beim ersten Start,
- * lokale Speicherung (DSGVO – nur localStorage), Nutzung in Begruessung/Funk/Briefing/Ergebnis.
- * Bewusst getrennt von WB.Captain (KI-Fahrstil-Profil). Vollstaendig fehlergekapselt. */
+ * RS5: Persönliche Spieler-Identität (Funkname). Story-Onboarding beim ersten Start,
+ * lokale Speicherung (DSGVO – nur localStorage), Nutzung in Begrüßung/Funk/Briefing/Ergebnis.
+ * Bewusst getrennt von WB.Captain (KI-Fahrstil-Profil). Vollständig fehlergekapselt. */
 (function (WB) {
   'use strict';
   var KEY = 'wavebite.skipper';
-  var FALLBACK = 'Kapitaen';
+  var FALLBACK = 'Kapitän';
   function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
   function store(d) { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch (e) {} }
   function clean(n) { return (n || '').replace(/[<>"'`\\]/g, '').replace(/\s+/g, ' ').trim().slice(0, 16); }
@@ -34,7 +34,7 @@
       if (!this.has()) return;
       var n = this.esc(this.display());
       setTimeout(function () {
-        try { if (WB.LucyHUD && WB.LucyHUD.say) WB.LucyHUD.say('Willkommen zurueck, ' + n + '. Das Revier wartet.'); } catch (e) {}
+        try { if (WB.LucyHUD && WB.LucyHUD.say) WB.LucyHUD.say('Willkommen zurück, ' + n + '. Das Revier wartet.'); } catch (e) {}
       }, 900);
     },
 
@@ -53,8 +53,8 @@
         + '<p class="skp-x">Leitstelle an neues Crewmitglied – willkommen bei der Wave-Bite-Wasserschutz. Wie sollen wir dich im Funkverkehr rufen?</p>'
         + '<input id="skp-input" class="skp-input" type="text" maxlength="16" autocomplete="off" spellcheck="false" placeholder="dein Name, z. B. Carsten" />'
         + '<div class="skp-actions"><button class="btn btn-gold" id="skp-go">⚓ An Bord gehen</button>'
-        + '<button class="btn btn-line" id="skp-skip">Ueberspringen</button></div>'
-        + '<div class="skp-note">🔒 Nur lokal auf deinem Geraet gespeichert · keine Anmeldung</div>'
+        + '<button class="btn btn-line" id="skp-skip">Überspringen</button></div>'
+        + '<div class="skp-note">🔒 Nur lokal auf deinem Gerät gespeichert · keine Anmeldung</div>'
         + '</div>';
       ov.classList.add('show');
       var inp = document.getElementById('skp-input');
@@ -67,8 +67,8 @@
           + '<div class="skp-from">LUCY · BORD-KI</div>'
           + '<div class="skp-check">✓</div>'
           + '<h3 class="skp-h">Willkommen an Bord, ' + dn + '.</h3>'
-          + '<p class="skp-x">Eintrag im Bordcomputer gespeichert. Lucy hat dein Revier vorbereitet – bereit fuer den ersten Einsatz?</p>'
-          + '<div class="skp-actions"><button class="btn btn-gold" id="skp-start">🚤 Einsatz uebernehmen</button></div>'
+          + '<p class="skp-x">Eintrag im Bordcomputer gespeichert. Lucy hat dein Revier vorbereitet – bereit für den ersten Einsatz?</p>'
+          + '<div class="skp-actions"><button class="btn btn-gold" id="skp-start">🚤 Einsatz übernehmen</button></div>'
           + '</div>';
         try { if (WB.Audio) { if (WB.Audio.success) WB.Audio.success(); else if (WB.Audio.coin) WB.Audio.coin(); } } catch (e) {}
         var b = document.getElementById('skp-start');
