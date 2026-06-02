@@ -13,6 +13,7 @@
     seenplatte: [[0.5,0.92],[0.36,0.72],[0.58,0.56],[0.40,0.38],[0.60,0.20],[0.5,0.08]],
     schleuse:   [[0.5,0.92],[0.5,0.74],[0.44,0.58],[0.56,0.42],[0.5,0.26],[0.5,0.09]]
   };
+  var COORD = { bucht:'52.438°N 13.645°E', kanal:'52.502°N 13.445°E', seenplatte:'52.355°N 13.630°E', schleuse:'52.378°N 13.700°E' };
   function pathFor(id) { return PATHS[id] || PATHS.bucht; }
   function lerpPt(path, t) {
     t = Math.max(0, Math.min(1, t)); var n = path.length - 1, f = t * n, i = Math.min(n - 1, f | 0), k = f - i;
@@ -74,7 +75,7 @@
         var reg = world.region || {}, m = Math.max(0, Math.round((1-pr) * (world.distance||world.mission.distance||1) / 12));
         setT('nav-revier', reg.name || 'Revier');
         setT('nav-dist', m + ' m · KP ' + done + '/' + n);
-        setT('nav-coord', reg.coord || '');
+        setT('nav-coord', COORD[reg.id] || reg.coord || '');
         var amp = $('nav-amp'); if (amp) { amp.className = 'nav-amp ' + (world.storm ? 'red' : (world._fog ? 'amber' : 'green')); amp.textContent = world.storm ? 'WARNUNG' : (world._fog ? 'SICHT' : 'FREI'); }
       } catch (e) {}
     }
