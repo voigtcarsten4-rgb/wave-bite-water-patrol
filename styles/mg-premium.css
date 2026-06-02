@@ -1,0 +1,47 @@
+/* Wave Bite v79 — MINISPIEL PREMIUM-SKIN (P3)
+   Glassmorphism, Tiefe, dezenter Glow. Override-Layer, kein Umbau. Apple/Tesla Marine. */
+.mg-overlay{ background:radial-gradient(120% 90% at 50% 30%, rgba(8,20,36,.62), rgba(3,8,16,.86)) !important; -webkit-backdrop-filter:blur(10px) saturate(115%); backdrop-filter:blur(10px) saturate(115%); }
+.mg-panel.mg2{
+  max-width:360px; padding:20px 18px 18px;
+  background:linear-gradient(168deg, rgba(18,42,68,.92), rgba(9,21,36,.95));
+  border:1px solid rgba(201,162,75,.34); border-radius:22px;
+  box-shadow:0 24px 64px -18px rgba(0,0,0,.72), inset 0 1px 0 rgba(255,255,255,.08), inset 0 0 0 1px rgba(120,200,235,.05);
+  -webkit-backdrop-filter:blur(14px) saturate(120%); backdrop-filter:blur(14px) saturate(120%);
+  animation:mgRise .34s cubic-bezier(.2,.9,.3,1.1);
+}
+@keyframes mgRise{ from{ opacity:0; transform:translateY(14px) scale(.97); } to{ opacity:1; transform:none; } }
+.mg-head{ padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,.07); margin-bottom:10px; }
+.mg-title{ background:linear-gradient(180deg,#F4E2AE,#C9A24B); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; text-shadow:0 1px 10px rgba(201,162,75,.18); }
+.mg-score{ font:800 12px ui-monospace,monospace; color:#cfe6ff; background:rgba(120,200,235,.10); border:1px solid rgba(120,200,235,.22); padding:3px 9px; border-radius:99px; }
+.mg-sub{ color:#a9bccf; }
+.mg-btn{
+  border-radius:14px; padding:13px; font-weight:800; letter-spacing:.04em;
+  background:linear-gradient(180deg,#E2C268,#B98E33); border:1px solid rgba(231,206,139,.55);
+  box-shadow:0 8px 20px -8px rgba(201,162,75,.55), inset 0 1px 0 rgba(255,255,255,.35);
+  transition:transform .12s ease, box-shadow .2s ease, filter .2s ease;
+}
+.mg-btn:hover{ filter:brightness(1.06); box-shadow:0 12px 26px -8px rgba(201,162,75,.7), inset 0 1px 0 rgba(255,255,255,.4); }
+.mg-btn:active{ transform:translateY(1px) scale(.995); }
+.mg-btn.ghost{ background:linear-gradient(180deg, rgba(28,58,82,.95), rgba(14,36,56,.95)); color:#cfe6ff; border-color:rgba(120,200,235,.4); box-shadow:0 8px 20px -10px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.08); }
+.mg-btn.alarm{ background:linear-gradient(180deg,#D6543B,#992f1e); color:#fff; border-color:rgba(255,140,110,.5); box-shadow:0 8px 22px -8px rgba(201,70,47,.6), inset 0 1px 0 rgba(255,255,255,.25); }
+.mg-timer{ height:7px; background:rgba(255,255,255,.08); box-shadow:inset 0 0 0 1px rgba(255,255,255,.04); }
+.mg-timer-fill{ background:linear-gradient(90deg,#C9A24B,#F4E2AE); box-shadow:0 0 12px rgba(231,206,139,.55); }
+.mg-feedback.good{ text-shadow:0 0 10px rgba(111,224,163,.35); }
+.mg-feedback.bad{ text-shadow:0 0 10px rgba(255,122,102,.3); }
+.funk-call, .hk-card{
+  background:linear-gradient(168deg, rgba(14,34,54,.78), rgba(9,22,38,.82)) !important;
+  border:1px solid rgba(120,200,235,.20) !important; border-radius:14px !important;
+  box-shadow:0 10px 28px -14px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.06);
+  -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+}
+.hk-card{ border-color:rgba(201,162,75,.28) !important; }
+.radar2, .ret-radar{
+  background:radial-gradient(circle at 50% 42%, rgba(26,72,96,.9), rgba(6,18,32,.97)) !important;
+  border:1.5px solid rgba(91,185,139,.45) !important;
+  box-shadow:0 0 0 6px rgba(91,185,139,.06), 0 18px 40px -16px rgba(0,0,0,.7), inset 0 0 46px rgba(91,185,139,.16);
+}
+.radar2::after, .ret-radar::after{ content:''; position:absolute; inset:0; border-radius:50%; pointer-events:none; background:radial-gradient(circle at 38% 30%, rgba(255,255,255,.10), rgba(255,255,255,0) 42%); }
+.rd-blip{ box-shadow:0 0 14px rgba(231,206,139,.85), 0 0 4px rgba(255,255,255,.6); }
+.schl-meter{ height:28px; background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.10)); box-shadow:inset 0 2px 6px rgba(0,0,0,.4); }
+.schl-needle{ box-shadow:0 0 10px rgba(231,206,139,.7); }
+.schl-green, .ret-zone{ box-shadow:inset 0 0 18px rgba(91,185,139,.4); }
