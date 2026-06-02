@@ -346,6 +346,20 @@
           hero.classList.add('on');
         }
       }
+      // RC2.0: Menue-Hero-Video je Tageszeit/Wetter (Standbild bleibt Fallback darunter)
+      try {
+        var vEl = document.getElementById('start-hero-vid');
+        if (vEl && WB.Assets) {
+          var hr = new Date().getHours();
+          var lw = WB.LivingWorld, wx = (lw && lw.today && lw.today().weather) ? lw.today().weather.id : null;
+          var vid = (wx === 'gewitter') ? 'vid_a4_sturm_seenplatte' : (wx === 'nebel') ? 'vid_a4_nebel_mueggelsee'
+                  : (hr < 8) ? 'vid_a4_sonnenaufgang' : (hr >= 21 || hr < 6) ? 'vid_a4_nachtfahrt_berlin'
+                  : (hr >= 18) ? 'vid_a4_abendfahrt' : 'vid_a4_wasserleben_potsdam';
+          var vurl = WB.Assets.has(vid) ? WB.Assets.url(vid) : null;
+          if (vurl) { vEl.src = vurl; vEl.classList.add('on'); var pp = vEl.play(); if (pp && pp.catch) pp.catch(function(){}); }
+          else { vEl.classList.remove('on'); vEl.removeAttribute('src'); }
+        }
+      } catch (e) {}
       var strip = document.getElementById('world-strip');
       if (strip && WB.News) { strip.innerHTML = WB.News.statusStrip(); strip.onclick = function () { WB.News.showBriefing(null); }; }
       if (WB.LucyHUD) WB.LucyHUD.mount();
