@@ -53,7 +53,8 @@
       var mvidUrl = (WB.Assets && mvid) ? WB.Assets.url(mvid) : null;
       var clip = WB.Game._missionClip(mission);
       var clipUrl = (WB.Assets && clip) ? WB.Assets.url(clip) : null;
-      if (WB.Cinematic && (mvidUrl || heroUrl || clipUrl)) {
+      var _skipCine = WB.Game._skipCinemaOnce; WB.Game._skipCinemaOnce = false;
+      if (WB.Cinematic && !_skipCine && (mvidUrl || heroUrl || clipUrl)) {
         WB.Cinematic.play({
           kicker: '● EINSATZ · ' + (WB.data.rankUnit || 'WATER PATROL'),
           title: mission.title, subtitle: mission.objective || '',
@@ -81,13 +82,14 @@
 
     // Echtes Mission-Video je Einsatz (Wave-Video-Phase). null => Standbild-Hero nutzen.
     _missionVideo: function (mission) {
-      var byId = { // RC2.0 Welle-1 EINSATZ-Clips je Einsatz (Trigger=Mission-Start, Fallback=Hero-Standbild)
+      var byId = { // Schritt-2-Korrektur: thematisch passende EINSATZ-Clips je Mission (Fallback=Hero-Standbild)
         m_verfolgung:'vid_e2_verfolgung_spree', m_diebstahl:'vid_e2_verfolgung_dahme',
-        m_kontrolle:'vid_e2_kontrolle_hausboot', m_speed:'vid_e2_kontrolle_marina', m_vip:'vid_welt_glienicke',
-        m_rettung:'vid_e2_rettung_sup', m_sturm:'vid_e2_rettung_wetter',
+        m_kontrolle:'vid_e2_kontrolle_hausboot', m_speed:'vid_e2_regatta', m_vip:'vid_welt_glienicke',
+        m_rettung:'vid_e2_rettung_sup', m_sturm:'vid_a4_sturm_seenplatte',
         m_schmuggler:'vid_e2_schleuse_wernsdorf', m_razzia:'vid_e2_hafenstoerung',
-        m_umwelt:'vid_e2_umwelt_oelspur', m_beweis:'vid_myst_uebergabe',
-        m_funk:'vid_m2_boje', m_beweis:'vid_m2_uebergabe', m_vermisst:'vid_m2_geheimer_anleger', m_nacht:'vid_m2_lotse_verschwindet', m_streife:'vid_e2_regatta' };
+        m_umwelt:'vid_e2_umwelt_oelspur', m_beweis:'vid_m2_schatten_bruecke',
+        m_funk:'vid_myst_funksignal', m_vermisst:'vid_a4_nebel_mueggelsee',
+        m_nacht:'vid_a4_nachtfahrt_berlin', m_streife:'vid_welt_mueggelsee' };
       var byType = { pursuit:'vid_e2_verfolgung_spree', rescue:'vid_e2_rettung_sup', control:'vid_e2_kontrolle_hausboot',
         smuggler:'vid_e2_schleuse_wernsdorf', eco:'vid_e2_umwelt_oelspur', patrol:'vid_welt_berlin' };
       var id = byId[mission.id] || byType[mission.type] || null;
