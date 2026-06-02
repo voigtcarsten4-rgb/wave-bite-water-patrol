@@ -1299,6 +1299,66 @@
       "category": "video",
       "src": "assets/video/vid_e2_regatta.mp4",
       "status": "ready"
+    },
+    {
+      "id": "vid_m2_lotse_nebel",
+      "category": "video",
+      "src": "assets/video/vid_m2_lotse_nebel.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_m2_verlassenes_boot",
+      "category": "video",
+      "src": "assets/video/vid_m2_verlassenes_boot.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_m2_funksignal",
+      "category": "video",
+      "src": "assets/video/vid_m2_funksignal.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_m2_uebergabe",
+      "category": "video",
+      "src": "assets/video/vid_m2_uebergabe.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_m2_boje",
+      "category": "video",
+      "src": "assets/video/vid_m2_boje.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_m2_schatten_bruecke",
+      "category": "video",
+      "src": "assets/video/vid_m2_schatten_bruecke.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_m2_geheimer_anleger",
+      "category": "video",
+      "src": "assets/video/vid_m2_geheimer_anleger.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_m2_lotse_verschwindet",
+      "category": "video",
+      "src": "assets/video/vid_m2_lotse_verschwindet.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_m2_stroemung_radar",
+      "category": "video",
+      "src": "assets/video/vid_m2_stroemung_radar.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_m2_finale_spur",
+      "category": "video",
+      "src": "assets/video/vid_m2_finale_spur.mp4",
+      "status": "ready"
     }
   ]
 }

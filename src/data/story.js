@@ -12,7 +12,7 @@
   WB.data.story = {
     title: 'Die Spur auf dem Wasser',
     chapters: [
-      ch({ idx:0, cineVid:'vid_myst_verlassenes_boot', cine:'myst_verlassenes_boot', title:'Der leere Anleger', icon:'🔦', regionId:'bucht', station:'station_abandoned_jetty_1',
+      ch({ idx:0, cineVid:'vid_m2_verlassenes_boot', cine:'myst_verlassenes_boot', title:'Der leere Anleger', icon:'🔦', regionId:'bucht', station:'station_abandoned_jetty_1',
         distance:1500, timeLimit:0, minigame:null, rewardCoins:90, rewardXp:70,
         intro:[ {who:'Lena',portrait:LENA,text:'Patrol One, hier Lena. Am Suedsteg fehlt eine komplette Ladung. Anleger ist leer - keiner will was gesehen haben.'},
                 {who:'Hafenmeister',portrait:HM,text:'Ich schwoere, gestern lag da noch alles. Über Nacht weg. Das war kein Zufall.'} ],
@@ -21,7 +21,7 @@
           {label:'Sofort Spur suchen', reply:{who:'Lena',portrait:LENA,text:'Forsch. Gut. Aber pass auf - wer das war, ist noch in der Naehe.'}} ] },
         outro:{who:'Lena',portrait:LENA,text:'Sauber. Eine Schleifspur im Wasser führt Richtung Hafen. Wir bleiben dran.'} }),
 
-      ch({ idx:1, cineVid:'vid_myst_funksignal', cine:'myst_funksignal', title:'Funkstoerung am Hafen', icon:'📡', regionId:'bucht', station:'station_radio_room_1',
+      ch({ idx:1, cineVid:'vid_m2_funksignal', cine:'myst_funksignal', title:'Funkstoerung am Hafen', icon:'📡', regionId:'bucht', station:'station_radio_room_1',
         distance:1800, timeLimit:0, minigame:'radar', rewardCoins:120, rewardXp:90,
         intro:[ {who:'Lena',portrait:LENA,text:'Mein Funk rauscht. Jemand stoert gezielt. Ich kriege das Echo nicht sauber.'},
                 {who:'Lena',portrait:LENA,text:'Mach erst einen Radar-Scan, bevor du blind reinfaehrst.'} ],
@@ -39,7 +39,7 @@
           {label:'Bestimmt', reply:{who:'Lena',portrait:LENA,text:'Zeig Praesenz. Aber bleib sauber, wir wollen ihn, nicht eine Beschwerde.'}} ] },
         outro:{who:'Skipper',portrait:SK,text:'Ich hab nichts getan! ... Ich sag nichts mehr ohne... ach, vergiss es.'} }),
 
-      ch({ idx:3, cineVid:'vid_einsatz_verfolgung', cine:'chase_nacht', title:'Verfolgung durch den Nebel', icon:'🚨', regionId:'kanal', station:'station_suspicious_boat_1',
+      ch({ idx:3, cineVid:'vid_m2_lotse_nebel', cine:'chase_nacht', title:'Verfolgung durch den Nebel', icon:'🚨', regionId:'kanal', station:'station_suspicious_boat_1',
         distance:2200, timeLimit:46, minigame:null, rewardCoins:230, rewardXp:160,
         intro:[ {who:'Lena',portrait:LENA,text:'Er flieht! Volle Fahrt Richtung Nordkanal - und es zieht Nebel auf.'},
                 {who:'Lena',portrait:LENA,text:'Halt Abstand, aber verlier ihn nicht. Boost clever einsetzen.'} ],
@@ -48,7 +48,7 @@
           {label:'Abschneiden', reply:{who:'Lena',portrait:LENA,text:'Riskant im Nebel - aber wenn es klappt, haben wir ihn.'}} ] },
         outro:{who:'Lena',portrait:LENA,text:'Er ist uns entwischt - aber er hat was abgeworfen. Markiert. Wir kommen naeher.'} }),
 
-      ch({ idx:4, cineVid:'vid_myst_stroemung', cine:'myst_stroemung_hinweis', title:'Umweltspur im Kanal', icon:'🛢', regionId:'kanal', station:'station_suspicious_boat_1',
+      ch({ idx:4, cineVid:'vid_m2_stroemung_radar', cine:'myst_stroemung_hinweis', title:'Umweltspur im Kanal', icon:'🛢', regionId:'kanal', station:'station_suspicious_boat_1',
         distance:2300, timeLimit:0, minigame:null, rewardCoins:170, rewardXp:120,
         intro:[ {who:'Lena',portrait:LENA,text:'Ölschimmer im Kanal. Die Spur passt zu unserem Boot von gestern.'},
                 {who:'Hafenmeister',portrait:HM,text:'Die kippen was rein, um Verfolger abzuhaengen. Skrupellos.'} ],
@@ -66,7 +66,7 @@
           {label:'Deckung anfordern', reply:{who:'Lena',portrait:LENA,text:'Unterwegs - aber du bist zuerst da. Mach den Anfang.'}} ] },
         outro:{who:'Thief',portrait:TH,text:'Du ahnst nicht, für wen ich fahre. Das hier ist groesser als du denkst.'} }),
 
-      ch({ idx:6, cineVid:'vid_myst_uebergabe', cine:'myst_geheimtreffen_steg', title:'Der Schatten unter der Bruecke', icon:'🌑', regionId:'kanal', station:'station_radio_room_1',
+      ch({ idx:6, cineVid:'vid_m2_schatten_bruecke', cine:'myst_geheimtreffen_steg', title:'Der Schatten unter der Bruecke', icon:'🌑', regionId:'kanal', station:'station_radio_room_1',
         distance:2100, timeLimit:48, minigame:null, rewardCoins:240, rewardXp:170,
         intro:[ {who:'Lena',portrait:LENA,text:'Der Thief hat einen Hintermann erwaehnt. Heute Nacht ein Treffen unter der Bruecke.'},
                 {who:'Lena',portrait:LENA,text:'Dunkel, eng, Gegenverkehr. Fahr vorsichtig - und schnell.'} ],
@@ -93,7 +93,7 @@
           {label:'Riskant, aber ja', reply:{who:'Lena',portrait:LENA,text:'Respekt vor dem Sturm ist gut. Aber wir fahren.'}} ] },
         outro:{who:'Lena',portrait:LENA,text:'Durchgehalten! Sie sind fast am Ziel - die Schleuse, letzte Etappe. Finale.'} }),
 
-      ch({ idx:9, cineVid:'vid_myst_lotse', cine:'myst_enthuellung', title:'Finale: Jagd über den See', icon:'🏁', regionId:'schleuse', station:'station_event_deck_1',
+      ch({ idx:9, cineVid:'vid_m2_finale_spur', cine:'myst_enthuellung', title:'Finale: Jagd über den See', icon:'🏁', regionId:'schleuse', station:'station_event_deck_1',
         distance:2800, timeLimit:46, minigame:null, rewardCoins:500, rewardXp:360,
         intro:[ {who:'Lena',portrait:LENA,text:'Das ist es, Captain. Das gesamte Netzwerk auf einem Boot - und sie wollen durch die Schleuse.'},
                 {who:'Lena',portrait:LENA,text:'Stell sie. Für den leeren Anleger, für alles. Ich bin bei dir auf dem Funk.'} ],

@@ -79,10 +79,10 @@
       var byId = { // RC2.0 Welle-1 EINSATZ-Clips je Einsatz (Trigger=Mission-Start, Fallback=Hero-Standbild)
         m_verfolgung:'vid_e2_verfolgung_spree', m_diebstahl:'vid_e2_verfolgung_dahme',
         m_kontrolle:'vid_e2_kontrolle_hausboot', m_speed:'vid_e2_kontrolle_marina', m_vip:'vid_welt_glienicke',
-        m_rettung:'vid_e2_rettung_sup', m_vermisst:'vid_e2_rettung_wetter', m_sturm:'vid_e2_rettung_wetter',
+        m_rettung:'vid_e2_rettung_sup', m_sturm:'vid_e2_rettung_wetter',
         m_schmuggler:'vid_e2_schleuse_wernsdorf', m_razzia:'vid_e2_hafenstoerung',
         m_umwelt:'vid_e2_umwelt_oelspur', m_beweis:'vid_myst_uebergabe',
-        m_funk:'vid_myst_funksignal', m_streife:'vid_e2_regatta', m_nacht:'vid_einsatz_verfolgung' };
+        m_funk:'vid_m2_boje', m_beweis:'vid_m2_uebergabe', m_vermisst:'vid_m2_geheimer_anleger', m_nacht:'vid_m2_lotse_verschwindet', m_streife:'vid_e2_regatta' };
       var byType = { pursuit:'vid_e2_verfolgung_spree', rescue:'vid_e2_rettung_sup', control:'vid_e2_kontrolle_hausboot',
         smuggler:'vid_e2_schleuse_wernsdorf', eco:'vid_e2_umwelt_oelspur', patrol:'vid_welt_berlin' };
       var id = byId[mission.id] || byType[mission.type] || null;
