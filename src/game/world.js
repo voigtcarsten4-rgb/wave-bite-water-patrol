@@ -6,6 +6,7 @@
 (function (WB) {
   'use strict';
   var M = WB.math;
+  function escFromSave(){ try { var s = WB.Save.data, runs = (s.stats && s.stats.runs) || 0, lvl = s.captainLevel || 1; return Math.min(1, runs / 25 * 0.6 + (lvl - 1) / 20 * 0.4); } catch (e) { return 0; } }
 
   var COCKPIT = 'cockpit_bridge';
   var BG = { bucht: 'loc_mueggelsee', kanal: 'loc_spree', seenplatte: 'loc_dahme', schleuse: 'loc_lock' };
@@ -54,8 +55,11 @@
     // RC3.0 Phase C: Missions-Variation
     this.variant = variant || (WB.Variation ? WB.Variation.roll(mission) : null);
     var V = this.variant;
-    this.distance = mission.distance * ((V && V.distMul) || 1);
-    this._trafficMul = (V && V.trafficMul) || 1;
+    var E = (mission.escalation != null) ? mission.escalation : escFromSave();
+    this.escalation = E;
+    this.distance = mission.distance * ((V && V.distMul) || 1) * (1 + E * 0.22);
+    this._trafficMul = ((V && V.trafficMul) || 1) * (1 + E * 0.6);
+    this._curveAmp = 0.40 * (1 + E * 0.30); this._curveAmp2 = 0.16 * (1 + E * 0.30);
     this._startLane = (V && V.startLane) || 0;
     this._fog = !!(V && V.weather === 'fog');
     if (V && (V.weather === 'storm')) this.storm = true;
@@ -139,7 +143,7 @@
 
     var zRate = speed / 520;
     // FAHRWASSER: rot/grün-Bojengasse, deren Mitte mäandert (Kurven). Spieler faehrt DAZWISCHEN.
-    this._chCenter = 0.40 * Math.sin(this.scroll * 0.0011) + 0.16 * Math.sin(this.scroll * 0.0029 + 1.3);
+    this._chCenter = (this._curveAmp||0.40) * Math.sin(this.scroll * 0.0011) + (this._curveAmp2||0.16) * Math.sin(this.scroll * 0.0029 + 1.3);
     // FAHRWASSER-LERNLOGIK: zwischen den Tonnen (|lane-Mitte|<0.40) = sauberer Kurs.
     this.totalT += dt;
     var _off = Math.abs(this.playerLane - this._chCenter);

@@ -36,6 +36,7 @@
       if (WB.Track) WB.Track.log('mission_start', { mode: this.mode, id: mission.id, type: mission.type });
       var self = this;
       var begin = function () {
+        try { if (WB.Audio) { WB.Audio.unlock(); if (WB.Audio.siren) WB.Audio.siren(); } } catch (e) {}
         WB.Screens.showGame(mission);
         try { if (WB.Captain) WB.Captain.greet(); } catch (e) {}
         try { if (WB.Game.variant && WB.LucyHUD) { var v=WB.Game.variant; setTimeout(function(){ WB.LucyHUD.say('📻 '+v.radio); },600); } } catch (e) {}

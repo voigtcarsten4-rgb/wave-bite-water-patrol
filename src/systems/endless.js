@@ -18,7 +18,10 @@
       var rankIdx = WB.Rank.current().index;
       var pool = WB.data.eventTemplates.filter(function (t) { return (MINRANK[t.type] || 0) <= rankIdx; });
       if (!pool.length) pool = WB.data.eventTemplates.slice();
-      var tpl = M.pick(pool);
+      var self = this, noRep = pool.filter(function (t) { return t.type !== self._lastType; });
+      if (noRep.length) pool = noRep;                       // keine identische Mission direkt hintereinander
+      var tpl = M.pick(pool); this._lastType = tpl.type;
+      var esc = Math.min(1, this.streak * 0.05 + rankIdx * 0.06);  // Eskalation mit Streak + Rang
       var L = WB.data.lucy;
       var diff = 1 + rankIdx * 0.07;
       var dist = rng(tpl.distance);
@@ -26,7 +29,7 @@
       return {
         id: 'live_' + Date.now(), type: tpl.type, title: tpl.title, icon: tpl.icon,
         objective: tpl.objective, regionId: tpl.regionId, distance: dist,
-        timeLimit: tpl.timeLimit ? rng(tpl.timeLimit) : 0, minigame: tpl.minigame,
+        timeLimit: tpl.timeLimit ? Math.round(rng(tpl.timeLimit) * (1 - esc * 0.18)) : 0, minigame: tpl.minigame, escalation: esc,
         briefChar: tpl.char, briefStation: tpl.station, brief: brief, live: true,
         rewardCoins: Math.round((70 + dist * 0.05) * diff) + (tpl.timeLimit ? 40 : 0),
         rewardXp: Math.round((55 + dist * 0.035) * diff), difficulty: (MINRANK[tpl.type] || 0) + 1
@@ -36,6 +39,7 @@
     next: function () {
       if (!this.active) return;
       var ev = this.currentEvent = this.buildEvent();
+      try { if (WB.Audio) { WB.Audio.unlock(); if (WB.Audio.siren) WB.Audio.siren(); } } catch (e) {}
       WB.Screens.showLenaBriefing(ev, function () {
         if (ev.minigame && WB.Minigame) {
           WB.Minigame.play(ev.minigame, null, function (r) {
