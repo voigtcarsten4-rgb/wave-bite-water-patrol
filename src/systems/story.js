@@ -18,8 +18,9 @@
       var runDialogue = function () { WB.Dialogue.play(seq, { station: ch.station }, function () { self.beginDrive(ch); }); };
       // Kapitel-Einspieler: Premium-Hero-Still (Wave-2), per Tap überspringbar.
       var heroUrl = (ch.cine && WB.Assets && WB.Assets.has(ch.cine)) ? WB.Assets.url(ch.cine) : null;
-      if (heroUrl && WB.Cinematic) {
-        WB.Cinematic.play({ kicker: '● KAPITEL ' + (i + 1), title: ch.title, subtitle: '', bgUrl: heroUrl, duration: 3000 }, runDialogue);
+      var vidUrl = (ch.cineVid && WB.Assets && WB.Assets.has(ch.cineVid)) ? WB.Assets.url(ch.cineVid) : null;
+      if ((vidUrl || heroUrl) && WB.Cinematic) {
+        WB.Cinematic.play({ kicker: '● KAPITEL ' + (i + 1), title: ch.title, subtitle: '', bgUrl: heroUrl, videoUrl: vidUrl, duration: vidUrl ? 4000 : 3000 }, runDialogue);
       } else { runDialogue(); }
     },
 

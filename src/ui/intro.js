@@ -161,7 +161,14 @@
 
     var greet = returning ? 'Willkommen zurück' : 'Willkommen an Bord';
     var sub = greet + (lvl >= 5 ? ', Kapitän (Lvl ' + lvl + ')' : ', Kapitän') + '. ' + lena.replace(/^Lena:\s*/,'');
-    return { bg: bg ? (WB.Assets.url(bg)) : null, kicker: kicker, title: title, subtitle: sub, lucy: lucy };
+    var VMAP = { wow_sunrise_einsatz:'vid_welt_mueggelsee', im_steg_mueggelsee:'vid_welt_mueggelsee', loc_mueggelsee:'vid_welt_mueggelsee',
+      wow_berlin_skyline:'vid_welt_berlin', loc_spree:'vid_welt_berlin', loc_spree_day:'vid_welt_berlin',
+      rescue_gewitter:'vid_atm_sturm', chase_gewitter:'vid_atm_sturm', loc_storm:'vid_atm_sturm',
+      myst_lotse_distanz:'vid_myst_lotse', myst_geheimer_hafen:'vid_myst_lotse', char_lotse:'vid_myst_lotse',
+      myst_stroemung_hinweis:'vid_myst_stroemung', myst_geistersignal:'vid_myst_funksignal',
+      chase_finale:'vid_einsatz_verfolgung', chase_nacht:'vid_einsatz_verfolgung', loc_dahme:'vid_welt_dahme', wow_regatta_grosseinsatz:'vid_atm_regatta' };
+    var vid = bg && VMAP[bg] && WB.Assets && WB.Assets.has(VMAP[bg]) ? WB.Assets.url(VMAP[bg]) : null;
+    return { bg: bg ? (WB.Assets.url(bg)) : null, video: vid, kicker: kicker, title: title, subtitle: sub, lucy: lucy };
   }
 
   WB.Intro = {
@@ -305,7 +312,7 @@
         if (WB.Audio) { WB.Audio.unlock(); WB.Audio.radio(); }
         WB.Cinematic.play({
           kicker: ctx.kicker, title: ctx.title, subtitle: ctx.subtitle,
-          bgUrl: ctx.bg, duration: 5200
+          bgUrl: ctx.bg, videoUrl: ctx.video || null, duration: ctx.video ? 5600 : 5200
         }, function () {
           if (ctx.lucy && WB.LucyHUD && WB.LucyHUD.say) { try { WB.LucyHUD.mount(); WB.LucyHUD.say(ctx.lucy, 4200); } catch (e) {} }
           goWordmark();

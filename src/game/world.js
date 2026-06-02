@@ -287,6 +287,23 @@
     var em = ctx.createLinearGradient(0, dt - 26, 0, dt + 8);
     em.addColorStop(0, 'rgba(7,15,26,0)'); em.addColorStop(1, 'rgba(7,15,26,0.55)');
     ctx.fillStyle = em; ctx.fillRect(0, dt - 26, w, 34);
+    // Lebendige Instrumente (subtil): Radar-Sweep links, Funk-Blink rechts
+    var cyc = dt + (h-dt)*0.5, rx = w*0.30, rr = (h-dt)*0.30;
+    ctx.save();
+    ctx.globalAlpha=0.5; ctx.strokeStyle='rgba(90,200,160,0.5)'; ctx.lineWidth=1.2;
+    ctx.beginPath(); ctx.arc(rx, cyc, rr, 0, Math.PI*2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(rx, cyc, rr*0.6, 0, Math.PI*2); ctx.stroke();
+    var ang=(t*1.6)%(Math.PI*2);
+    var sweep=ctx.createConicGradient ? null : null;
+    ctx.globalAlpha=0.55; ctx.strokeStyle='rgba(120,235,180,0.8)';
+    ctx.beginPath(); ctx.moveTo(rx,cyc); ctx.lineTo(rx+Math.cos(ang)*rr, cyc+Math.sin(ang)*rr); ctx.stroke();
+    // ein „Kontakt"-Punkt
+    var cpt=ang+1.1; ctx.fillStyle='rgba(120,235,180,'+(0.3+0.5*Math.abs(Math.sin(t))).toFixed(2)+')';
+    ctx.beginPath(); ctx.arc(rx+Math.cos(cpt)*rr*0.7, cyc+Math.sin(cpt)*rr*0.7, 2.5, 0, Math.PI*2); ctx.fill();
+    // Funk-Blink rechts
+    var blink=(Math.sin(t*4)>0.6)?1:0; ctx.globalAlpha=0.3+0.6*blink; ctx.fillStyle='#ffcaa0';
+    ctx.beginPath(); ctx.arc(w*0.74, dt+(h-dt)*0.32, 4, 0, Math.PI*2); ctx.fill();
+    ctx.restore();
     ctx.fillStyle = 'rgba(201,162,75,0.45)'; ctx.fillRect(0, dt - 2, w, 2);
   };
 
@@ -353,6 +370,27 @@
       ctx.restore();
       shown++;
     }
+    // Ausweich-Assistent: bei akuter Kollision Richtungs-Pfeile + Kollisionslinie
+    var danger=null;
+    for (var d=0; d<this.obstacles.length; d++){ var ob2=this.obstacles[d];
+      if (ob2.z<0.5 && ob2.z>0.05 && Math.abs(ob2.lane-this.playerLane)<(ob2.hitW+0.14)){ if(!danger||ob2.z<danger.z) danger=ob2; } }
+    if (danger){
+      var w2=this.w, vb2=this.viewBottom, cy=vb2-(vb2-this.horizonY)*0.30;
+      var safeLeft = danger.lane >= this.playerLane;       // Objekt rechts -> links ausweichen
+      var sgn = safeLeft ? -1 : 1, dx = w2/2 + sgn*w2*0.20, ddx = w2/2 - sgn*w2*0.16;
+      var pulse=0.55+0.45*Math.sin(danger.phase*3);
+      ctx.save();
+      // grüner Sicher-Pfeil
+      ctx.globalAlpha=0.85; ctx.fillStyle='#5fe39a';
+      ctx.beginPath(); ctx.moveTo(dx-sgn*16, cy-13); ctx.lineTo(dx+sgn*16, cy); ctx.lineTo(dx-sgn*16, cy+13); ctx.closePath(); ctx.fill();
+      // rote Gefahrenseite + Kollisionslinie zum Objekt
+      ctx.globalAlpha=0.4+0.4*pulse; ctx.strokeStyle='#ff4d3d'; ctx.lineWidth=3;
+      var ox=this._projX(danger.lane,danger.z), oy=this._projY(danger.z);
+      ctx.beginPath(); ctx.moveTo(w2/2 - this.playerLane*0, vb2); ctx.lineTo(ox, oy); ctx.stroke();
+      ctx.fillStyle='#ff4d3d'; ctx.globalAlpha=0.5+0.4*pulse;
+      ctx.beginPath(); ctx.moveTo(ddx+sgn*16, cy-12); ctx.lineTo(ddx-sgn*16, cy); ctx.lineTo(ddx+sgn*16, cy+12); ctx.closePath(); ctx.fill();
+      ctx.restore();
+    }
   };
 
   World.prototype.draw = function (ctx, t) {
@@ -401,7 +439,25 @@
     if (this.opp) this.opp.draw(ctx, t);
     this._airLight(ctx, t);
 
-    // Bug-Spray unten mittig (am unteren Rand, „passiert unter dem Bug")
+    // EIGENES BOOT: sichtbarer Bug-Keil + Doppel-Bugwelle (Präsenz/Wasserverdrängung)
+    (function(self){
+      var bx = w/2 - self.playerLane * w * 0.06, by = vb + 6, bw = w * 0.30, bh = (vb-hy) * 0.16;
+      ctx.save();
+      // Rumpf-Bug (dunkler Keil von unten)
+      var hull = ctx.createLinearGradient(0, by-bh, 0, by);
+      hull.addColorStop(0,'rgba(10,22,38,0.0)'); hull.addColorStop(0.5,'rgba(10,22,38,0.55)'); hull.addColorStop(1,'rgba(6,14,26,0.95)');
+      ctx.fillStyle=hull; ctx.beginPath(); ctx.moveTo(bx-bw, by); ctx.lineTo(bx, by-bh); ctx.lineTo(bx+bw, by); ctx.closePath(); ctx.fill();
+      // Gold-Bugstreifen
+      ctx.strokeStyle='rgba(201,162,75,0.5)'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(bx-bw*0.5, by-bh*0.5); ctx.lineTo(bx, by-bh); ctx.lineTo(bx+bw*0.5, by-bh*0.5); ctx.stroke();
+      // Doppel-Bugwelle (Wasserverdrängung), Stärke nach Tempo
+      var spd = Math.min(1, self.curSpeed/240), ww = bw*(0.7+spd*0.5);
+      ctx.globalCompositeOperation='lighter'; ctx.globalAlpha=0.35+spd*0.4;
+      [-1,1].forEach(function(dir){ var g=ctx.createLinearGradient(bx,by-bh*0.4,bx+dir*ww,by+10);
+        g.addColorStop(0,'rgba(255,255,255,0.0)'); g.addColorStop(0.6,'rgba(230,245,255,0.5)'); g.addColorStop(1,'rgba(230,245,255,0)');
+        ctx.strokeStyle=g; ctx.lineWidth=3+spd*4; ctx.beginPath(); ctx.moveTo(bx,by-bh*0.35); ctx.quadraticCurveTo(bx+dir*ww*0.6, by-bh*0.1, bx+dir*ww, by+8+spd*10); ctx.stroke(); });
+      ctx.restore();
+    })(this);
+    // Bug-Spray unten mittig
     var bowY = vb - 4;
     ctx.save(); ctx.globalAlpha = 0.5 + 0.3 * Math.min(1, this.curSpeed/260);
     var spray = ctx.createRadialGradient(w/2, bowY, 4, w/2, bowY, 80);
