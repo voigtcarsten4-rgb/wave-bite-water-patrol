@@ -1,36 +1,42 @@
 /* Wave Bite – Water Patrol · ui/wasserlage.js
- * RC3.0: Wasserlage-Cockpit-Instrument. Kompakte Live-Lage (Ampel/Wetter/Revier/Hinweis) als Bord-Display,
- * verlinkt zur Wasserlage 2.0. Datengetrieben aus WB.LivingWorld. Vollständig fehlergekapselt. */
+ * RC4 Priorität 3: Cockpit-Instrumenten-Cluster (Armaturenbrett) statt externer Box.
+ * Werte aus WB.LivingWorld (Revier-Lage-Simulation des Spiels) – als Bord-Instrumente dargestellt.
+ * Ein einziger dezenter Zugang zur Wasserlage 2.0. Vollständig fehlergekapselt. */
 (function (WB) {
   'use strict';
   var WL_URL = 'https://voigtcarsten4-rgb.github.io/wasserlage/index.html?from=game';
+  var WIND = { klar:[8,'NW'], wolkig:[13,'W'], regen:[19,'SW'], nebel:[6,'N'], gewitter:[31,'NW'], sturm:[34,'W'] };
 
   function lage() {
     var d = null, stro = 50;
     try { d = WB.LivingWorld.day(); stro = WB.LivingWorld.stroemung(); } catch (e) {}
     var wId = d && d.weather ? d.weather.id : 'wolkig';
-    var wLabel = d && d.weather ? (d.weather.label || d.weather.id) : 'wechselhaft';
+    var wLabel = d && d.weather ? (d.weather.label || wId) : 'wechselhaft';
     var wIcon = d && d.weather ? (d.weather.icon || '🌤️') : '🌤️';
-    var spec = d && d.special ? d.special.label : null;
+    var spec = d && d.special ? d.special.label : null, specId = d && d.special ? d.special.id : null;
+    var wind = WIND[wId] || [12, 'W']; var boen = Math.round(wind[0] * 1.45);
     var amp, ampTxt, hint;
-    if (wId === 'gewitter') { amp = 'red'; ampTxt = 'WARNSTUFE ROT'; hint = 'Sturm/Gewitter – nur erfahrene Fahrten.'; }
+    if (wId === 'gewitter' || wId === 'sturm') { amp = 'red'; ampTxt = 'WARNSTUFE ROT'; hint = 'Sturm/Gewitter – nur erfahrene Fahrten.'; }
     else if (wId === 'nebel' || stro >= 72) { amp = 'amber'; ampTxt = 'WARNSTUFE GELB'; hint = (wId === 'nebel' ? 'Dichter Nebel – Sicht beachten.' : 'Starke Strömung gemeldet.'); }
     else { amp = 'green'; ampTxt = 'REVIERE FREI'; hint = 'Gute Bedingungen auf den Revieren.'; }
-    return { amp: amp, ampTxt: ampTxt, wIcon: wIcon, wLabel: wLabel, stro: stro, spec: spec, hint: hint };
+    var schleuse = (specId === 'razzia' || wId === 'gewitter') ? ['red','✖ Störung'] : (stro >= 72 ? ['amber','⚠ Verzögerung'] : ['green','✓ Offen']);
+    var windDir = { N:0, NW:-45, W:-90, SW:-135, S:180 }[wind[1]] || 0;
+    return { amp:amp, ampTxt:ampTxt, wIcon:wIcon, wLabel:wLabel, stro:stro, spec:spec, hint:hint,
+      wind:wind[0], windCard:wind[1], windDir:windDir, boen:boen, schleuse:schleuse };
   }
 
-  function html() {
-    var L = lage();
-    var dot = '<span class="wl-dot ' + L.amp + '"></span>';
-    return '<div class="wl-head"><span class="wl-title">🌊 WASSERLAGE · LIVE</span>' + dot + '</div>'
-      + '<div class="wl-amp ' + L.amp + '">' + L.ampTxt + '</div>'
-      + '<div class="wl-rows">'
-      + '<div class="wl-row"><span>Wetter</span><b>' + L.wIcon + ' ' + L.wLabel + '</b></div>'
-      + '<div class="wl-row"><span>Strömung</span><b>' + L.stro + '%</b></div>'
-      + (L.spec ? '<div class="wl-row"><span>Lage</span><b>' + L.spec + '</b></div>' : '')
-      + '</div>'
-      + '<div class="wl-hint">' + L.hint + '</div>'
-      + '<button class="wl-btn" id="wl-open">🔗 Wasserlage öffnen</button>';
+  function gauge(L) {
+    // Wind-Instrument (Zeiger dreht nach Windrichtung), Strömung-Balken, Ampel, Schleuse
+    return '<div class="wl-inst">'
+      + '<div class="wl-i wl-wind"><div class="wl-dial"><span class="wl-needle" style="transform:rotate(' + L.windDir + 'deg)"></span></div>'
+        + '<div class="wl-i-lbl">WIND</div><div class="wl-i-val">' + L.wind + ' km/h ' + L.windCard + '</div><div class="wl-i-sub">Böen ' + L.boen + '</div></div>'
+      + '<div class="wl-i wl-stro"><div class="wl-i-lbl">STRÖMUNG</div><div class="wl-bar"><span style="width:' + L.stro + '%"></span></div>'
+        + '<div class="wl-i-val">' + L.stro + '%</div></div>'
+      + '<div class="wl-i"><div class="wl-i-lbl">REVIER</div><div class="wl-amp ' + L.amp + '">' + L.ampTxt + '</div>'
+        + '<div class="wl-i-sub">' + L.wIcon + ' ' + L.wLabel + '</div></div>'
+      + '<div class="wl-i"><div class="wl-i-lbl">SCHLEUSE</div><div class="wl-sch ' + L.schleuse[0] + '">' + L.schleuse[1] + '</div>'
+        + (L.spec ? '<div class="wl-i-sub">' + L.spec + '</div>' : '<div class="wl-i-sub">Betrieb normal</div>') + '</div>'
+      + '</div>';
   }
 
   var WL = {
@@ -38,17 +44,18 @@
       try {
         var host = document.getElementById(id || 'wasserlage-cockpit');
         if (!host) return;
-        var fromWL = false; try { fromWL = /[?&]from=wasserlage/.test(location.search); } catch(e){}
-        host.innerHTML = (fromWL ? '<a class="wl-back" id="wl-back" href="https://voigtcarsten4-rgb.github.io/wasserlage/index.html" target="_blank" rel="noopener">← Zurück zur Wasserlage</a>' : '') + html();
-        var bk = document.getElementById('wl-back'); if (bk) bk.onclick = function(){ if (WB.Track) WB.Track.log('return_to_wasserlage'); };
-        var btn = document.getElementById('wl-open');
-        if (btn) btn.onclick = function () {
-          if (WB.Track) WB.Track.log('wasserlage_cockpit_open');
-          try { window.open(WL_URL, '_blank', 'noopener'); } catch (e) { location.href = WL_URL; }
-        };
+        var L = lage();
+        var fromWL = false; try { fromWL = /[?&]from=wasserlage/.test(location.search); } catch (e) {}
+        host.innerHTML = (fromWL ? '<a class="wl-back" id="wl-back" href="https://voigtcarsten4-rgb.github.io/wasserlage/index.html" target="_blank" rel="noopener">← Zurück zur Wasserlage</a>' : '')
+          + '<div class="wl-head"><span class="wl-title">⚓ REVIER-INSTRUMENTE</span><span class="wl-dot ' + L.amp + '"></span></div>'
+          + gauge(L)
+          + '<div class="wl-foot"><span class="wl-hint">' + L.hint + '</span><a class="wl-link" id="wl-open" href="' + WL_URL + '" target="_blank" rel="noopener">🌊 Revierdaten</a></div>';
+        var bk = document.getElementById('wl-back'); if (bk) bk.onclick = function () { if (WB.Track) WB.Track.log('return_to_wasserlage'); };
+        var op = document.getElementById('wl-open'); if (op) op.onclick = function () { if (WB.Track) WB.Track.log('wasserlage_cockpit_open'); };
       } catch (e) {}
     },
-    refresh: function (id) { this.mount(id); }
+    refresh: function (id) { this.mount(id); },
+    lage: lage
   };
   WB.Wasserlage = WL;
 })(window.WB = window.WB || {});
