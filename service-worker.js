@@ -1,13 +1,19 @@
 /* Wave Bite – Captain's Run · service-worker.js
- * App-Shell-Precache → offline spielbar. Stale-While-Revalidate für Updates. */
-var CACHE = 'wavebite-captainsrun-v70';
+ * App-Shell-Precache -> offline spielbar. Stale-While-Revalidate fuer Updates.
+ * (Hinweis: interne Kommentare bewusst ASCII; alle SICHTBAREN Texte liegen in den HTML/JS-Dateien.) */
+var CACHE = 'wavebite-captainsrun-v91';
 
 var ASSETS = [
   '.',
   'index.html',
   'manifest.json',
-  'styles/main.css?v=30',
   'assets/icons/icon.svg',
+  'assets/icons/apple-touch-icon-180.png',
+  'assets/icons/icon-192.png',
+  'assets/icons/icon-512.png',
+  'assets/icons/wave-bite-badge.png',
+  'styles/main.css',
+  'styles/mg-premium.css',
   'src/utils/math.js',
   'src/utils/storage.js',
   'src/data/models.js',
@@ -21,6 +27,7 @@ var ASSETS = [
   'src/data/story.js',
   'src/data/ranks.js',
   'src/data/asset-manifest.js',
+  'src/data/voices.js',
   'src/systems/worldstate.js',
   'src/systems/save.js',
   'src/systems/progression.js',
@@ -41,13 +48,10 @@ var ASSETS = [
   'src/game/opponent.js',
   'src/game/minigame.js',
   'src/game/minigame-modules.js',
-  'src/game/minigame-lock.js',
-  'src/game/minigame-search.js',
   'src/game/obstacle.js',
   'src/game/world.js',
   'src/game/mission.js',
   'src/game/game.js',
-  'src/game/minigame-radar.js',
   'src/ui/news.js',
   'src/ui/lucy.js',
   'src/ui/hud.js',
@@ -55,18 +59,22 @@ var ASSETS = [
   'src/ui/navmap.js',
   'src/ui/screens.js',
   'src/ui/cinematic.js',
+  'src/ui/trailer.js',
+  'src/ui/mission-cinematic.js',
+  'src/ui/revier-lage.js',
+  'src/game/minigame-extra.js',
   'src/ui/dialogue.js',
   'src/ui/intro.js',
   'src/ui/rating.js',
+  'src/ui/skipper.js',
   'src/main.js'
 ];
 
 self.addEventListener('install', function (e) {
   e.waitUntil(
     caches.open(CACHE).then(function (c) {
-      // Resilient: ein einzelnes fehlgeschlagenes Asset darf den Offline-Cache nicht verhindern.
       return Promise.all(ASSETS.map(function (u) {
-        return c.add(u).catch(function () { /* einzelnes Asset übersprungen */ });
+        return c.add(u).catch(function () { /* einzelnes Asset uebersprungen */ });
       }));
     }).then(function () { return self.skipWaiting(); })
   );
@@ -85,4 +93,13 @@ self.addEventListener('fetch', function (e) {
   e.respondWith(
     caches.match(e.request).then(function (cached) {
       var network = fetch(e.request).then(function (res) {
-        if (res && res.status 
+        if (res && res.status === 200 && (res.type === 'basic' || res.type === 'default')) {
+          var copy = res.clone();
+          caches.open(CACHE).then(function (c) { c.put(e.request, copy); });
+        }
+        return res;
+      }).catch(function () { return cached; });
+      return cached || network;
+    })
+  );
+});
