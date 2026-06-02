@@ -21,13 +21,13 @@
           {label:'Sofort Spur suchen', reply:{who:'Lena',portrait:LENA,text:'Forsch. Gut. Aber pass auf - wer das war, ist noch in der Naehe.'}} ] },
         outro:{who:'Lena',portrait:LENA,text:'Sauber. Eine Schleifspur im Wasser führt Richtung Hafen. Wir bleiben dran.'} }),
 
-      ch({ idx:1, cineVid:'vid_m2_funksignal', cine:'myst_funksignal', title:'Funkstoerung am Hafen', icon:'📡', regionId:'bucht', station:'station_radio_room_1',
+      ch({ idx:1, cineVid:'vid_m2_funksignal', cine:'myst_funksignal', title:'Funkstörung am Hafen', icon:'📡', regionId:'bucht', station:'station_radio_room_1',
         distance:1800, timeLimit:0, minigame:'radar', rewardCoins:120, rewardXp:90,
-        intro:[ {who:'Lena',portrait:LENA,text:'Mein Funk rauscht. Jemand stoert gezielt. Ich kriege das Echo nicht sauber.'},
+        intro:[ {who:'Lena',portrait:LENA,text:'Mein Funk rauscht. Jemand stört gezielt. Ich kriege das Echo nicht sauber.'},
                 {who:'Lena',portrait:LENA,text:'Mach erst einen Radar-Scan, bevor du blind reinfaehrst.'} ],
         choice:{ text:'Lena, was vermutest du?', options:[
           {label:'Ablenkungsmanoever?', reply:{who:'Lena',portrait:LENA,text:'Genau mein Gedanke. Sie wollen uns binden, waehrend woanders was laeuft.'}},
-          {label:'Technischer Defekt?', reply:{who:'Lena',portrait:LENA,text:'Schoen waers. Das hier ist Absicht. Augen auf.'}} ] },
+          {label:'Technischer Defekt?', reply:{who:'Lena',portrait:LENA,text:'Schön wär’s. Das hier ist Absicht. Augen auf.'}} ] },
         outro:{who:'Lena',portrait:LENA,text:'Signal lokalisiert. Es kam von einem Sportboot, das gerade ablegt. Notiert.'} }),
 
       ch({ idx:2, cine:'myst_versteckter_anleger', title:'Das verdaechtige Sportboot', icon:'🔍', regionId:'kanal', station:'station_suspicious_boat_1',
@@ -64,7 +64,7 @@
         choice:{ text:'Letzte Worte vor dem Einsatz?', options:[
           {label:'Bin bereit', reply:{who:'Lena',portrait:LENA,text:'Das hoere ich gern. Los.'}},
           {label:'Deckung anfordern', reply:{who:'Lena',portrait:LENA,text:'Unterwegs - aber du bist zuerst da. Mach den Anfang.'}} ] },
-        outro:{who:'Thief',portrait:TH,text:'Du ahnst nicht, für wen ich fahre. Das hier ist groesser als du denkst.'} }),
+        outro:{who:'Thief',portrait:TH,text:'Du ahnst nicht, für wen ich fahre. Das hier ist größer als du denkst.'} }),
 
       ch({ idx:6, cineVid:'vid_m2_schatten_bruecke', cine:'myst_geheimtreffen_steg', title:'Der Schatten unter der Bruecke', icon:'🌑', regionId:'kanal', station:'station_radio_room_1',
         distance:2100, timeLimit:48, minigame:null, rewardCoins:240, rewardXp:170,

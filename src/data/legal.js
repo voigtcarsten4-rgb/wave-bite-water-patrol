@@ -20,15 +20,15 @@
       + 'Inhalte unterliegen dem schweizerischen Urheberrecht. Quelle: wave-bite.com/impressum</p>',
     datenschutz:
       '<h4>Datenschutz</h4>'
-      + '<p>Dieses Spiel ist eine installierbare Web-App (PWA). Es speichert <b>ausschliesslich deinen '
-      + 'Spielfortschritt lokal auf deinem Geraet</b> (localStorage).</p>'
-      + '<p>Es werden <b>keine personenbezogenen Daten an Server uebertragen</b>, keine Tracking-Cookies '
+      + '<p>Dieses Spiel ist eine installierbare Web-App (PWA). Es speichert <b>ausschließlich deinen '
+      + 'Spielfortschritt lokal auf deinem Gerät</b> (localStorage).</p>'
+      + '<p>Es werden <b>keine personenbezogenen Daten an Server übertragen</b>, keine Tracking-Cookies '
       + 'gesetzt und keine Analyse-, Werbe- oder Drittanbieterdienste eingesetzt. Keine Weitergabe an Dritte.</p>'
       + '<p><b>Nutzungsstatistik (nur lokal):</b> Zur Produktverbesserung zählt das Spiel anonyme '
-      + 'Nutzungs-Ereignisse (z. B. Einsatz gestartet/abgeschlossen, Bewertung) <b>ausschliesslich lokal '
-      + 'auf deinem Geraet</b> - ohne Uebertragung. Abschaltbar unter Einstellungen &rarr; Nutzungsstatistik.</p>'
-      + '<p>Du kannst deinen Fortschritt jederzeit unter <b>Einstellungen &rarr; Fortschritt zuruecksetzen</b> '
-      + 'loeschen - damit werden alle lokal gespeicherten Daten entfernt.</p>',
+      + 'Nutzungs-Ereignisse (z. B. Einsatz gestartet/abgeschlossen, Bewertung) <b>ausschließlich lokal '
+      + 'auf deinem Gerät</b> - ohne Übertragung. Abschaltbar unter Einstellungen &rarr; Nutzungsstatistik.</p>'
+      + '<p>Du kannst deinen Fortschritt jederzeit unter <b>Einstellungen &rarr; Fortschritt zurücksetzen</b> '
+      + 'löschen - damit werden alle lokal gespeicherten Daten entfernt.</p>',
     disclaimer:
       '<h4>Fiktion &amp; Markenhinweis</h4>'
       + '<p><b>Wave Bite - Water Patrol</b> ist ein fiktives Unterhaltungsspiel. Die dargestellte '
