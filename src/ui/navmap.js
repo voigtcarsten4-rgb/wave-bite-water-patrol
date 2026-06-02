@@ -20,11 +20,11 @@
     return [path[i][0] + (path[i+1][0]-path[i][0])*k, path[i][1] + (path[i+1][1]-path[i][1])*k];
   }
 
-  var state = { open: true, lastCp: 0, completed: false, devT: 0, opened: false };
+  var state = { open: false, lastCp: 0, completed: false, devT: 0, opened: false };
 
   var NavMap = {
     toggle: function () { state.open = !state.open; var p = $('navmap'); if (p) p.classList.toggle('collapsed', !state.open); },
-    reset: function () { state.lastCp = 0; state.completed = false; state.devT = 0; },
+    reset: function () { state.lastCp = 0; state.completed = false; state.devT = 0; state.open = false; var p = document.getElementById('navmap'); if (p) p.classList.add('collapsed'); },
     openWasserlage: function () {
       try { if (WB.Track) WB.Track.log('nav_map_wasserlage_click'); } catch (e) {}
       try { if (WB.Game && WB.Game.togglePause && WB.Game.state === 'playing') WB.Game.togglePause(); } catch (e) {}

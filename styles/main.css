@@ -785,5 +785,9 @@ body {
 .nav-wl{ display:block; width:100%; margin-top:7px; padding:7px; border-radius:9px; border:1px solid rgba(201,162,75,.5);
   background:linear-gradient(180deg,#C9A24B,#A9842F); color:#10243f; font-weight:800; font-size:11px; cursor:pointer; }
 .navmap.collapsed #navmap-cv, .navmap.collapsed .nav-info, .navmap.collapsed .nav-wl{ display:none; }
-.navmap.collapsed{ width:auto; }
-@media (max-width:560px){ .navmap{ top:58px; right:6px; width:128px; padding:6px; } .navmap.collapsed{ width:auto; } #navmap-cv{ } }
+.navmap.collapsed{ width:auto; padding:5px 8px; background:rgba(10,28,48,.6); }
+.navmap.collapsed .nav-head{ margin:0; }
+.navmap.collapsed .nav-ttl::after{ content:' ▸'; color:#E7CE8B; }
+@media (max-width:560px){ .navmap{ top:58px; right:6px; width:128px; padding:6px; } .navmap.collapsed{ width:auto; padding:5px 8px; background:rgba(10,28,48,.6); }
+.navmap.collapsed .nav-head{ margin:0; }
+.navmap.collapsed .nav-ttl::after{ content:' ▸'; color:#E7CE8B; } #navmap-cv{ } }
