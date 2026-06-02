@@ -164,19 +164,24 @@
       this.obstacles.push(new WB.Obstacle('buoy_g', M.clamp(c + half, -0.9, 0.9), 1.04));  // Steuerbord grün rechts
       this._chT = M.clamp(1.5 - this.region.difficulty * 0.05, 1.0, 1.6);
     }
-    // Verkehr/Hindernisse (etwas seltener, damit die Gasse lesbar bleibt)
+    // Verkehr/Hindernisse (seltener + neben der Rinne -> keine Objektflut, Gasse bleibt lesbar)
     this.spawnTimer -= dt;
-    var base = 1.05 - this.region.difficulty * 0.07;
-    if (this.spawnTimer <= 0) { if (this._elapsed > 6) this._spawn(); if (this._elapsed > 11 && Math.random() < 0.22 * this._trafficMul) this._spawn(); this.spawnTimer = M.clamp((base + M.rand(-0.12, 0.4)) / (this._trafficMul || 1), 0.34, 1.7); }
+    var base = 1.30 - this.region.difficulty * 0.07;
+    if (this.spawnTimer <= 0) { if (this._elapsed > 6) this._spawn(); if (this._elapsed > 13 && Math.random() < 0.13 * this._trafficMul) this._spawn(); this.spawnTimer = M.clamp((base + M.rand(-0.10, 0.5)) / (this._trafficMul || 1), 0.5, 2.1); }
 
+    // Kollision: Kreuzen der Kamera-Ebene (z passiert Zhit) -> KEIN Durchtunneln bei Tempo/Boost/niedriger FPS.
+    var Zhit = 0.10;
     for (var i = this.obstacles.length - 1; i >= 0; i--) {
       var o = this.obstacles[i];
+      var pz = o.z;
       o.update(dt, zRate);
-      if (!o.counted && o.z <= 0.14 && o.z > -0.02 && Math.abs(o.lane - this.playerLane) < (o.hitW + 0.05)) {
+      if (!o.counted && pz > Zhit && o.z <= Zhit) {
         o.counted = true;
-        if (this.boat.hit(o.kind === 'swimmer' ? 'buoy' : o.kind)) {
-          this.collisions += 1; this.shake = Math.min(1, this.shake + 0.85); this.flash = 0.6;
-          if (this.boat.integrity <= 0) this.failed = true;
+        if (Math.abs(o.lane - this.playerLane) < (o.hitW + 0.06)) {
+          if (this.boat.hit(o.kind === 'swimmer' ? 'buoy' : o.kind)) {
+            this.collisions += 1; this.shake = Math.min(1, this.shake + 0.85); this.flash = 0.6;
+            if (this.boat.integrity <= 0) this.failed = true;
+          }
         }
       }
       if (o.dead) this.obstacles.splice(i, 1);
@@ -357,44 +362,69 @@
     ctx.fillStyle = lg; ctx.fillRect(0, 0, w, hy * 1.8); ctx.restore();
   };
 
-  // ---------- Cockpit-Vordergrund (Scheibenrahmen, A-Säulen, Armatur, Glasreflex) ----------
+  // ---------- Cockpit-Vordergrund: FESTE Frontscheibe (3 Scheiben, A-Holme, Mittelstege, Dach) + Armatur ----------
   World.prototype._drawCockpit = function (ctx, t) {
     var w = this.w, h = this.h, dt = this.dashTop, hy = this.horizonY;
-    var headerH = Math.round(h * 0.055);
-    var pillarW = Math.round(w * 0.075);
-    var navy = '#0a1726';
+    var roofH = Math.round(h * 0.05);
+    var yTop = roofH, yBot = dt;
+    var pOut = Math.round(w * 0.10);     // A-Holm-Breite (unten)
+    var mW   = Math.round(w * 0.030);    // Mittelsteg-Breite
+    var rake = Math.round(w * 0.030);    // Einzug nach oben (geneigter Rahmen)
+    var steel = '#1d3a58';
+    var innerL = pOut, innerR = w - pOut, innerW = innerR - innerL;
+    var b1 = innerL + innerW * 0.30, b2 = innerL + innerW * 0.70;  // 3 Scheiben: links 30% / mitte 40% / rechts 30%
 
-    // A-Säulen links/rechts (Scheibenrahmen)
-    var pl = ctx.createLinearGradient(0, 0, pillarW, 0);
-    pl.addColorStop(0, navy); pl.addColorStop(0.7, 'rgba(12,26,42,0.92)'); pl.addColorStop(1, 'rgba(12,26,42,0)');
-    ctx.fillStyle = pl; ctx.fillRect(0, 0, pillarW, dt);
-    var pr = ctx.createLinearGradient(w, 0, w - pillarW, 0);
-    pr.addColorStop(0, navy); pr.addColorStop(0.7, 'rgba(12,26,42,0.92)'); pr.addColorStop(1, 'rgba(12,26,42,0)');
-    ctx.fillStyle = pr; ctx.fillRect(w - pillarW, 0, pillarW, dt);
-    // Dachholm oben
-    var hd = ctx.createLinearGradient(0, 0, 0, headerH);
-    hd.addColorStop(0, navy); hd.addColorStop(0.6, 'rgba(12,26,42,0.9)'); hd.addColorStop(1, 'rgba(12,26,42,0)');
-    ctx.fillStyle = hd; ctx.fillRect(0, 0, w, headerH);
-    // dünne Gold-Kante am Scheibenrahmen
-    ctx.strokeStyle = 'rgba(201,162,75,0.30)'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(pillarW, headerH); ctx.lineTo(pillarW, dt); ctx.moveTo(w - pillarW, headerH); ctx.lineTo(w - pillarW, dt); ctx.moveTo(pillarW, headerH); ctx.lineTo(w - pillarW, headerH); ctx.stroke();
-
-    // Glasreflex (diagonaler Schein über der Scheibe)
-    ctx.save(); ctx.globalCompositeOperation = 'screen';
-    var gl = ctx.createLinearGradient(0, headerH, w * 0.8, dt);
-    gl.addColorStop(0, 'rgba(255,255,255,0.0)'); gl.addColorStop(0.45, 'rgba(200,225,255,0.06)'); gl.addColorStop(0.5, 'rgba(255,255,255,0.10)'); gl.addColorStop(0.56, 'rgba(200,225,255,0.04)'); gl.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.fillStyle = gl; ctx.fillRect(pillarW, headerH, w - 2 * pillarW, dt - headerH);
-    ctx.restore();
+    // tubuläre Rahmen-Säule als Trapez mit Quergradient (3D) + Gold-Kanten
+    function pillar(botCx, botHalf, topCx, topHalf) {
+      var g = ctx.createLinearGradient(botCx - botHalf, 0, botCx + botHalf, 0);
+      g.addColorStop(0, '#050d18'); g.addColorStop(0.5, steel); g.addColorStop(1, '#050d18');
+      ctx.beginPath();
+      ctx.moveTo(botCx - botHalf, yBot); ctx.lineTo(botCx + botHalf, yBot);
+      ctx.lineTo(topCx + topHalf, yTop); ctx.lineTo(topCx - topHalf, yTop); ctx.closePath();
+      ctx.fillStyle = g; ctx.fill();
+      ctx.strokeStyle = 'rgba(201,162,75,0.55)'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(botCx - botHalf, yBot); ctx.lineTo(topCx - topHalf, yTop);
+      ctx.moveTo(botCx + botHalf, yBot); ctx.lineTo(topCx + topHalf, yTop); ctx.stroke();
+    }
+    // Glasreflex je Scheibe (diagonaler Schein, nur in der Fensterfläche)
+    function paneGlare(x0, x1) {
+      if (x1 <= x0) return;
+      ctx.save(); ctx.beginPath(); ctx.rect(x0, yTop, x1 - x0, yBot - yTop); ctx.clip();
+      ctx.globalCompositeOperation = 'screen';
+      var g = ctx.createLinearGradient(x0, yTop, x1, yBot);
+      g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.46, 'rgba(200,225,255,0.05)');
+      g.addColorStop(0.5, 'rgba(255,255,255,0.10)'); g.addColorStop(0.55, 'rgba(200,225,255,0.03)');
+      g.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = g; ctx.fillRect(x0, yTop, x1 - x0, yBot - yTop);
+      ctx.restore();
+    }
+    paneGlare(innerL, b1 - mW/2); paneGlare(b1 + mW/2, b2 - mW/2); paneGlare(b2 + mW/2, innerR);
 
     // Blaulicht-Reflexion auf der Scheibe
     var bl = document.getElementById('bluelight');
     if (bl && bl.classList.contains('on')) {
       var pulse = 0.5 + 0.5 * Math.sin(t * 8);
       ctx.save(); ctx.globalCompositeOperation = 'lighter';
-      var bgGlass = ctx.createLinearGradient(0, headerH, 0, dt * 0.7);
-      bgGlass.addColorStop(0, 'rgba(70,150,255,' + (0.06 + pulse * 0.10).toFixed(2) + ')'); bgGlass.addColorStop(1, 'rgba(70,150,255,0)');
-      ctx.fillStyle = bgGlass; ctx.fillRect(pillarW, headerH, w - 2 * pillarW, dt * 0.7); ctx.restore();
+      var bgGlass = ctx.createLinearGradient(0, yTop, 0, dt * 0.7);
+      bgGlass.addColorStop(0, 'rgba(70,150,255,' + (0.05 + pulse * 0.10).toFixed(2) + ')'); bgGlass.addColorStop(1, 'rgba(70,150,255,0)');
+      ctx.fillStyle = bgGlass; ctx.fillRect(innerL, yTop, innerW, dt * 0.7); ctx.restore();
     }
+
+    // Dachholm
+    var rg = ctx.createLinearGradient(0, 0, 0, roofH);
+    rg.addColorStop(0, '#06101c'); rg.addColorStop(1, steel);
+    ctx.fillStyle = rg; ctx.fillRect(0, 0, w, roofH);
+    ctx.strokeStyle = 'rgba(201,162,75,0.55)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(0, roofH); ctx.lineTo(w, roofH); ctx.stroke();
+    // A-Holme (außen) + Mittelstege (nach oben leicht eingezogen)
+    pillar(pOut/2, pOut/2, pOut/2 + rake, pOut/2 * 0.78);
+    pillar(w - pOut/2, pOut/2, w - pOut/2 - rake, pOut/2 * 0.78);
+    pillar(b1, mW/2, b1 + rake * 0.35, mW/2 * 0.85);
+    pillar(b2, mW/2, b2 - rake * 0.35, mW/2 * 0.85);
+    // unterer Scheiben-Abschluss (Cowl-Kante)
+    var cowl = ctx.createLinearGradient(0, dt - 18, 0, dt + 4);
+    cowl.addColorStop(0, 'rgba(6,14,24,0)'); cowl.addColorStop(1, 'rgba(6,14,24,0.7)');
+    ctx.fillStyle = cowl; ctx.fillRect(0, dt - 18, w, 22);
 
     // Armaturenbrett (cockpit_bridge) als Vordergrund-Konsole unten
     var dash = WB.Assets && WB.Assets.get(this.cockpitId);
@@ -437,6 +467,53 @@
     ctx.beginPath(); ctx.arc(w*0.74, dt+(h-dt)*0.32, 4, 0, Math.PI*2); ctx.fill();
     ctx.restore();
     ctx.fillStyle = 'rgba(201,162,75,0.45)'; ctx.fillRect(0, dt - 2, w, 2);
+  };
+
+  // EIGENES BOOT als fester Vordergrund: Bug/Vorschiff (Deck, Reling, Mittelnaht, Navlicht) + Bugwelle/Gischt.
+  World.prototype._drawBow = function (ctx, t) {
+    var w = this.w, vb = this.viewBottom, hy = this.horizonY, dt = this.dashTop;
+    var spd = Math.min(1, this.curSpeed / 240);
+    var cx = w / 2 - this.playerLane * w * 0.05 + Math.sin(t * 1.1) * 2;
+    var baseY = dt + 2;
+    var tipY = dt - (dt - hy) * 0.34;
+    var halfB = w * 0.30;
+    var deckTipY = tipY + (baseY - tipY) * 0.16;
+
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.4 + spd * 0.45;
+    var spray = ctx.createRadialGradient(cx, tipY + 6, 3, cx, tipY + 6, 70 + spd * 50);
+    spray.addColorStop(0, 'rgba(255,255,255,0.6)'); spray.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = spray; ctx.beginPath(); ctx.ellipse(cx + Math.sin(t*8)*3, tipY + 8, 70 + spd*44, 22 + spd*14, 0, 0, Math.PI*2); ctx.fill();
+    ctx.globalAlpha = 0.3 + spd * 0.4;
+    [-1, 1].forEach(function (d) {
+      var g = ctx.createLinearGradient(cx, tipY, cx + d * (halfB + 60), baseY + 10);
+      g.addColorStop(0, 'rgba(230,245,255,0)'); g.addColorStop(0.5, 'rgba(230,245,255,0.5)'); g.addColorStop(1, 'rgba(230,245,255,0)');
+      ctx.strokeStyle = g; ctx.lineWidth = 3 + spd * 5;
+      ctx.beginPath(); ctx.moveTo(cx, tipY + 4); ctx.quadraticCurveTo(cx + d * halfB * 0.8, baseY - 30, cx + d * (halfB + 50), baseY + 8); ctx.stroke();
+    });
+    ctx.restore();
+
+    ctx.save();
+    var hull = ctx.createLinearGradient(0, tipY, 0, baseY);
+    hull.addColorStop(0, '#0c2238'); hull.addColorStop(1, '#05101d');
+    ctx.fillStyle = hull;
+    ctx.beginPath(); ctx.moveTo(cx - halfB, baseY); ctx.lineTo(cx, tipY); ctx.lineTo(cx + halfB, baseY); ctx.closePath(); ctx.fill();
+    var inset = halfB * 0.74;
+    var deck = ctx.createLinearGradient(0, deckTipY, 0, baseY);
+    deck.addColorStop(0, 'rgba(238,232,214,0.96)'); deck.addColorStop(1, 'rgba(206,198,178,0.95)');
+    ctx.fillStyle = deck;
+    ctx.beginPath(); ctx.moveTo(cx - inset, baseY); ctx.lineTo(cx, deckTipY); ctx.lineTo(cx + inset, baseY); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = '#C9A24B'; ctx.lineWidth = 2.4;
+    ctx.beginPath(); ctx.moveTo(cx, deckTipY); ctx.lineTo(cx, baseY); ctx.stroke();
+    ctx.strokeStyle = 'rgba(201,162,75,0.85)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(cx - halfB, baseY); ctx.lineTo(cx, tipY); ctx.lineTo(cx + halfB, baseY); ctx.stroke();
+    ctx.strokeStyle = 'rgba(245,240,225,0.5)'; ctx.lineWidth = 1.5;
+    [-0.55, 0.55].forEach(function (f) {
+      ctx.beginPath(); ctx.moveTo(cx + f * inset, baseY - (baseY - deckTipY) * 0.30); ctx.lineTo(cx + f * inset * 0.55, deckTipY + (baseY - deckTipY) * 0.10); ctx.stroke();
+    });
+    var nav = 0.5 + 0.5 * Math.sin(t * 4);
+    ctx.fillStyle = 'rgba(120,235,180,' + (0.5 + nav * 0.5).toFixed(2) + ')';
+    ctx.beginPath(); ctx.arc(cx, deckTipY + 2, 3.2, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
   };
 
   // Sicherer Fahrkorridor: zwei dezente grüne Linien + kleine Pfeile entlang der aktuellen Spur.
@@ -579,32 +656,7 @@
     if (this.opp) this.opp.draw(ctx, t);
     this._airLight(ctx, t);
 
-    // EIGENES BOOT: sichtbarer Bug-Keil + Doppel-Bugwelle (Präsenz/Wasserverdrängung)
-    (function(self){
-      var bx = w/2 - self.playerLane * w * 0.06, by = vb + 6, bw = w * 0.34, bh = (vb-hy) * 0.19;
-      ctx.save();
-      // Rumpf-Bug (dunkler Keil von unten)
-      var hull = ctx.createLinearGradient(0, by-bh, 0, by);
-      hull.addColorStop(0,'rgba(10,22,38,0.0)'); hull.addColorStop(0.5,'rgba(10,22,38,0.55)'); hull.addColorStop(1,'rgba(6,14,26,0.95)');
-      ctx.fillStyle=hull; ctx.beginPath(); ctx.moveTo(bx-bw, by); ctx.lineTo(bx, by-bh); ctx.lineTo(bx+bw, by); ctx.closePath(); ctx.fill();
-      // Gold-Bugstreifen
-      ctx.strokeStyle='rgba(201,162,75,0.5)'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(bx-bw*0.5, by-bh*0.5); ctx.lineTo(bx, by-bh); ctx.lineTo(bx+bw*0.5, by-bh*0.5); ctx.stroke();
-      // Doppel-Bugwelle (Wasserverdrängung), Stärke nach Tempo
-      var spd = Math.min(1, self.curSpeed/240), ww = bw*(0.7+spd*0.5);
-      ctx.globalCompositeOperation='lighter'; ctx.globalAlpha=0.35+spd*0.4;
-      [-1,1].forEach(function(dir){ var g=ctx.createLinearGradient(bx,by-bh*0.4,bx+dir*ww,by+10);
-        g.addColorStop(0,'rgba(255,255,255,0.0)'); g.addColorStop(0.6,'rgba(230,245,255,0.5)'); g.addColorStop(1,'rgba(230,245,255,0)');
-        ctx.strokeStyle=g; ctx.lineWidth=3+spd*4; ctx.beginPath(); ctx.moveTo(bx,by-bh*0.35); ctx.quadraticCurveTo(bx+dir*ww*0.6, by-bh*0.1, bx+dir*ww, by+8+spd*10); ctx.stroke(); });
-      ctx.restore();
-    })(this);
-    // Bug-Spray unten mittig
-    var bowY = vb - 4;
-    ctx.save(); ctx.globalAlpha = 0.5 + 0.3 * Math.min(1, this.curSpeed/260);
-    var spray = ctx.createRadialGradient(w/2, bowY, 4, w/2, bowY, 80);
-    spray.addColorStop(0,'rgba(255,255,255,0.5)'); spray.addColorStop(1,'rgba(255,255,255,0)');
-    ctx.fillStyle = spray; ctx.beginPath(); ctx.ellipse(w/2 + Math.sin(t*8)*4, bowY, 72, 26, 0, 0, Math.PI*2); ctx.fill();
-    ctx.restore();
-
+    // (Eigenes Boot / Bug wird als FIXER Vordergrund nach dem Welt-Restore gezeichnet -> _drawBow)
     if (this.boat.boosting) {
       var bv = ctx.createRadialGradient(w/2, vb*0.5, vb*0.2, w/2, vb*0.5, vb*0.95);
       bv.addColorStop(0,'rgba(201,162,75,0)'); bv.addColorStop(1,'rgba(201,162,75,0.2)');
@@ -612,6 +664,9 @@
     }
     if (this.flash > 0) { ctx.save(); ctx.globalCompositeOperation='lighter'; ctx.fillStyle='rgba(201,70,47,'+(this.flash*0.5).toFixed(3)+')'; ctx.fillRect(-w*0.2,-h*0.12,w*1.4,vb+h*0.24); ctx.restore(); }
     ctx.restore(); // Ende Welt-Rotation/Clip
+
+    // ---------- EIGENES BOOT (fixer Vordergrund – rollt NICHT mit der Welt) ----------
+    this._drawBow(ctx, t);
 
     // ---------- Tageszeit-Farbwelt über der Welt ----------
     var hr = new Date().getHours(), tint;
