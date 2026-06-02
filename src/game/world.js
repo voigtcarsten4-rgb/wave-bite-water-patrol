@@ -116,6 +116,9 @@
 
   World.prototype.update = function (dt, input) {
     var speed = this.boat.forwardSpeed(input);
+    this._elapsed = (this._elapsed || 0) + dt;
+    var _ramp = Math.min(1, 0.55 + this._elapsed / 7 * 0.45);   // faires Start-Tempo: 55% -> 100% in 7s
+    speed *= _ramp;
     this.curSpeed = speed;
     this.boostT = (this.boostT||0) + (this.boat.boosting?dt:0);
     this._spdSum = (this._spdSum||0) + speed*dt;  // fuer Kapitaensprofil (Ø-Tempo)
@@ -136,11 +139,11 @@
 
     var zRate = speed / 520;
     // FAHRWASSER: rot/grün-Bojengasse, deren Mitte mäandert (Kurven). Spieler faehrt DAZWISCHEN.
-    this._chCenter = 0.34 * Math.sin(this.scroll * 0.0011) + 0.14 * Math.sin(this.scroll * 0.0029 + 1.3);
+    this._chCenter = 0.40 * Math.sin(this.scroll * 0.0011) + 0.16 * Math.sin(this.scroll * 0.0029 + 1.3);
     // FAHRWASSER-LERNLOGIK: zwischen den Tonnen (|lane-Mitte|<0.40) = sauberer Kurs.
     this.totalT += dt;
     var _off = Math.abs(this.playerLane - this._chCenter);
-    this.inChannel = _off < 0.40;
+    this.inChannel = _off < 0.56;
     if (this.inChannel) { this.cleanT += dt; this.offT = Math.max(0, this.offT - dt * 0.6); }
     else {
       this.offT += dt; this._offWarn -= dt;
@@ -152,15 +155,15 @@
     }
     this._chT = (this._chT == null ? 0 : this._chT) - dt;
     if (this._chT <= 0) {
-      var c = this._chCenter, half = 0.40;
+      var c = this._chCenter, half = 0.56;
       this.obstacles.push(new WB.Obstacle('buoy',  M.clamp(c - half, -0.9, 0.9), 1.04));   // Backbord rot links
       this.obstacles.push(new WB.Obstacle('buoy_g', M.clamp(c + half, -0.9, 0.9), 1.04));  // Steuerbord grün rechts
-      this._chT = M.clamp(1.05 - this.region.difficulty * 0.05, 0.6, 1.1);
+      this._chT = M.clamp(1.5 - this.region.difficulty * 0.05, 1.0, 1.6);
     }
     // Verkehr/Hindernisse (etwas seltener, damit die Gasse lesbar bleibt)
     this.spawnTimer -= dt;
     var base = 1.05 - this.region.difficulty * 0.07;
-    if (this.spawnTimer <= 0) { this._spawn(); if (Math.random() < 0.22 * this._trafficMul) this._spawn(); this.spawnTimer = M.clamp((base + M.rand(-0.12, 0.4)) / (this._trafficMul || 1), 0.32, 1.6); }
+    if (this.spawnTimer <= 0) { if (this._elapsed > 6) this._spawn(); if (this._elapsed > 11 && Math.random() < 0.22 * this._trafficMul) this._spawn(); this.spawnTimer = M.clamp((base + M.rand(-0.12, 0.4)) / (this._trafficMul || 1), 0.34, 1.7); }
 
     for (var i = this.obstacles.length - 1; i >= 0; i--) {
       var o = this.obstacles[i];
@@ -438,12 +441,20 @@
     var lane = this.playerLane; var cc = this._chCenter || 0;
     function projX(self, ln, near){ return near ? (w/2 + ln*self._laneHalf(0) - lane*w*0.46) : (w/2 + ln*0.28*self._laneHalf(1) - lane*w*0.12); }
     ctx.save();
+    // breiter Korridor passend zur Fahrrinne (Tonnen bei cc±0.56)
     var grd = ctx.createLinearGradient(0, mid, 0, vb);
-    grd.addColorStop(0, 'rgba(90,220,160,0.0)'); grd.addColorStop(1, 'rgba(90,220,160,0.30)');
-    ctx.strokeStyle = grd; ctx.lineWidth = 2.5;
-    [cc-0.22, cc+0.22].forEach(function(off){
+    grd.addColorStop(0, 'rgba(90,220,170,0.0)'); grd.addColorStop(1, 'rgba(90,220,170,0.40)');
+    ctx.strokeStyle = grd; ctx.lineWidth = 3;
+    [cc-0.34, cc+0.34].forEach(function(off){
       ctx.beginPath(); ctx.moveTo(projX(this, off, true), vb); ctx.lineTo(projX(this, off, false), mid); ctx.stroke();
     }, this);
+    // dezente Neon-Leitlinie in der Mitte (gestrichelt, HUD-Stil) -> "hier fahren"
+    ctx.save(); ctx.setLineDash([10, 12]); ctx.lineDashOffset = -(this.scroll * 0.05) % 22;
+    var ng = ctx.createLinearGradient(0, mid, 0, vb);
+    ng.addColorStop(0, 'rgba(120,235,200,0.0)'); ng.addColorStop(1, 'rgba(150,245,210,0.55)');
+    ctx.strokeStyle = ng; ctx.lineWidth = 2.2; ctx.shadowColor = 'rgba(120,235,200,0.8)'; ctx.shadowBlur = 6;
+    ctx.beginPath(); ctx.moveTo(projX(this, cc, true), vb); ctx.lineTo(projX(this, cc, false), mid); ctx.stroke();
+    ctx.restore();
     // Richtungspfeile (scrollen nach unten = Fahrtgefühl)
     ctx.fillStyle = 'rgba(120,235,180,0.5)';
     for (var i = 0; i < 3; i++) {
@@ -566,7 +577,7 @@
 
     // EIGENES BOOT: sichtbarer Bug-Keil + Doppel-Bugwelle (Präsenz/Wasserverdrängung)
     (function(self){
-      var bx = w/2 - self.playerLane * w * 0.06, by = vb + 6, bw = w * 0.30, bh = (vb-hy) * 0.16;
+      var bx = w/2 - self.playerLane * w * 0.06, by = vb + 6, bw = w * 0.34, bh = (vb-hy) * 0.19;
       ctx.save();
       // Rumpf-Bug (dunkler Keil von unten)
       var hull = ctx.createLinearGradient(0, by-bh, 0, by);
