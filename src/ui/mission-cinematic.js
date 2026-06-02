@@ -165,7 +165,11 @@
     }
   }
 
-  function startGameplay(){
+  // Cinematic-Mission -> echte Spiel-Mission (IDs aus WB.data.missions)
+  var REAL_ID={1:'m_sturm',2:'m_rettung',3:'m_verfolgung',4:'m_nacht',5:'m_schmuggler',6:'m_speed',7:'m_kontrolle',8:'m_diebstahl',9:'m_vermisst',10:'m_streife'};
+  function startGameplay(m){
+    var rid = m && REAL_ID[m.id];
+    if (rid && WB.Game && WB.Game.start) { try { WB.Game.start(rid); return; } catch(e){} }
     var qs=document.getElementById('btn-quickstart'); if(qs) qs.click();
   }
 
@@ -178,7 +182,7 @@
     MISSIONS.forEach(function(m){
       var btn=el('button','mc-mcard');
       btn.innerHTML='Mission '+(m.id<10?'0':'')+m.id+' · '+m.name+'<small>Revier '+m.region+(m.gap?' · Video-Lücke':'')+'</small>';
-      btn.onclick=function(){ document.body.removeChild(ov); playIntro(m, startGameplay); };
+      btn.onclick=function(){ document.body.removeChild(ov); playIntro(m, function(){ startGameplay(m); }); };
       grid.appendChild(btn);
     });
     box.appendChild(grid);
@@ -188,14 +192,41 @@
     document.body.appendChild(ov);
   }
 
-  WB.MissionCinematic = { playIntro: playIntro, openPicker: openPicker, missions: MISSIONS };
+  // KINO-HUB: ein Menüpunkt mit Tabs (Promo-Trailer / Einsätze) – bündelt Trailer + Einsatz-Kino.
+  function openHub(tab){
+    ensureStyle();
+    var ov=el('div','mc-pick'), box=el('div','mc-pbox');
+    var h=el('h3'); h.textContent='🎬 Wave Bite Kino'; box.appendChild(h);
+    var tabs=el('div'); tabs.style.cssText='display:flex;gap:8px;justify-content:center;margin:6px 0 12px';
+    var tA=el('button'), tB=el('button'); tA.textContent='Promo-Trailer'; tB.textContent='Einsätze';
+    function styleTab(b,on){ b.style.cssText='padding:8px 16px;border-radius:9px;border:1px solid rgba(201,162,75,'+(on?'0.8':'0.25')+');background:'+(on?'rgba(201,162,75,.18)':'transparent')+';color:#eaf2fb;font-weight:700;cursor:pointer'; }
+    tabs.appendChild(tA); tabs.appendChild(tB); box.appendChild(tabs);
+    var body=el('div'); box.appendChild(body);
+    function render(t){
+      styleTab(tA,t==='trailer'); styleTab(tB,t!=='trailer');
+      body.innerHTML=''; var grid=el('div','mc-grid');
+      if(t==='trailer' && WB.Trailer && WB.Trailer.list){
+        WB.Trailer.list.forEach(function(tr){ var b=el('button','mc-mcard'); b.innerHTML=tr.name+'<small>Promo-Sequenz · Schnitte/Funktext</small>'; b.onclick=function(){ if(ov.parentNode)document.body.removeChild(ov); WB.Trailer.play(tr); }; grid.appendChild(b); });
+      } else {
+        MISSIONS.forEach(function(m){ var b=el('button','mc-mcard'); b.innerHTML='Mission '+(m.id<10?'0':'')+m.id+' · '+m.name+'<small>Revier '+m.region+(m.gap?' · Video-Lücke':'')+'</small>'; b.onclick=function(){ if(ov.parentNode)document.body.removeChild(ov); playIntro(m, function(){ startGameplay(m); }); }; grid.appendChild(b); });
+      }
+      body.appendChild(grid);
+    }
+    tA.onclick=function(){ render('trailer'); }; tB.onclick=function(){ render('missionen'); };
+    var c=el('button','mc-close'); c.textContent='Schließen'; c.onclick=function(){ if(ov.parentNode)document.body.removeChild(ov); }; box.appendChild(c);
+    ov.appendChild(box); ov.addEventListener('click',function(e){ if(e.target===ov&&ov.parentNode)document.body.removeChild(ov); });
+    document.body.appendChild(ov); render(tab||'missionen');
+  }
 
-  // Menü-Button "🎬 Einsatz-Kino" additiv injizieren (kein Eingriff in bestehende Screens).
+  WB.MissionCinematic = { playIntro: playIntro, openPicker: openPicker, openHub: openHub, missions: MISSIONS };
+
+  // Ein Menü-Button "🎬 Kino"; alten separaten Trailer-Button ausblenden (jetzt im Hub).
   function injectBtn(){
-    var grid=document.querySelector('.menu-grid');
-    if(!grid || document.getElementById('btn-einsatzkino')) return;
-    var b=document.createElement('button'); b.id='btn-einsatzkino'; b.className='btn btn-line'; b.textContent='🎬 Einsatz-Kino';
-    b.addEventListener('click', function(){ openPicker(); });
+    var grid=document.querySelector('.menu-grid'); if(!grid) return;
+    var tb=document.getElementById('btn-trailer'); if(tb) tb.style.display='none';
+    if(document.getElementById('btn-kino')) return;
+    var b=document.createElement('button'); b.id='btn-kino'; b.className='btn btn-line'; b.textContent='🎬 Kino';
+    b.addEventListener('click', function(){ openHub('missionen'); });
     grid.appendChild(b);
   }
   if (document.readyState!=='loading') injectBtn();
