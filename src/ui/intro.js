@@ -187,7 +187,7 @@
     function bail(){ if(done) return; done=true; clear(); el.classList.remove('show'); el.style.opacity=''; el.style.transition=''; el.innerHTML=''; if(onMissing) onMissing(); }
     function finish(){ if(done) return; done=true; clear(); el.onclick=null; el.style.transition='opacity .6s ease'; el.style.opacity='0';
       setTimeout(function(){ el.classList.remove('show'); el.style.opacity=''; el.style.transition=''; el.innerHTML=''; if(onEnd) onEnd(); }, 640); }
-    el.innerHTML = '<div class="intro-stage" style="background:#03070e">'
+    el.innerHTML = '<div class="intro-stage film" style="background:#03070e">'
       + '<video id="wb-film" class="intro-vid" autoplay muted playsinline preload="auto" style="opacity:0;transition:opacity .9s ease"></video>'
       + '<div class="intro-grade"></div><div class="cine-bar top"></div><div class="cine-bar bottom"></div>'
       + '<button id="wb-film-skip" style="position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:14px;z-index:7;padding:9px 16px;border-radius:22px;border:1px solid rgba(255,255,255,.35);background:rgba(6,16,28,.55);color:#fff;font:600 13px system-ui,sans-serif;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)">Überspringen ›</button>'
