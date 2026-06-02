@@ -196,8 +196,8 @@
     var v=$('wb-film'), skip=$('wb-film-skip');
     if (skip) skip.addEventListener('click', function(e){ e.stopPropagation(); finish(); });
     el.onclick = function(){ /* Film nur per Skip-Button beenden, nicht per Tap */ };
-    // Datei fehlt/ladbar? -> nach 2.5s ohne Start in den Fallback.
-    failT = setTimeout(function(){ if(!started) bail(); }, 2500);
+    // Datei fehlt/ladbar? -> nach 9s ohne Start in den Fallback.
+    failT = setTimeout(function(){ if(!started) bail(); }, 9000);
     function ok(){ if(started) return; started=true; clear(); if(v) v.style.opacity='1'; }
     v.addEventListener('loadeddata', ok);
     v.addEventListener('playing', ok);
