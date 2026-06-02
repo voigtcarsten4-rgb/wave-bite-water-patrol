@@ -14,18 +14,43 @@
   // Klartext-Namen für Labels
   Obstacle.NAME = { buoy:'Backbord-Tonne', buoy_g:'Steuerbord-Tonne', rock:'Felsen', log:'Treibholz', sail:'Segler', motor:'Motorboot', sup:'SUP', houseboat:'Hausboot', swimmer:'Schwimmer', ferry:'Fähre', gate:'Schleuse' };
 
-  function Obstacle(kind, lane, z) {
+  function Obstacle(kind, lane, z, behavior) {
     this.kind = kind; this.lane = lane; this.z = (z == null ? 1 : z);
+    this.behavior = behavior || 'cruise';   // cruise|cross|harbor|turn|anchor|ferry
     this.drift = (kind === 'motor' || kind === 'sail') ? (Math.random() - 0.5) * 0.10 : (Math.random() - 0.5) * 0.03;
     this.phase = Math.random() * Math.PI * 2;
     this.counted = false; this.dead = false;
     this.hitW = HIT[kind] || 0.13;
+    this.t = 0; this.turnT = 1.0 + Math.random() * 0.8; this.zMul = 1;
+    var dir = (lane <= 0) ? 1 : -1;          // bewegt sich Richtung Gegenseite
+    switch (this.behavior) {
+      case 'cross':  this.laneV = dir * (0.16 + Math.random() * 0.14); this.zMul = 1.05; break;  // quert die Fahrrinne
+      case 'harbor': this.laneV = dir * (0.10 + Math.random() * 0.08); this.zMul = 0.95; break;  // läuft aus dem Hafen aus
+      case 'turn':   this.laneV = (Math.random() < 0.5 ? 1 : -1) * (0.10 + Math.random() * 0.10); break; // wendet
+      case 'anchor': this.laneV = 0; this.drift = 0; this.zMul = 1; break;                       // liegt vor Anker
+      case 'ferry':  this.laneV = dir * 0.05; this.zMul = 0.7; break;                            // langsame Fähre (man überholt sie)
+      default:       this.laneV = 0;                                                            // cruise: nur drift
+    }
   }
 
   Obstacle.prototype.update = function (dt, zRate) {
-    this.z -= zRate * dt;
-    this.lane += this.drift * dt;           // leichte Eigenbewegung
-    this.phase += dt * 2;
+    this.z -= zRate * dt * (this.zMul || 1);
+    this.t += dt; this.phase += dt * 2;
+    switch (this.behavior) {
+      case 'cross': case 'ferry':
+        this.lane += this.laneV * dt; break;
+      case 'harbor':
+        this.lane += this.laneV * dt; this.laneV *= Math.max(0, 1 - dt * 0.5); break;   // biegt ein, richtet sich aus
+      case 'turn':
+        this.turnT -= dt; if (this.turnT <= 0) { this.laneV *= -1; this.turnT = 1.0 + Math.random() * 0.9; }
+        this.lane += this.laneV * dt; break;
+      case 'anchor':
+        this.lane += Math.sin(this.phase * 0.5) * 0.012 * dt * 20; break;               // sanftes Ankern/Schaukeln
+      default:
+        this.lane += this.drift * dt;
+    }
+    if (this.lane < -1.15) { this.lane = -1.15; if (this.behavior==='cross'||this.behavior==='turn') this.laneV = Math.abs(this.laneV); }
+    if (this.lane >  1.15) { this.lane =  1.15; if (this.behavior==='cross'||this.behavior==='turn') this.laneV = -Math.abs(this.laneV); }
     if (this.z <= -0.05) this.dead = true;
   };
 

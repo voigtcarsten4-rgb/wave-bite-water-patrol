@@ -78,10 +78,29 @@
   };
 
   World.prototype._spawn = function () {
-    var pool = (this.region.difficulty >= 3) ? TRAFFIC : ['buoy','sail','motor','sup','swimmer','rock'];
-    var kind = M.pick(pool);
-    var lane = M.rand(-0.85, 0.85);
-    this.obstacles.push(new WB.Obstacle(kind, lane, 1.02));
+    // Autonomer Wasserverkehr: Verhalten + passende Bootsklasse, relativ zum Fahrwasser.
+    var cc = this._chCenter || 0, hard = this.region.difficulty >= 3;
+    var r = Math.random(), behavior, kind, lane, side = (Math.random() < 0.5 ? -1 : 1);
+    if (r < 0.34) {                       // Freizeitverkehr NEBEN der Fahrrinne (Rinne bleibt befahrbar)
+      behavior = 'cruise'; kind = M.pick(['sup','sail','motor','log','swimmer']);
+      lane = M.clamp(cc + side * M.rand(0.5, 0.98), -1.1, 1.1);
+    } else if (r < 0.56) {                // querender Verkehr (fährt durch die Rinne -> reagieren!)
+      behavior = 'cross'; kind = M.pick(['motor','sail','sup']);
+      lane = side * M.rand(0.8, 1.05);
+    } else if (r < 0.71) {                // läuft aus einem Hafen aus
+      behavior = 'harbor'; kind = M.pick(['motor','sail','sup']);
+      lane = side * M.rand(0.85, 1.08);
+    } else if (r < 0.82 && hard) {        // langsame Fähre (man überholt sie)
+      behavior = 'ferry'; kind = 'ferry'; lane = M.clamp(cc + side * M.rand(0.3, 0.7), -1, 1);
+    } else if (r < 0.92) {                // wendendes Boot
+      behavior = 'turn'; kind = M.pick(['motor','sail']);
+      lane = M.clamp(cc + side * M.rand(0.4, 0.85), -1, 1);
+    } else {                              // ankerndes Boot / Hausboot am Rand
+      behavior = 'anchor'; kind = M.pick(['houseboat','sail','buoy']);
+      lane = M.clamp(cc + side * M.rand(0.6, 1.0), -1.1, 1.1);
+    }
+    if (!hard && (kind === 'ferry' || kind === 'houseboat')) kind = 'motor';
+    this.obstacles.push(new WB.Obstacle(kind, lane, 1.02, behavior));
   };
 
   World.prototype.update = function (dt, input) {
