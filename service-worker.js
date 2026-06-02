@@ -37,6 +37,7 @@ var ASSETS = [
   'src/game/ai.js',
   'src/game/opponent.js',
   'src/game/minigame.js',
+  'src/game/minigame-modules.js',
   'src/game/minigame-lock.js',
   'src/game/minigame-search.js',
   'src/game/obstacle.js',
