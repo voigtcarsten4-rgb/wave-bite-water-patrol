@@ -27,6 +27,7 @@
       var boat = new WB.Boat(this.boatStats);
       this.variant = (WB.Variation ? WB.Variation.roll(mission) : null);
       this.world = new WB.World(boat, this.region, mission, this.variant);
+      try { if (WB.NavMap) WB.NavMap.reset(); } catch (e) {}
       this.world.layout(WB.Engine.w, WB.Engine.h);
       this.runtime = new WB.MissionRuntime(mission);
       this.t = 0;
@@ -148,6 +149,7 @@
         escBand: this.world._escBand,
         escProg: this.world.escortProgress
       });
+      try { if (WB.NavMap) WB.NavMap.draw(this.world, this.t); } catch (e) {}
     },
 
     togglePause: function () {
