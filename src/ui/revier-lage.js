@@ -1,8 +1,9 @@
-/* Wave Bite – Captain's Run · ui/revier-lage.js  (v76)
- * "Lage übernehmen" erzeugt jetzt eine SPIELBARE Mini-Mission:
+/* Wave Bite – Captain's Run · ui/revier-lage.js  (v77)
+ * "Lage übernehmen" erzeugt eine SPIELBARE Mini-Mission (21 Einsätze, Mission-Bibel V2):
  *   Lage wählen → Lage übernehmen → Mini-Mission-Karte (Name/Beschreibung/Ziel/Risiko/Belohnung/Start)
- *   → echtes Mini-Spiel (WB.Minigame.play) → Ergebnis/Belohnung → zurück zum Hub.
- * Lage speichert zusätzlich Wetter/Verkehr/Belohnung für die normalen Renn-Einsätze (Racing bleibt separat).
+ *   → echtes Mini-Spiel (WB.Minigame.play, parametriert) → Ergebnis/Belohnung → zurück zum Hub.
+ * Variation echt über Modul-Parameter (decoyRatio/signalLifetime/penaltyMs/calls/greenWindow/suspectRatio/holdTime/driftSpeed).
+ * Lage speichert zusätzlich Wetter/Verkehr/Belohnung für die Renn-Einsätze (Racing bleibt separat).
  * Hooks: WB.Variation.roll + MissionRuntime.result. Persistenz: localStorage 'wb_revierlage'. */
 (function (WB) {
   'use strict';
@@ -14,28 +15,52 @@
     sturm:    { id:'sturm',    label:'Sturmwoche',   icon:'⛈', weather:'storm', trafficMul:1.1, rewardMul:1.4,  tod:null,  risiko:'Hoch',    funk:'Einsatzleitung: Sturmwoche – schwerer Seegang. Höchste Belohnung.' }
   };
 
-  // Mini-Spiel-Pools je Lage. type -> bestehendes spielbares Modul (WB.Minigame.play).
+  // Eigene Funk-Spruchsaetze fuer Stoerungs-Missionen (anderes Erlebnis, gleiche Mechanik).
+  var CALLS_F2=[
+    { from:'Kanal 9 (gestört)', say:'…rol 3 …örst du …ich?', right:'„Empfang schwach – bitte wiederholen."', wrong:['„Alles klar, Ende."','„Kanal 16 frei."'] },
+    { from:'Relais Spree', say:'Patrol 3, Frequenz wechseln auf 72?', right:'„Bestätige Wechsel auf Kanal 72."', wrong:['„Bleibe auf 9."','„Negativ, kein Wechsel."'] },
+    { from:'Leitstelle (verrauscht)', say:'…position …durchgeben…', right:'„Gebe Position langsam und deutlich durch."', wrong:['„Später."','„Verstehe nichts, Ende."'] },
+    { from:'DLRG Müggelsee', say:'Empfangen Sie uns noch?', right:'„Empfang wieder besser, bleibe dran."', wrong:['„Nein."','„Schluss jetzt."'] }
+  ];
+  var CALLS_F3=[
+    { from:'Unbekannt', say:'…hier ist niemand …und doch …', right:'„Identifizieren Sie sich, bitte."', wrong:['„Hallo zurück!"','„Egal, ignorieren."'] },
+    { from:'Lotse (?)', say:'Folgen Sie dem Licht an der Brücke.', right:'„Negativ – ich halte Kurs und melde Sichtung."', wrong:['„Folge sofort."','„Welches Licht?"'] },
+    { from:'Leitstelle', say:'Patrol 3, wir hören ein zweites Signal.', right:'„Verstanden, peile die Quelle an."', wrong:['„Da ist nichts."','„Ende."'] },
+    { from:'Echo', say:'…3 …3 …3…', right:'„Wiederholtes Echo – protokolliere und prüfe."', wrong:['„Antworte mit Echo."','„Abschalten."'] },
+    { from:'Nachtfunk', say:'Können Sie die Koordinaten bestätigen?', right:'„Bestätige nach Prüfung."', wrong:['„Blind bestätigt."','„Keine Zeit."'] }
+  ];
+
+  // Mini-Spiel-Pools je Lage (Mission-Bibel V2: 21 Einsätze auf 5 Mechaniken, variiert via Parameter).
   // base = Basis-Belohnung (wird mit rewardMul der Lage skaliert).
   var POOLS = {
     klar: [
-      { name:'Bojenkurs',        type:'radar',         cfg:{need:4,duration:15000}, desc:'Ruhiges Wasser, perfekte Sicht – fahre den markierten Bojenkurs sauber ab.', ziel:'4 echte Kontakte (gold) bestätigen, Störsignale meiden.', base:80 },
-      { name:'Hafenrunde',       type:'hafenkontrolle',cfg:{rounds:4,duration:24000}, desc:'Routine-Streife im Hafen. Prüfe Boote mit Augenmaß.', ziel:'4 Boote korrekt durchwinken oder kontrollieren.', base:85 },
-      { name:'Präzisionsfahrt',  type:'schleuse',      cfg:{duration:17000}, desc:'Übungseinfahrt an der Schleuse – Tempo & Timing zeigen.', ziel:'Bei Grün in der grünen Tempo-Zone einfahren.', base:90 }
+      { id:'R1', name:'Bojenkurs', type:'radar', cfg:{need:4,duration:15000,decoyRatio:0.3,signalLifetime:1900}, desc:'Ruhiges Wasser, perfekte Sicht – fahre den markierten Bojenkurs sauber ab.', ziel:'4 echte Kontakte bestätigen, Störsignale meiden.', base:80 },
+      { id:'S1', name:'Präzisionsfahrt', type:'schleuse', cfg:{duration:17000,greenWindow:4.8}, desc:'Übungseinfahrt an der Schleuse – Tempo & Timing zeigen.', ziel:'Bei Grün in der grünen Tempo-Zone einfahren.', base:90 },
+      { id:'H1', name:'Hafenrunde', type:'hafenkontrolle', cfg:{rounds:4,duration:24000,suspectRatio:0.4}, desc:'Routine-Streife im Hafen. Prüfe Boote mit Augenmaß.', ziel:'4 Boote korrekt durchwinken oder kontrollieren.', base:85 },
+      { id:'RE1', name:'Person über Bord', type:'rettung', cfg:{duration:22000,holdTime:2.0,driftSpeed:0.08}, desc:'Person im Wasser bei ruhiger See – peilen, sacht heran, halten.', ziel:'Orten, langsam annähern, Rettungszone halten.', base:120 },
+      { id:'F1', name:'Funkdisziplin Kanal 16', type:'funk', cfg:{rounds:4,duration:22000,penaltyMs:2000}, desc:'Routine-Funkverkehr – quittiere korrekt auf Kanal 16.', ziel:'Funksprüche korrekt beantworten.', base:85 }
     ],
     andrang: [
-      { name:'Verkehrslücke',    type:'hafenkontrolle',cfg:{rounds:5,duration:24000}, desc:'Dichter Bootsverkehr – schnelle, richtige Entscheidungen sind gefragt.', ziel:'5 Boote im Andrang korrekt einschätzen.', base:120 },
-      { name:'Ausweichfahrt',    type:'schleuse',      cfg:{duration:15000}, desc:'Viel Betrieb an der Schleuse – Tempo halten und sauber ausweichen.', ziel:'Tempo in der grünen Zone halten, bei Grün einfahren.', base:120 },
-      { name:'Engstellen-Kontrolle', type:'hafenkontrolle',cfg:{rounds:5,duration:22000}, desc:'Enge Durchfahrt mit hohem Aufkommen – Kontrolle behalten.', ziel:'5 Kontakte korrekt abfertigen.', base:125 }
+      { id:'H2', name:'Verkehrslücke', type:'hafenkontrolle', cfg:{rounds:5,duration:24000,suspectRatio:0.5}, desc:'Dichter Bootsverkehr – schnelle, richtige Entscheidungen sind gefragt.', ziel:'5 Boote im Andrang korrekt einschätzen.', base:120 },
+      { id:'H3', name:'Engstellen-Kontrolle', type:'hafenkontrolle', cfg:{rounds:5,duration:22000,suspectRatio:0.55}, desc:'Enge Durchfahrt mit hohem Aufkommen – Kontrolle behalten.', ziel:'5 Kontakte korrekt abfertigen.', base:125 },
+      { id:'S3', name:'Schleuse im Gedränge', type:'schleuse', cfg:{duration:13000,greenWindow:3.2}, desc:'Viel Betrieb, enges Zeitfenster – nur bei Grün rein.', ziel:'Im knappen Fenster sauber einfahren.', base:150 },
+      { id:'RE4', name:'Vermisstes Boot', type:'rettung', cfg:{duration:22000,holdTime:2.2,driftSpeed:0.14}, desc:'Boot überfällig im Verkehr – orten, annähern, sichern.', ziel:'Position trotz Abdrift halten.', base:165 },
+      { id:'R5', name:'Spotlight-Suche', type:'radar', cfg:{need:5,duration:16000,decoyRatio:0.45,signalLifetime:1500}, desc:'Suchscheinwerfer an – Kontakte im Getümmel aufspüren.', ziel:'5 echte Kontakte bestätigen.', base:155 }
     ],
     stoerung: [
-      { name:'Radar-Suche',      type:'radar',         cfg:{need:5,duration:15000}, desc:'Störung im Revier – nutze das Radar, um echte Signale herauszufiltern.', ziel:'5 echte Kontakte orten, Störsignale ignorieren.', base:150 },
-      { name:'Funksignal prüfen',type:'funk',          cfg:{rounds:4,duration:20000}, desc:'Unklare Funksprüche – quittiere korrekt auf Kanal 16.', ziel:'Mehrheit der Funksprüche richtig beantworten.', base:150 },
-      { name:'Spotlight-Suche',  type:'radar',         cfg:{need:5,duration:16000}, desc:'Schlechte Sicht – Suchscheinwerfer an und Kontakte aufspüren.', ziel:'5 Kontakte im Störnebel bestätigen.', base:155 }
+      { id:'R3', name:'Radar-Suche', type:'radar', cfg:{need:5,duration:15000,decoyRatio:0.55,signalLifetime:1400}, desc:'Störquelle im Revier – filtere die echten Signale heraus.', ziel:'5 echte Kontakte, viele Störsignale.', base:150 },
+      { id:'F2', name:'Verlorenes Funksignal', type:'funk', cfg:{rounds:4,duration:18000,penaltyMs:3500,calls:CALLS_F2}, desc:'Signal bricht ab – andere Frequenz, weniger Zeit.', ziel:'Auf gestörtem Kanal korrekt antworten.', base:150 },
+      { id:'F3', name:'Geistersignal', type:'funk', cfg:{rounds:5,duration:18000,penaltyMs:3000,calls:CALLS_F3}, desc:'Unbekanntes Signal aus dem Nebel – prüf jede Antwort.', ziel:'Mehrheit korrekt quittieren.', base:175 },
+      { id:'S2', name:'Schleusung bei Nebel', type:'schleuse', cfg:{duration:15000,greenWindow:3.8}, desc:'Dichter Nebel an der Schleuse – ruhig & exakt.', ziel:'Bei Grün im engeren Fenster einfahren.', base:150 },
+      { id:'H4', name:'Großrazzia', type:'hafenkontrolle', cfg:{rounds:6,duration:22000,suspectRatio:0.6}, desc:'Schmuggel vermutet – viele Verdächtige, scharf entscheiden.', ziel:'6 Boote, jeder Fehlverdacht zählt.', base:180 },
+      { id:'RE3', name:'Notfallkurs im Nebel', type:'rettung', cfg:{duration:20000,holdTime:2.2,driftSpeed:0.12}, desc:'Notruf im Nebel – Kurs auf die Notposition.', ziel:'Orten, annähern, sichern.', base:160 }
     ],
     sturm: [
-      { name:'Sturmfahrt',       type:'rettung',       cfg:{duration:22000}, desc:'Schwerer Seegang – Person in Not orten und sicher bergen.', ziel:'Person peilen, langsam annähern, Rettungszone halten.', base:200 },
-      { name:'Sichtverlust',     type:'radar',         cfg:{need:5,duration:16000}, desc:'Sturm nimmt die Sicht – verlasse dich allein auf das Radar.', ziel:'5 Kontakte blind über Radar bestätigen.', base:190 },
-      { name:'Notfallkurs',      type:'rettung',       cfg:{duration:22000}, desc:'Notruf bei Sturm – Kurs auf die Notposition, ruhige Hand.', ziel:'Orten, annähern, Person sichern.', base:205 }
+      { id:'R4', name:'Sichtverlust', type:'radar', cfg:{need:5,duration:16000,decoyRatio:0.5,signalLifetime:1200}, desc:'Sturm nimmt die Sicht – verlass dich nur aufs Radar.', ziel:'5 Kontakte, Signale verblassen schnell.', base:190 },
+      { id:'F4', name:'Sturm-Funkverkehr', type:'funk', cfg:{rounds:5,duration:16000,penaltyMs:3000}, desc:'Chaos auf dem Kanal – Disziplin trotz Sturm.', ziel:'Korrekt quittieren unter Druck.', base:195 },
+      { id:'RE2', name:'Sturmrettung', type:'rettung', cfg:{duration:22000,holdTime:2.5,driftSpeed:0.18}, desc:'Schwerer Seegang – Bergung unter Höchstlast.', ziel:'Starke Abdrift ausgleichen, lange halten.', base:205 },
+      { id:'S3s', name:'Schleuse im Sturm', type:'schleuse', cfg:{duration:13000,greenWindow:3.0}, desc:'Sturmböen an der Schleuse – enges Fenster, ruhige Hand.', ziel:'Im knappen Fenster sauber einfahren.', base:200 },
+      { id:'R2', name:'Seenotboje orten', type:'radar', cfg:{need:3,duration:13000,decoyRatio:0.35,signalLifetime:1200}, desc:'Notboje treibt – schwaches, kurzes Signal anpeilen.', ziel:'3 schwache Kontakte rasch bestätigen.', base:130 }
     ]
   };
 
@@ -96,7 +121,6 @@
     var gained={coins:0,xp:0};
     if (ok && WB.Progression && WB.Progression.grant){ try{ WB.Progression.grant(rw.coins, rw.xp); gained=rw; }catch(e){} }
     else if (ok && WB.Save && WB.Save.data){ WB.Save.data.coins=(WB.Save.data.coins||0)+rw.coins; if(WB.Save.save)WB.Save.save(); gained=rw; }
-    // Top-Leiste aktualisieren
     try{ var tc=document.getElementById('top-coins'); if(tc&&WB.Save&&WB.Save.data) tc.textContent=WB.Save.data.coins; }catch(e){}
     try{ if(WB.Audio){ ok?(WB.Audio.success&&WB.Audio.success()):(WB.Audio.fail&&WB.Audio.fail()); } }catch(e){}
 

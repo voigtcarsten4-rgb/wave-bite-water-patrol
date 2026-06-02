@@ -30,7 +30,7 @@
 
   // ============================ RADAR / SONAR ============================
   WB.MiniRadar = { play: function(cfg, onDone){
-    cfg=cfg||{}; var need=cfg.need||4, dur=cfg.duration||14000, t0=Date.now(), done=false, hits=0, miss=0;
+    cfg=cfg||{}; var need=cfg.need||4, dur=cfg.duration||14000, t0=Date.now(), done=false, hits=0, miss=0; var decoyRatio=(cfg.decoyRatio!=null?cfg.decoyRatio:0.4), life=cfg.signalLifetime||1700;
     var ui=Frame('📡','RADAR / SONAR','Identifiziere die echten Funksignale (gold). Meide Störsignale (grau).');
     ui.body.innerHTML='<div class="radar2" id="rd"><div class="radar-rings"></div><div class="radar-cross"></div><div class="rd-sweep" id="rdsw"></div><div class="rd-read" id="rdr">—</div></div>';
     ui.score.textContent='0 / '+need;
@@ -40,7 +40,7 @@
     function bearing(x,y){ var a=Math.atan2(y-140,x-140)*180/Math.PI+90; if(a<0)a+=360; return (a|0); }
     function spawn(){
       var R=120, a=Math.random()*Math.PI*2, r=30+Math.sqrt(Math.random())*R;
-      var x=140+Math.cos(a)*r, y=140+Math.sin(a)*r, decoy=Math.random()<0.4;
+      var x=140+Math.cos(a)*r, y=140+Math.sin(a)*r, decoy=Math.random()<decoyRatio;
       var el=document.createElement('div'); el.className='rd-blip'+(decoy?' decoy':'');
       el.style.left=(x-13)+'px'; el.style.top=(y-13)+'px';
       var rec={el:el,dead:false,x:x,y:y};
@@ -51,7 +51,7 @@
         setTimeout(function(){ if(el.parentNode)el.parentNode.removeChild(el); },170);
       });
       rd.appendChild(el); blips.push(rec);
-      setTimeout(function(){ if(!rec.dead&&el.parentNode){ el.classList.add('fade'); setTimeout(function(){ if(el.parentNode)el.parentNode.removeChild(el); },200);} },1700);
+      setTimeout(function(){ if(!rec.dead&&el.parentNode){ el.classList.add('fade'); setTimeout(function(){ if(el.parentNode)el.parentNode.removeChild(el); },200);} },life);
     }
     function loop(){ if(done)return; ang=(ang+2.2)%360; sweep.style.transform='rotate('+ang+'deg)';
       // Lese-Anzeige folgt dem nächsten echten Kontakt
@@ -67,8 +67,8 @@
 
   // ============================ FUNK ============================
   WB.MiniFunk = { play: function(cfg, onDone){
-    cfg=cfg||{}; var rounds=cfg.rounds||4, dur=cfg.duration||20000, t0=Date.now(), idx=0, ok=0, done=false;
-    var calls=[
+    cfg=cfg||{}; var rounds=cfg.rounds||4, dur=cfg.duration||20000, t0=Date.now(), idx=0, ok=0, done=false; var penalty=cfg.penaltyMs||2500;
+    var calls=cfg.calls||[
       { from:'Hafenmeister Grünau', say:'WSP Patrol 3, Lage am Steg?', right:'„Verstanden, Position wird kontrolliert."', wrong:['„Kanal 9, bitte wechseln."','„Keine Zeit, Ende."'] },
       { from:'Zentrale Spree', say:'Patrol 3, bestätigen Sie Kanal 16.', right:'„Bestätige Kanal 16, empfangsbereit."', wrong:['„Negativ, Feierabend."','„Welcher Kanal?"'] },
       { from:'DLRG Müggelsee', say:'Benötigen Sie Unterstützung?', right:'„Bitte Bereitschaft halten, melde mich."', wrong:['„Ignorieren."','„Später vielleicht."'] },
@@ -89,7 +89,7 @@
       ui.body.querySelectorAll('.funk-opt').forEach(function(b){ b.addEventListener('pointerdown',function(e){ e.preventDefault();
         var good=b.getAttribute('data-ok')==='1';
         if(good){ ok++; feedback(ui.fb,true,'Korrekt quittiert.'); if(WB.Audio)WB.Audio.success&&WB.Audio.success(); }
-        else { t0-=2500; feedback(ui.fb,false,'Falsche Antwort – Zeitverlust.'); if(WB.Audio)WB.Audio.fail&&WB.Audio.fail(); }
+        else { t0-=penalty; feedback(ui.fb,false,'Falsche Antwort – Zeitverlust.'); if(WB.Audio)WB.Audio.fail&&WB.Audio.fail(); }
         idx++; setTimeout(round,650);
       }); });
     }
@@ -100,7 +100,7 @@
 
   // ============================ SCHLEUSE ============================
   WB.MiniSchleuse = { play: function(cfg, onDone){
-    cfg=cfg||{}; var done=false; var dur=cfg.duration||16000, t0=Date.now();
+    cfg=cfg||{}; var done=false; var dur=cfg.duration||16000, t0=Date.now(); var greenWin=cfg.greenWindow||4.5;
     var ui=Frame('🚦','SCHLEUSE WERNSDORF','Halte Tempo in der grünen Zone. Fahre erst bei GRÜN ein.');
     ui.body.innerHTML='<div class="schl"><div class="schl-lights" id="slz"><span class="sl r on"></span><span class="sl y"></span><span class="sl g"></span></div>'
       +'<div class="schl-meter"><div class="schl-green"></div><div class="schl-needle" id="sln"></div></div>'
@@ -127,7 +127,7 @@
       vel += (thr?0.9:-0.7)*dt; vel*=0.92; pos=Math.max(0,Math.min(1,pos+vel*dt));
       needle.style.left=(pos*100)+'%';
       var inZone=pos>0.34&&pos<0.66; needle.className='schl-needle'+(inZone?' ok':' bad');
-      phaseT-=dt; if(phaseT<=0){ phase = phase==='red'?'yellow':phase==='yellow'?'green':'red'; phaseT = phase==='green'?4.5:phase==='yellow'?1.4:3.0; setLights(); }
+      phaseT-=dt; if(phaseT<=0){ phase = phase==='red'?'yellow':phase==='yellow'?'green':'red'; phaseT = phase==='green'?greenWin:phase==='yellow'?1.4:3.0; setLights(); }
       raf=requestAnimationFrame(loop);
     }
     setLights(); raf=requestAnimationFrame(loop);
@@ -136,7 +136,7 @@
 
   // ============================ HAFENKONTROLLE ============================
   WB.MiniHafen = { play: function(cfg, onDone){
-    cfg=cfg||{}; var rounds=cfg.rounds||4, dur=cfg.duration||22000, t0=Date.now(), idx=0, ok=0, done=false;
+    cfg=cfg||{}; var rounds=cfg.rounds||4, dur=cfg.duration||22000, t0=Date.now(), idx=0, ok=0, done=false; var suspectRatio=cfg.suspectRatio;
     var pool=[
       { name:'Sportboot „Seeadler"', clues:['Papiere vollständig','ruhiges Verhalten','keine Ladung'], suspect:false },
       { name:'Motoryacht „Nordwind"', clues:['Registrierung abgelaufen','nervöser Skipper','abgedeckte Ladung'], suspect:true },
@@ -147,7 +147,7 @@
     ];
     var ui=Frame('🔦','HAFENKONTROLLE','Prüfe Papiere · Verhalten · Ladegut. Kontrolliere mit Augenmaß.');
     function shuffle(a){ return a.slice().sort(function(){return Math.random()-0.5;}); }
-    var order=shuffle(pool);
+    var order; if(suspectRatio!=null){ var sus=pool.filter(function(b){return b.suspect;}), cle=pool.filter(function(b){return !b.suspect;}); order=[]; for(var oi=0;oi<rounds;oi++){ var useS=Math.random()<suspectRatio; var src=useS?sus:cle; if(!src.length)src=useS?cle:sus; order.push(src[Math.floor(Math.random()*src.length)]); } } else { order=shuffle(pool); }
     lucy('Augenmaß, Kapitän: nicht jeder ist verdächtig. Hinweise abwägen.');
     function round(){
       if(done)return;
@@ -171,7 +171,7 @@
 
   // ============================ RETTUNG ============================
   WB.MiniRettung = { play: function(cfg, onDone){
-    cfg=cfg||{}; var dur=cfg.duration||20000, t0=Date.now(), done=false, stage='locate';
+    cfg=cfg||{}; var dur=cfg.duration||20000, t0=Date.now(), done=false, stage='locate'; var holdNeed=cfg.holdTime||2.0, drift=(cfg.driftSpeed!=null?cfg.driftSpeed:0.10);
     var ui=Frame('🛟','RETTUNGSEINSATZ','Person orten, ruhig annähern, Rettungszone halten.');
     // Stage 1: orten (Richtungssuche), Stage 2: annähern (Tempo), Stage 3: Ring werfen
     var target=Math.random()*360, holdT=0, raf;
@@ -193,15 +193,15 @@
       raf=requestAnimationFrame(appLoop);
     }
     function appLoop(){ if(done)return; var dt=Math.min(0.05,(Date.now()-last)/1000); last=Date.now();
-      approach += (thr?-0.22:0.10)*dt*1.6; approach=Math.max(0,Math.min(1,approach));
+      approach += (thr?-0.22:drift)*dt*1.6; approach=Math.max(0,Math.min(1,approach));
       var mark=$('rm'), rl=$('rl'); if(mark) mark.style.left=((1-approach)*100)+'%';
       var inZone = approach>0.12 && approach<0.30; if(mark) mark.className='ret-mark'+(inZone?' ok':'');
       if(rl) rl.innerHTML='Distanz: <b>'+(approach>0.5?'weit':approach>0.30?'mittel':inZone?'RETTUNGSZONE':'zu nah!')+'</b>';
-      if(inZone){ holdT+=dt; feedbackHold(holdT); if(holdT>2.0){ done=true; if(raf)cancelAnimationFrame(raf); feedback(ui.fb,true,'Person gesichert – saubere Rettung!'); if(WB.Audio)WB.Audio.success&&WB.Audio.success(); lucy('Person an Bord. Stark gemacht.'); close(ui.host,{success:true,score:1},onDone); return; } }
+      if(inZone){ holdT+=dt; feedbackHold(holdT); if(holdT>=holdNeed){ done=true; if(raf)cancelAnimationFrame(raf); feedback(ui.fb,true,'Person gesichert – saubere Rettung!'); if(WB.Audio)WB.Audio.success&&WB.Audio.success(); lucy('Person an Bord. Stark gemacht.'); close(ui.host,{success:true,score:1},onDone); return; } }
       else { if(approach<=0.10){ feedback(ui.fb,false,'Zu nah/zu schnell – Abbruch droht!'); holdT=Math.max(0,holdT-dt); } }
       raf=requestAnimationFrame(appLoop);
     }
-    function feedbackHold(h){ if(ui.fb && stage==='approach'){ ui.fb.className='mg-feedback good show'; ui.fb.textContent='In der Rettungszone… halten ('+h.toFixed(1)+'s / 2.0s)'; } }
+    function feedbackHold(h){ if(ui.fb && stage==='approach'){ ui.fb.className='mg-feedback good show'; ui.fb.textContent='In der Rettungszone… halten ('+h.toFixed(1)+'s / '+holdNeed.toFixed(1)+'s)'; } }
     act.addEventListener('pointerdown',function(e){ e.preventDefault(); if(stage!=='locate'||done)return;
       if(diff()<22){ feedback(ui.fb,true,'Position bestätigt – jetzt annähern.'); if(WB.Audio)WB.Audio.coin&&WB.Audio.coin(); if(raf)cancelAnimationFrame(raf); startApproach(); }
       else { feedback(ui.fb,false,'Falsche Peilung – Pfeil nachführen.'); if(WB.Audio)WB.Audio.danger&&WB.Audio.danger(); }
