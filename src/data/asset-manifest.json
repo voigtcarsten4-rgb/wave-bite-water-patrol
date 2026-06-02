@@ -1359,6 +1359,66 @@
       "category": "video",
       "src": "assets/video/vid_m2_finale_spur.mp4",
       "status": "ready"
+    },
+    {
+      "id": "vid_w3_rangaufstieg",
+      "category": "video",
+      "src": "assets/video/vid_w3_rangaufstieg.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_w3_wolff",
+      "category": "video",
+      "src": "assets/video/vid_w3_wolff.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_w3_rettung_erfolg",
+      "category": "video",
+      "src": "assets/video/vid_w3_rettung_erfolg.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_w3_elite",
+      "category": "video",
+      "src": "assets/video/vid_w3_elite.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_w3_neues_revier",
+      "category": "video",
+      "src": "assets/video/vid_w3_neues_revier.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_w3_neues_boot",
+      "category": "video",
+      "src": "assets/video/vid_w3_neues_boot.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_w3_perfekt",
+      "category": "video",
+      "src": "assets/video/vid_w3_perfekt.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_w3_comeback",
+      "category": "video",
+      "src": "assets/video/vid_w3_comeback.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_w3_story_hinweis",
+      "category": "video",
+      "src": "assets/video/vid_w3_story_hinweis.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_w3_heroshot",
+      "category": "video",
+      "src": "assets/video/vid_w3_heroshot.mp4",
+      "status": "ready"
     }
   ]
 }

@@ -181,7 +181,7 @@
         var cfg = {
           kicker: '● FUNK · ' + WB.data.rankUnit,
           bgUrl: (function(){ var h=WB.Game._rewardHero(promoted); return (h&&WB.Assets)?WB.Assets.url(h):((WB.Assets&&mission.briefStation)?WB.Assets.url(mission.briefStation):null); })(),
-          videoUrl: (function(){ var pool = promoted ? ['vid_bel_rang','vid_bel_wolff','vid_bel_heroshot'] : ['vid_bel_heroshot','vid_welt_berlin'];
+          videoUrl: (function(){ var pool = promoted ? ['vid_w3_rangaufstieg','vid_w3_wolff','vid_w3_elite','vid_w3_neues_boot'] : (res.perfect ? ['vid_w3_perfekt','vid_w3_heroshot','vid_w3_rettung_erfolg'] : ['vid_w3_heroshot','vid_w3_comeback','vid_w3_neues_revier','vid_w3_story_hinweis']);
             var lvl=(WB.Save.data&&WB.Save.data.captainLevel)||0; var id=pool[lvl%pool.length];
             return (WB.Assets&&WB.Assets.has(id))?WB.Assets.url(id):(WB.Assets?WB.Assets.url(promoted?'cine_boat_hero':'cine_reward'):null); })(),
           title: promoted ? 'BEFÖRDERT' : 'EINSATZ ERFOLGREICH',
