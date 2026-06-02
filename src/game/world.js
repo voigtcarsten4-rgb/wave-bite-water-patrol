@@ -47,8 +47,10 @@
     this.checkpointN = mission.checkpoints || 5;
     this.cpDone = 0;
     this.totalT = 0; this.cleanT = 0; this.offT = 0; this._offWarn = 0; this._dockWarn = 0;
-    this.objective = OBJ[mission.type] || 'Erreiche den Zielpunkt.';
-    this.objectiveHint = HINT[mission.type] || '';
+    this.isEscort = (mission.id === 'm_vip' || mission.escort === true);
+    this.escortHoldT = 0; this.escortProgress = 0; this._escWarn = 0;
+    this.objective = this.isEscort ? 'VIP-Jacht eskortieren – Sicherheitsabstand halten (nicht zu nah, nicht abreißen lassen).' : (OBJ[mission.type] || 'Erreiche den Zielpunkt.');
+    this.objectiveHint = this.isEscort ? 'Tempo so anpassen, dass der Abstand im grünen Band bleibt.' : (HINT[mission.type] || '');
   }
 
   World.prototype.layout = function (w, h) {
@@ -61,10 +63,10 @@
     this.boat.reset(w / 2, this.viewBottom - 40);
     this.gulls = [];
     for (var i = 0; i < 4; i++) this.gulls.push({ x: M.rand(0, w), y: M.rand(this.horizonY * 0.3, this.horizonY * 1.2), s: M.rand(0.6, 1.2), v: M.rand(8, 20) * (Math.random() < 0.5 ? -1 : 1), ph: Math.random() * 6 });
-    if (this.isChase && WB.Opponent) this.opp = new WB.Opponent(this, this.mission, this.region);
+    if ((this.isChase || this.isEscort) && WB.Opponent) { this.opp = new WB.Opponent(this, this.mission, this.region); if (this.isEscort) this.opp.label = 'VIP-Jacht'; }
   };
 
-  World.prototype.progressRatio = function () { return this.opp ? M.clamp(1 - this.opp.gap, 0, 1) : M.clamp(this.progress / this.mission.distance, 0, 1); };
+  World.prototype.progressRatio = function () { if (this.isEscort) return M.clamp(this.escortProgress, 0, 1); return this.opp ? M.clamp(1 - this.opp.gap, 0, 1) : M.clamp(this.progress / this.mission.distance, 0, 1); };
 
   // Perspektiv-Projektion: z (1 fern .. 0 nah) -> Bildschirm. Nahebene = viewBottom (unterer Rand).
   World.prototype._t = function (z) { var tt = 1 - M.clamp(z, 0, 1); return tt * tt; };
@@ -192,8 +194,25 @@
     if (this.opp) {
       this.progress += speed * dt;
       this.opp.update(dt, input, this.boat);
-      if (this.opp.caught) this.delivered = true;
-      else if (this.opp.escaped) { this.failed = true; this.failReason = 'escaped'; }
+      if (this.isEscort) {
+        // ESKORTE: Abstandsband halten (nicht jagen). gap 0.30..0.62 = sicher.
+        this.opp.caught = false; this.opp.escaped = false;   // Jagd-Ende neutralisieren
+        var g = this.opp.gap; this._escWarn -= dt;
+        if (g > 0.30 && g < 0.62) { this.escortHoldT += dt; this._escBand = 'ok'; }
+        else {
+          this._escBand = (g <= 0.30) ? 'near' : 'far';
+          if (this._escWarn <= 0) {
+            if (WB.LucyHUD && WB.LucyHUD.say) WB.LucyHUD.say(g <= 0.30 ? '⚠ Zu dicht auf die VIP-Jacht – Sicherheitsabstand!' : '⚠ Anschluss verloren – wieder aufschließen!');
+            if (WB.Audio && WB.Audio.danger) WB.Audio.danger(); this._escWarn = 2.4;
+          }
+        }
+        var target = this.mission.escortHold || 16;
+        this.escortProgress = M.clamp(this.escortHoldT / target, 0, 1);
+        if (this.escortHoldT >= target) this.delivered = true;
+      } else {
+        if (this.opp.caught) this.delivered = true;
+        else if (this.opp.escaped) { this.failed = true; this.failReason = 'escaped'; }
+      }
     } else if (!this.harborActive) {
       this.progress += speed * dt;
       if (this.progress >= this.mission.distance) { this.harborActive = true; this.harborZ = 1.0;

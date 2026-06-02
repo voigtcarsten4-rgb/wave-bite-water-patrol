@@ -140,7 +140,10 @@
         objective: this.world.objective,
         cpDone: this.world.cpDone,
         cpN: this.world.checkpointN,
-        inChannel: this.world.inChannel
+        inChannel: this.world.inChannel,
+        escort: this.world.isEscort,
+        escBand: this.world._escBand,
+        escProg: this.world.escortProgress
       });
     },
 

@@ -17,13 +17,17 @@
       var plbl = $('hud-progress-lbl');
       if (plbl) {
         var cp = (d.cpDone != null) ? (d.cpDone + '/' + d.cpN) : '';
-        plbl.textContent = d.chase ? ('🎯 Sichtkontakt · Abstand · KP ' + cp) : ('🧭 Kontrollpunkte ' + cp);
+        plbl.textContent = d.escort ? ('🎖 Eskorte · ' + Math.round((d.escProg||0)*100) + '%') : d.chase ? ('🎯 Sichtkontakt · Abstand · KP ' + cp) : ('🧭 Kontrollpunkte ' + cp);
       }
       var obj = $('hud-mission-obj');
       if (obj && d.objective) obj.textContent = d.objective;
       var fw = $('hud-fahrwasser');
       if (fw) {
-        if (d.inChannel === false) { fw.textContent = '🔴 raus aus der Gasse'; fw.style.color = '#ff7a66'; }
+        if (d.escort) {
+          if (d.escBand === 'near') { fw.textContent = '🔴 zu dicht auf'; fw.style.color = '#ff7a66'; }
+          else if (d.escBand === 'far') { fw.textContent = '🟠 Anschluss verloren'; fw.style.color = '#ffc23d'; }
+          else { fw.textContent = '🟢 Abstand ok'; fw.style.color = '#6fe0a3'; }
+        } else if (d.inChannel === false) { fw.textContent = '🔴 raus aus der Gasse'; fw.style.color = '#ff7a66'; }
         else { fw.textContent = '🟢 im Fahrwasser'; fw.style.color = '#6fe0a3'; }
       }
       var pFill = $('hud-progress-fill');
