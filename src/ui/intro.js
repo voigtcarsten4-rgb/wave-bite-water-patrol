@@ -177,6 +177,37 @@
     return { bg: bg ? (WB.Assets.url(bg)) : null, video: vid, kicker: kicker, title: title, subtitle: sub, lucy: lucy };
   }
 
+  // ---- Pixar-Headline-Film (bei JEDEM Start, kein localStorage). Liegt KEINE Datei vor -> sauberer Fallback. ----
+  var FILM_SRC = 'assets/video/WB_Pixarstil.mp4';
+  function playFilm(onEnd, onMissing){
+    var el = $('intro');
+    if (!el) { if (onMissing) onMissing(); return; }
+    var done = false, started = false, failT = null;
+    function clear(){ if(failT){ clearTimeout(failT); failT=null; } }
+    function bail(){ if(done) return; done=true; clear(); el.classList.remove('show'); el.style.opacity=''; el.style.transition=''; el.innerHTML=''; if(onMissing) onMissing(); }
+    function finish(){ if(done) return; done=true; clear(); el.onclick=null; el.style.transition='opacity .6s ease'; el.style.opacity='0';
+      setTimeout(function(){ el.classList.remove('show'); el.style.opacity=''; el.style.transition=''; el.innerHTML=''; if(onEnd) onEnd(); }, 640); }
+    el.innerHTML = '<div class="intro-stage" style="background:#03070e">'
+      + '<video id="wb-film" class="intro-vid" autoplay muted playsinline preload="auto" style="opacity:0;transition:opacity .9s ease"></video>'
+      + '<div class="intro-grade"></div><div class="cine-bar top"></div><div class="cine-bar bottom"></div>'
+      + '<button id="wb-film-skip" style="position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:14px;z-index:7;padding:9px 16px;border-radius:22px;border:1px solid rgba(255,255,255,.35);background:rgba(6,16,28,.55);color:#fff;font:600 13px system-ui,sans-serif;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)">Überspringen ›</button>'
+      + '</div>';
+    el.classList.add('show'); el.style.opacity='1';
+    var v=$('wb-film'), skip=$('wb-film-skip');
+    if (skip) skip.addEventListener('click', function(e){ e.stopPropagation(); finish(); });
+    el.onclick = function(){ /* Film nur per Skip-Button beenden, nicht per Tap */ };
+    // Datei fehlt/ladbar? -> nach 2.5s ohne Start in den Fallback.
+    failT = setTimeout(function(){ if(!started) bail(); }, 2500);
+    function ok(){ if(started) return; started=true; clear(); if(v) v.style.opacity='1'; }
+    v.addEventListener('loadeddata', ok);
+    v.addEventListener('playing', ok);
+    v.addEventListener('ended', function(){ finish(); });
+    v.addEventListener('error', function(){ bail(); });
+    try { v.src = FILM_SRC; var p = v.play && v.play(); if (p && p.catch) p.catch(function(){}); } catch(e){ bail(); }
+    // Sicherheitsnetz: nie länger als 75s hängen.
+    setTimeout(function(){ finish(); }, 75000);
+  }
+
   WB.Intro = {
     play: function (onDone) {
       var el = $('intro');
@@ -309,7 +340,12 @@
     },
 
     // Signature-Intro: dynamische Welt-Einblendung -> dann Marken-Intro.
-    playSignature: function (onDone) { try{ if(window.WB&&WB.Track) WB.Track.log('intro_seen'); }catch(e){}
+    playSignature: function (onDone) {
+      var self = this;
+      try { playFilm(function(){ if(onDone) onDone(); }, function(){ self._legacySignature(onDone); }); }
+      catch(e){ this._legacySignature(onDone); }
+    },
+    _legacySignature: function (onDone) { try{ if(window.WB&&WB.Track) WB.Track.log('intro_seen'); }catch(e){}
       var self = this;
       var ctx = null;
       try { ctx = signatureContext(); } catch (e) { ctx = null; }
