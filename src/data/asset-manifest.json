@@ -1239,6 +1239,66 @@
       "category": "video",
       "src": "assets/video/vid_atm_sturm.mp4",
       "status": "ready"
+    },
+    {
+      "id": "vid_e2_verfolgung_spree",
+      "category": "video",
+      "src": "assets/video/vid_e2_verfolgung_spree.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_e2_verfolgung_dahme",
+      "category": "video",
+      "src": "assets/video/vid_e2_verfolgung_dahme.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_e2_kontrolle_hausboot",
+      "category": "video",
+      "src": "assets/video/vid_e2_kontrolle_hausboot.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_e2_kontrolle_marina",
+      "category": "video",
+      "src": "assets/video/vid_e2_kontrolle_marina.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_e2_rettung_sup",
+      "category": "video",
+      "src": "assets/video/vid_e2_rettung_sup.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_e2_rettung_wetter",
+      "category": "video",
+      "src": "assets/video/vid_e2_rettung_wetter.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_e2_schleuse_wernsdorf",
+      "category": "video",
+      "src": "assets/video/vid_e2_schleuse_wernsdorf.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_e2_hafenstoerung",
+      "category": "video",
+      "src": "assets/video/vid_e2_hafenstoerung.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_e2_umwelt_oelspur",
+      "category": "video",
+      "src": "assets/video/vid_e2_umwelt_oelspur.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_e2_regatta",
+      "category": "video",
+      "src": "assets/video/vid_e2_regatta.mp4",
+      "status": "ready"
     }
   ]
 }

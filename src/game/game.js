@@ -76,11 +76,15 @@
 
     // Echtes Mission-Video je Einsatz (Wave-Video-Phase). null => Standbild-Hero nutzen.
     _missionVideo: function (mission) {
-      var byId = { m_vip:'vid_welt_glienicke', m_funk:'vid_myst_funksignal', m_beweis:'vid_myst_uebergabe',
-        m_razzia:'vid_einsatz_hafenstoerung', m_sturm:'vid_atm_sturm', m_umwelt:'vid_myst_stroemung',
-        m_schmuggler:'vid_einsatz_schleuse', m_streife:'vid_welt_mueggelsee', m_nacht:'vid_einsatz_verfolgung' };
-      var byType = { pursuit:'vid_einsatz_verfolgung', rescue:'vid_einsatz_rettung', control:'vid_einsatz_kontrolle',
-        smuggler:'vid_einsatz_schleuse', eco:'vid_myst_stroemung', patrol:'vid_welt_berlin' };
+      var byId = { // RC2.0 Welle-1 EINSATZ-Clips je Einsatz (Trigger=Mission-Start, Fallback=Hero-Standbild)
+        m_verfolgung:'vid_e2_verfolgung_spree', m_diebstahl:'vid_e2_verfolgung_dahme',
+        m_kontrolle:'vid_e2_kontrolle_hausboot', m_speed:'vid_e2_kontrolle_marina', m_vip:'vid_welt_glienicke',
+        m_rettung:'vid_e2_rettung_sup', m_vermisst:'vid_e2_rettung_wetter', m_sturm:'vid_e2_rettung_wetter',
+        m_schmuggler:'vid_e2_schleuse_wernsdorf', m_razzia:'vid_e2_hafenstoerung',
+        m_umwelt:'vid_e2_umwelt_oelspur', m_beweis:'vid_myst_uebergabe',
+        m_funk:'vid_myst_funksignal', m_streife:'vid_e2_regatta', m_nacht:'vid_einsatz_verfolgung' };
+      var byType = { pursuit:'vid_e2_verfolgung_spree', rescue:'vid_e2_rettung_sup', control:'vid_e2_kontrolle_hausboot',
+        smuggler:'vid_e2_schleuse_wernsdorf', eco:'vid_e2_umwelt_oelspur', patrol:'vid_welt_berlin' };
       var id = byId[mission.id] || byType[mission.type] || null;
       return (id && WB.Assets && WB.Assets.has(id)) ? id : null;
     },
