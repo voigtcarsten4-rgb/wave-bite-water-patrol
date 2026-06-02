@@ -599,7 +599,7 @@
         + '<button class="switch' + (s.settings.sound ? ' on' : '') + '" id="t-sound"><span></span></button></div>'
         + '<div class="row-between toggle-row"><span>📳 Vibration</span>'
         + '<button class="switch' + (s.settings.vibration ? ' on' : '') + '" id="t-vib"><span></span></button></div>'
-        + '<div class="row-between toggle-row"><span>📊 Nutzungsstatistik (nur lokal)</span>'
+        + '<div class="row-between toggle-row"><span>📊 Anonyme Statistik (Google Analytics)</span>'
         + '<button class="switch' + (s.settings.tracking !== false ? ' on' : '') + '" id="t-track"><span></span></button></div>'
         + '</div>'
         + '<div class="card"><h3>Kapitän</h3>'
@@ -617,7 +617,12 @@
 
       on('t-sound', function () { s.settings.sound = !s.settings.sound; WB.Save.save(); Screens.showSettings(); });
       on('t-vib', function () { s.settings.vibration = !s.settings.vibration; WB.Save.save(); Screens.showSettings(); });
-      on('t-track', function () { s.settings.tracking = (s.settings.tracking === false); WB.Save.save(); Screens.showSettings(); });
+      on('t-track', function () {
+        var turnOn = (s.settings.tracking === false);
+        if (turnOn) { if (WB.GA && WB.GA.grant) WB.GA.grant(); else { s.settings.tracking = true; WB.Save.save(); } }
+        else { if (WB.GA && WB.GA.deny) WB.GA.deny(); else { s.settings.tracking = false; WB.Save.save(); } }
+        Screens.showSettings();
+      });
       on('btn-reset', function () {
         if (window.confirm('Wirklich den gesamten Fortschritt zurücksetzen?')) {
           WB.Save.reset(); Screens.refreshTopbar(); Screens.showSettings();
