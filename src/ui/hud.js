@@ -15,7 +15,17 @@
       setW('hud-fuel-fill', d.fuel);
       setW('hud-progress-fill', d.progress);
       var plbl = $('hud-progress-lbl');
-      if (plbl) plbl.textContent = d.chase ? '🎯 Sichtkontakt · Abstand' : '🧭 Zielentfernung';
+      if (plbl) {
+        var cp = (d.cpDone != null) ? (d.cpDone + '/' + d.cpN) : '';
+        plbl.textContent = d.chase ? ('🎯 Sichtkontakt · Abstand · KP ' + cp) : ('🧭 Kontrollpunkte ' + cp);
+      }
+      var obj = $('hud-mission-obj');
+      if (obj && d.objective) obj.textContent = d.objective;
+      var fw = $('hud-fahrwasser');
+      if (fw) {
+        if (d.inChannel === false) { fw.textContent = '🔴 raus aus der Gasse'; fw.style.color = '#ff7a66'; }
+        else { fw.textContent = '🟢 im Fahrwasser'; fw.style.color = '#6fe0a3'; }
+      }
       var pFill = $('hud-progress-fill');
       if (pFill) pFill.style.background = d.chase ? 'linear-gradient(90deg,#C9462F,#E7CE8B)' : 'linear-gradient(90deg,#C9A24B,#E7CE8B)';
 

@@ -131,7 +131,11 @@
         integrity: this.world.boat.integrity,
         fuel: this.world.boat.fuel,
         progress: this.world.progressRatio(),
-        chase: !!this.world.opp
+        chase: !!this.world.opp,
+        objective: this.world.objective,
+        cpDone: this.world.cpDone,
+        cpN: this.world.checkpointN,
+        inChannel: this.world.inChannel
       });
     },
 

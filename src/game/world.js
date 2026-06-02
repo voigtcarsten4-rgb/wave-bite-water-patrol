@@ -10,6 +10,23 @@
   var COCKPIT = 'cockpit_bridge';
   var BG = { bucht: 'loc_mueggelsee', kanal: 'loc_spree', seenplatte: 'loc_dahme', schleuse: 'loc_lock' };
   var TRAFFIC = ['buoy','sail','motor','sup','houseboat','swimmer','ferry','rock','log'];
+  // Pro Missionstyp ein klares Ziel + Fahrhinweis (Learning by Playing / UX-Klarheit)
+  var OBJ = {
+    patrol:   'Streife fahren – im Fahrwasser bleiben, alle Kontrollpunkte abfahren.',
+    control:  'Zum Kontrollpunkt fahren und LANGSAM längsseits anlegen.',
+    eco:      'Der Verschmutzungsspur folgen – im Fahrwasser bis zur Quelle.',
+    pursuit:  'Zielboot verfolgen – Sichtkontakt halten, Abstand verringern.',
+    rescue:   'Zur Position navigieren und LANGSAM an die Person heranfahren.',
+    smuggler: 'Verdächtigen stellen – an der Schleuse Abstand schließen.'
+  };
+  var HINT = {
+    patrol:'Tonnen: rot links, grün rechts – dazwischen fahren.',
+    control:'Beim Anlegen Boost loslassen – langsam andocken.',
+    eco:'Bleib in der Gasse, folge den Markern.',
+    pursuit:'Nicht rammen – sauber dranbleiben.',
+    rescue:'Im Zielbereich Tempo raus – sonst Gefahr für die Person.',
+    smuggler:'Eng bleiben, Abstand Schritt für Schritt schließen.'
+  };
 
   function World(boat, region, mission) {
     this.boat = boat; this.region = region; this.mission = mission;
@@ -26,6 +43,12 @@
     this._parts = null; this._lucyT = 0; this._wasBoost = false; this._zone = null; this._zoneEnd = 0;
     this.roll = 0; this.pitch = 0;
     this.storm = !!(mission && (mission.type === 'rescue' || (region && region.id === 'seenplatte'))) ;
+    // v45: Route/Checkpoints + Fahrwasser-Lernlogik + Missionsziel
+    this.checkpointN = mission.checkpoints || 5;
+    this.cpDone = 0;
+    this.totalT = 0; this.cleanT = 0; this.offT = 0; this._offWarn = 0; this._dockWarn = 0;
+    this.objective = OBJ[mission.type] || 'Erreiche den Zielpunkt.';
+    this.objectiveHint = HINT[mission.type] || '';
   }
 
   World.prototype.layout = function (w, h) {
@@ -81,6 +104,19 @@
     var zRate = speed / 520;
     // FAHRWASSER: rot/grün-Bojengasse, deren Mitte mäandert (Kurven). Spieler faehrt DAZWISCHEN.
     this._chCenter = 0.34 * Math.sin(this.scroll * 0.0011) + 0.14 * Math.sin(this.scroll * 0.0029 + 1.3);
+    // FAHRWASSER-LERNLOGIK: zwischen den Tonnen (|lane-Mitte|<0.40) = sauberer Kurs.
+    this.totalT += dt;
+    var _off = Math.abs(this.playerLane - this._chCenter);
+    this.inChannel = _off < 0.40;
+    if (this.inChannel) { this.cleanT += dt; this.offT = Math.max(0, this.offT - dt * 0.6); }
+    else {
+      this.offT += dt; this._offWarn -= dt;
+      if (this.offT > 1.1 && this._offWarn <= 0) {
+        if (WB.LucyHUD && WB.LucyHUD.say) WB.LucyHUD.say('⚠ Zurück ins Fahrwasser – zwischen rot und grün bleiben!');
+        if (WB.Audio && WB.Audio.danger) WB.Audio.danger();
+        this._offWarn = 2.6;
+      }
+    }
     this._chT = (this._chT == null ? 0 : this._chT) - dt;
     if (this._chT <= 0) {
       var c = this._chCenter, half = 0.40;
@@ -140,10 +176,36 @@
       else if (this.opp.escaped) { this.failed = true; this.failReason = 'escaped'; }
     } else if (!this.harborActive) {
       this.progress += speed * dt;
-      if (this.progress >= this.mission.distance) { this.harborActive = true; this.harborZ = 1.0; }
+      if (this.progress >= this.mission.distance) { this.harborActive = true; this.harborZ = 1.0;
+        if (WB.LucyHUD && WB.LucyHUD.say) WB.LucyHUD.say(this.mission.type==='rescue' ? '🛟 Zielbereich – jetzt LANGSAM heran!' : (this.mission.type==='control'||this.mission.type==='smuggler') ? '🔦 Anlegen – Boost loslassen, langsam längsseits!' : '⚓ Zielpunkt voraus.');
+      }
     } else {
-      this.harborZ -= zRate * dt;
+      // Anlegen/Annähern: bei control/rescue/smuggler muss LANGSAM gefahren werden (kein Boost) – sonst Strafe.
+      var slowMiss = (this.mission.type==='control'||this.mission.type==='rescue'||this.mission.type==='smuggler');
+      var tooFast = slowMiss && this.boat.boosting;
+      this._dockWarn -= dt;
+      if (tooFast) {
+        this.harborZ -= zRate * dt * 0.25;
+        if (this._dockWarn <= 0) { if (WB.LucyHUD && WB.LucyHUD.say) WB.LucyHUD.say(this.mission.type==='rescue' ? '🐢 Zu schnell – die Person nicht gefährden!' : '🐢 Zu schnell zum Anlegen – Tempo raus!'); this._dockWarn = 1.8; this.dockPenalty = true; }
+      } else {
+        this.harborZ -= zRate * dt;
+      }
       if (this.harborZ <= 0.05) this.delivered = true;
+    }
+    this._updateCheckpoints();
+  };
+
+  // v45: Checkpoint-Fortschritt aus progressRatio; Belohnung steigt mit sauberem Kurs.
+  World.prototype._updateCheckpoints = function () {
+    var r = this.progressRatio();
+    var target = Math.floor(r * this.checkpointN);
+    if (target > this.cpDone && this.cpDone < this.checkpointN) {
+      this.cpDone = Math.min(target, this.checkpointN);
+      var cleanRatio = this.totalT > 1 ? (this.cleanT / this.totalT) : 1;
+      var bonus = 10 + Math.round(cleanRatio * 18);
+      try { WB.Save.data.coins += bonus; if (WB.Screens && WB.Screens.refreshTopbar) WB.Screens.refreshTopbar(); } catch (e) {}
+      if (WB.LucyHUD && WB.LucyHUD.say) WB.LucyHUD.say('✓ Kontrollpunkt ' + this.cpDone + '/' + this.checkpointN + ' · +' + bonus + ' 🪙');
+      if (WB.Audio && WB.Audio.radar) WB.Audio.radar();
     }
   };
 

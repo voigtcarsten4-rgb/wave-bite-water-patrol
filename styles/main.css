@@ -675,3 +675,7 @@ body {
   #screen-game .actions-bar .act small{display:none}
   #screen-game .hud-captain{display:none}      /* auf sehr schmal: Kapitaenschild aus, Funk reicht */
 }
+
+/* v45: Fahrwasser-Status im HUD */
+.hud-fw{ margin-top:4px; font:700 11px/1.2 system-ui,sans-serif; color:#6fe0a3; letter-spacing:.2px; opacity:.92; text-shadow:0 1px 2px rgba(0,0,0,.5); }
+@media (max-width:560px){ .hud-fw{ font-size:10px; } #hud-mission-obj{ display:none; } }
