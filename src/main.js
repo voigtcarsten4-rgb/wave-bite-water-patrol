@@ -7,7 +7,7 @@
     WB._bootLastPlayed = WB.Save.data.lastPlayed;
     WB.Meta.ensureDaily();
     WB.Meta.ensureWeekly();
-    if (WB.Track) { WB.Track.init(); WB.Track.log('game_open'); }
+    if (WB.Track) { WB.Track.init(); WB.Track.log('game_open'); try { if (/[?&]from=wasserlage/.test(location.search)) WB.Track.log('arrival_from_wasserlage'); } catch(e){} }
 
     WB.Engine.init('game-canvas');
     WB.Input.init();

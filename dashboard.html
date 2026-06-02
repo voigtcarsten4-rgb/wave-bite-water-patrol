@@ -126,6 +126,11 @@
       + kpi('Ø Bewertung', avgRating? avgRating.toFixed(2)+' ★':'–','gold')
       + kpi('Tage aktiv', fmt(d.days?d.days.length:0),'', 'Retention-Proxy')
       + kpi('Conv. Start→Bewertung', rateConv+'%')
+      + kpi('Minispiele gestartet', fmt(c.minigame_start||0),'', 'RC3 Module')
+      + kpi('Comeback genutzt', fmt(c.comeback_used||0),'gold', 'Retention-Loop')
+      + kpi('Wasserlage-Cockpit', fmt(c.wasserlage_cockpit_open||0),'gold', 'Game → Wasserlage')
+      + kpi('Ankunft aus Wasserlage', fmt(c.arrival_from_wasserlage||0),'good', 'Wasserlage → Game')
+      + kpi('Intro gesehen', fmt(c.intro_seen||0))
       +'</div>';
 
     // Funnel + Mission-Typen

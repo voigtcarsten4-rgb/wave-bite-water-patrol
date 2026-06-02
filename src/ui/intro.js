@@ -309,7 +309,7 @@
     },
 
     // Signature-Intro: dynamische Welt-Einblendung -> dann Marken-Intro.
-    playSignature: function (onDone) {
+    playSignature: function (onDone) { try{ if(window.WB&&WB.Track) WB.Track.log('intro_seen'); }catch(e){}
       var self = this;
       var ctx = null;
       try { ctx = signatureContext(); } catch (e) { ctx = null; }

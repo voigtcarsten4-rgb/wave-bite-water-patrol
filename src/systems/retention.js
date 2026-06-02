@@ -22,6 +22,7 @@
       var raw = null; try { raw = JSON.parse(window.localStorage.getItem(KEY) || 'null'); } catch (e) {}
       if (raw && mission && raw.id === mission.id) {
         try { window.localStorage.removeItem(KEY); } catch (e) {}
+        try { if (WB.Track) WB.Track.log('comeback_used', { id: mission.id }); } catch (e) {}
         try { WB.Save.data.coins += 18; WB.Save.save(); if (WB.Screens && WB.Screens.refreshTopbar) WB.Screens.refreshTopbar(); } catch (e) {}
         if (WB.LucyHUD && WB.LucyHUD.say) setTimeout(function(){ WB.LucyHUD.say('🌬️ Rückenwind-Bonus +18 🪙 – neuer Versuch, neue Chance!'); }, 950);
         return true;

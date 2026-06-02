@@ -38,7 +38,9 @@
       try {
         var host = document.getElementById(id || 'wasserlage-cockpit');
         if (!host) return;
-        host.innerHTML = html();
+        var fromWL = false; try { fromWL = /[?&]from=wasserlage/.test(location.search); } catch(e){}
+        host.innerHTML = (fromWL ? '<a class="wl-back" id="wl-back" href="https://voigtcarsten4-rgb.github.io/wasserlage/index.html" target="_blank" rel="noopener">← Zurück zur Wasserlage</a>' : '') + html();
+        var bk = document.getElementById('wl-back'); if (bk) bk.onclick = function(){ if (WB.Track) WB.Track.log('return_to_wasserlage'); };
         var btn = document.getElementById('wl-open');
         if (btn) btn.onclick = function () {
           if (WB.Track) WB.Track.log('wasserlage_cockpit_open');

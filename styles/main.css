@@ -763,3 +763,7 @@ body {
   background:linear-gradient(180deg,#C9A24B,#A9842F); color:#10243f; font-weight:800; font-size:13px; cursor:pointer; }
 .wl-btn:active{ transform:translateY(1px); }
 @media (max-width:560px){ .wl-cockpit{ max-width:94vw; padding:10px 12px; } }
+
+/* RC3.0 Rueckkehr-Chip Wasserlage->Game */
+.wl-back{display:block;text-align:center;margin:0 auto 8px;max-width:420px;padding:7px 10px;border-radius:10px;text-decoration:none;
+  font:700 12px system-ui,sans-serif;color:#9CE3BE;border:1px solid rgba(91,185,160,.4);background:rgba(12,30,52,.7)}

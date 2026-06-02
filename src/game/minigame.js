@@ -4,6 +4,7 @@
   'use strict';
   WB.Minigame = {
     play: function (type, cfg, onDone) {
+      try { if (WB.Track) WB.Track.log('minigame_start', { type: type }); } catch(e){}
       var R = function (m, d) { return m ? m.play(cfg || d, onDone) : (onDone && onDone({ success: true, score: 0 })); };
       switch (type) {
         case 'radar':  case 'sonar':        return R(WB.MiniRadar,   { need: 4, duration: 14000 });
