@@ -59,7 +59,7 @@
     this.escalation = E;
     this.distance = mission.distance * ((V && V.distMul) || 1) * (1 + E * 0.22);
     this._trafficMul = ((V && V.trafficMul) || 1) * (1 + E * 0.6);
-    this._curveAmp = 0.40 * (1 + E * 0.30); this._curveAmp2 = 0.16 * (1 + E * 0.30);
+    this._curveAmp = 0.52 * (1 + E * 0.30); this._curveAmp2 = 0.20 * (1 + E * 0.30); // RS5: deutlichere Kurven
     this._startLane = (V && V.startLane) || 0;
     this._fog = !!(V && V.weather === 'fog');
     if (V && (V.weather === 'storm')) this.storm = true;
@@ -72,7 +72,7 @@
     // Welt füllt den ganzen Bildschirm; Cockpit-Konsole liegt als Vordergrund über dem unteren Teil.
     this.viewBottom = Math.round(h * 0.965);   // Wasser reicht fast bis zum unteren Rand
     this.horizonY  = Math.round(h * 0.27);     // Horizont weiter oben -> mehr Welt/Tiefe
-    this.dashTop   = Math.round(h * 0.72);     // Oberkante der Cockpit-Konsole (Armaturen)
+    this.dashTop   = Math.round(h * 0.76);     // RS5: tiefer -> mehr Fenster (Panorama-Gefühl)
     this.boat.reset(w / 2 + (this._startLane || 0) * w * 0.30, this.viewBottom - 40);
     this.gulls = [];
     for (var i = 0; i < 4; i++) this.gulls.push({ x: M.rand(0, w), y: M.rand(this.horizonY * 0.3, this.horizonY * 1.2), s: M.rand(0.6, 1.2), v: M.rand(8, 20) * (Math.random() < 0.5 ? -1 : 1), ph: Math.random() * 6 });
@@ -164,10 +164,21 @@
       this.obstacles.push(new WB.Obstacle('buoy_g', M.clamp(c + half, -0.9, 0.9), 1.04));  // Steuerbord grün rechts
       this._chT = M.clamp(1.5 - this.region.difficulty * 0.05, 1.0, 1.6);
     }
-    // Verkehr/Hindernisse (seltener + neben der Rinne -> keine Objektflut, Gasse bleibt lesbar)
-    this.spawnTimer -= dt;
-    var base = 1.30 - this.region.difficulty * 0.07;
-    if (this.spawnTimer <= 0) { if (this._elapsed > 6) this._spawn(); if (this._elapsed > 13 && Math.random() < 0.13 * this._trafficMul) this._spawn(); this.spawnTimer = M.clamp((base + M.rand(-0.10, 0.5)) / (this._trafficMul || 1), 0.5, 2.1); }
+    // RS5: KEINE Objektflut. Nur SELTENE, bewusste Einzel-Hindernisse – erst nach Eingewöhnung.
+    this.hazardT = (this.hazardT == null ? 9999 : this.hazardT) - dt;
+    var hazardStart = 16, hazGap = Math.max(8, 14 - this.region.difficulty * 1.2);
+    if (this._elapsed > hazardStart) {
+      if (this.hazardT > 9000) this.hazardT = hazGap;            // erstes Hindernis erst nach Eingewöhnung
+      if (this.hazardT <= 0) {
+        var hk = M.pick(['log','rock','motor']);                 // klar erkennbares Einzelhindernis
+        var hSide = (Math.random() < 0.5 ? -1 : 1);
+        var inLane = Math.random() < 0.55;                       // bewusste Ausweichaufgabe ODER am Rand
+        var hl = inLane ? M.clamp(this._chCenter + M.rand(-0.18, 0.18), -0.8, 0.8)
+                        : M.clamp(this._chCenter + hSide * M.rand(0.6, 0.95), -1.0, 1.0);
+        this.obstacles.push(new WB.Obstacle(hk, hl, 1.06));
+        this.hazardT = hazGap + M.rand(-2, 4);
+      }
+    }
 
     // Kollision: Kreuzen der Kamera-Ebene (z passiert Zhit) -> KEIN Durchtunneln bei Tempo/Boost/niedriger FPS.
     var Zhit = 0.10;
@@ -177,8 +188,9 @@
       o.update(dt, zRate);
       if (!o.counted && pz > Zhit && o.z <= Zhit) {
         o.counted = true;
-        if (Math.abs(o.lane - this.playerLane) < (o.hitW + 0.06)) {
-          if (this.boat.hit(o.kind === 'swimmer' ? 'buoy' : o.kind)) {
+        var isMarker = (o.kind === 'buoy' || o.kind === 'buoy_g');   // Fahrwasser-Tonnen = Navigation, kein Crash
+        if (!isMarker && Math.abs(o.lane - this.playerLane) < (o.hitW + 0.06)) {
+          if (this.boat.hit(o.kind === 'swimmer' ? 'log' : o.kind)) {
             this.collisions += 1; this.shake = Math.min(1, this.shake + 0.85); this.flash = 0.6;
             if (this.boat.integrity <= 0) this.failed = true;
           }
@@ -516,6 +528,28 @@
     ctx.restore();
   };
 
+  // RS5: Ufer links/rechts – bewegen sich perspektivisch + verschieben mit der Kurve (cc) -> Kurve sichtbar.
+  World.prototype._drawBanks = function (ctx, t) {
+    var w = this.w, vb = this.viewBottom, hy = this.horizonY, cc = this._chCenter || 0, lane = this.playerLane, self = this;
+    function px(ln, near){ return near ? (w/2 + ln*self._laneHalf(0) - lane*w*0.46) : (w/2 + ln*0.30*self._laneHalf(1) - lane*w*0.12); }
+    var topY = hy + (vb - hy) * 0.05;
+    function bank(nearLn, farLn, dir){
+      var nearX = px(nearLn, true), farX = px(farLn, false), edge = (dir < 0 ? -w*0.25 : w*1.25);
+      ctx.beginPath();
+      ctx.moveTo(edge, vb); ctx.lineTo(nearX, vb); ctx.lineTo(farX, topY); ctx.lineTo(edge, topY); ctx.closePath();
+      var g = ctx.createLinearGradient(0, topY, 0, vb);
+      g.addColorStop(0, 'rgba(36,54,42,0.50)'); g.addColorStop(0.5, 'rgba(26,44,34,0.80)'); g.addColorStop(1, 'rgba(16,30,24,0.94)');
+      ctx.fillStyle = g; ctx.fill();
+      // Uferlinie (heller Schaum-Saum an der Wasserkante)
+      ctx.strokeStyle = 'rgba(150,195,175,0.40)'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(nearX, vb); ctx.lineTo(farX, topY); ctx.stroke();
+    }
+    ctx.save();
+    bank(cc - 1.15, cc - 0.62, -1);   // linkes Ufer
+    bank(cc + 1.15, cc + 0.62, 1);    // rechtes Ufer
+    ctx.restore();
+  };
+
   // Sicherer Fahrkorridor: zwei dezente grüne Linien + kleine Pfeile entlang der aktuellen Spur.
   World.prototype._drawSafeLane = function (ctx, t) {
     var w = this.w, vb = this.viewBottom, hy = this.horizonY, mid = hy + (vb - hy) * 0.34;
@@ -558,6 +592,7 @@
     var shown = 0;
     for (var k = 0; k < near.length && shown < 4; k++) {
       var ob = near[k];
+      if (ob.kind === 'buoy' || ob.kind === 'buoy_g') continue;   // RS5: Tonnen sind Navigation, keine Gefahr-Marker
       var dlane = Math.abs(ob.lane - this.playerLane);
       var collide = dlane < (ob.hitW + 0.12);
       var risk = (collide && ob.z < 0.6) ? 'red' : (dlane < 0.36 ? 'amber' : 'safe');
@@ -587,9 +622,10 @@
       ctx.restore();
       shown++;
     }
-    // Ausweich-Assistent: bei akuter Kollision Richtungs-Pfeile + Kollisionslinie
+    // Ausweich-Assistent: bei akuter Kollision Richtungs-Pfeile + Kollisionslinie (nur echte Hindernisse)
     var danger=null;
     for (var d=0; d<this.obstacles.length; d++){ var ob2=this.obstacles[d];
+      if (ob2.kind === 'buoy' || ob2.kind === 'buoy_g') continue;
       if (ob2.z<0.5 && ob2.z>0.05 && Math.abs(ob2.lane-this.playerLane)<(ob2.hitW+0.14)){ if(!danger||ob2.z<danger.z) danger=ob2; } }
     if (danger){
       var w2=this.w, vb2=this.viewBottom, cy=vb2-(vb2-this.horizonY)*0.30;
@@ -628,6 +664,7 @@
     ctx.translate(-w / 2, -vb);
 
     this._waterAndSky(ctx, t);
+    this._drawBanks(ctx, t);
     this._waterGlints(ctx, t);
     this._drawGulls(ctx);
 
