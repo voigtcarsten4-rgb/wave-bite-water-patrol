@@ -69,12 +69,17 @@
 
   // Berechnet Sterne + Belohnung (ohne zu verbuchen).
   MissionRuntime.prototype.result = function (world, boatStats) {
+    // RS5: Bewertung primär über Fahrwasser-Präzision + Kontrollpunkte (Hindernisse sind jetzt selten).
+    var clean = (world.totalT > 1) ? (world.cleanT / world.totalT) : 1;          // Zeitanteil im Fahrwasser
+    var cpRatio = world.checkpointN ? (world.cpDone / world.checkpointN) : 1;     // erreichte Kontrollpunkte
     var stars = 3;
-    if (world.collisions >= 3) stars -= 1;
-    if (world.collisions >= 6) stars -= 1;
-    if (boat_integrity(world) < 0.5 && stars > 2) stars = 2;
-    if (boat_integrity(world) < 0.25) stars = 1;
+    if (clean < 0.80) stars -= 1;                       // unsauberer Kurs
+    if (clean < 0.55) stars -= 1;
+    if (cpRatio < 0.8 && stars > 2) stars = 2;          // Kontrollpunkte verpasst
+    if (world.collisions >= 2) stars -= 1;              // Kollisionen bleiben spürbar (jetzt selten)
+    if (boat_integrity(world) < 0.35 && stars > 1) stars = 1;
     if (stars < 1) stars = 1;
+    if (stars > 3) stars = 3;
 
     var starMult = stars === 3 ? 1.1 : (stars === 2 ? 0.85 : 0.6);
     var prestigeMult = 1 + boatStats.prestige * 0.03;
