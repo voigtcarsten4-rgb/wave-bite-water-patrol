@@ -655,3 +655,23 @@ body {
 .lucy-av.speaking .lucy-scan { animation: lucyScan .5s ease 2; }
 @keyframes lucySpeak { 0%{ transform:scale(1);} 35%{ transform:scale(1.07); filter:brightness(1.18);} 100%{ transform:scale(1);} }
 @keyframes lucyScan { from{ opacity:.0; transform:translateY(-60%);} 50%{opacity:.8;} to{ opacity:0; transform:translateY(60%);} }
+
+/* ===== GAMEPLAY REBOOT: kompaktes In-Game-HUD (mehr Spielflaeche, mobil-first) ===== */
+#screen-game .hud-captain{transform:scale(.82);transform-origin:top left;opacity:.9}
+#screen-game .hud-mission{padding:5px 9px}
+#screen-game .hud-mission .ml{display:none}
+#screen-game .hud-mission .mt{font-size:12px}
+#screen-game .hud-right .hud-bar-wrap{padding:3px 8px}
+#screen-game .hud-bar{width:54px}
+#screen-game .hud-bar-label{font-size:9px}
+#screen-game #lucy-callout{max-width:62%;font-size:12px;padding:7px 11px}
+#screen-game .actions-bar{bottom:108px;gap:6px}
+#screen-game .actions-bar .act{padding:7px 9px;font-size:17px}
+#screen-game .actions-bar .act small{font-size:8.5px}
+@media (max-width:560px){
+  #screen-game .hud-right .hud-bar-wrap{padding:2px 6px}
+  #screen-game .hud-bar{width:42px}
+  #screen-game .actions-bar{bottom:104px}
+  #screen-game .actions-bar .act small{display:none}
+  #screen-game .hud-captain{display:none}      /* auf sehr schmal: Kapitaenschild aus, Funk reicht */
+}

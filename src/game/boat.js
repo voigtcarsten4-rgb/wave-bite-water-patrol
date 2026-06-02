@@ -68,7 +68,7 @@
     var maxLat = 95 + this.stats.handling * 15;
     var dir = (input.right ? 1 : 0) - (input.left ? 1 : 0);
     var targetVx = dir * maxLat * (this.boosting ? 1.25 : 1);
-    var ease = 1 - Math.pow(0.0015, dt);
+    var ease = 1 - Math.pow(0.06, dt);   // mehr Masse/Traegheit -> Boot, nicht Mauszeiger
     this.vx = M.lerp(this.vx, targetVx, ease);
     this.x += this.vx * dt;
     this.x = M.clamp(this.x, worldLeft + this.w / 2, worldRight - this.w / 2);

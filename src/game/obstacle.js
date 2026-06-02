@@ -7,12 +7,12 @@
   var M = WB.math;
 
   // halbe Trefferbreite (in lane-Einheiten) je Typ – große Boote breiter
-  var HIT = { buoy:0.10, rock:0.12, log:0.16, sail:0.16, motor:0.15, sup:0.10, houseboat:0.22, swimmer:0.09, ferry:0.26, gate:0.13 };
+  var HIT = { buoy:0.10, buoy_g:0.10, rock:0.12, log:0.16, sail:0.16, motor:0.15, sup:0.10, houseboat:0.22, swimmer:0.09, ferry:0.26, gate:0.13 };
   // Mindest-Bildschirmgröße je Klasse (als Skalen-Floor) + globale Lesbarkeits-Vergrößerung
-  var MINS = { buoy:0.40, rock:0.40, log:0.42, sail:0.46, motor:0.55, sup:0.44, houseboat:0.62, swimmer:0.40, ferry:0.70, gate:0.42 };
+  var MINS = { buoy:0.40, buoy_g:0.40, rock:0.40, log:0.42, sail:0.46, motor:0.55, sup:0.44, houseboat:0.62, swimmer:0.40, ferry:0.70, gate:0.42 };
   var GS = 1.55;
   // Klartext-Namen für Labels
-  Obstacle.NAME = { buoy:'Boje', rock:'Felsen', log:'Treibholz', sail:'Segler', motor:'Motorboot', sup:'SUP', houseboat:'Hausboot', swimmer:'Schwimmer', ferry:'Fähre', gate:'Schleuse' };
+  Obstacle.NAME = { buoy:'Backbord-Tonne', buoy_g:'Steuerbord-Tonne', rock:'Felsen', log:'Treibholz', sail:'Segler', motor:'Motorboot', sup:'SUP', houseboat:'Hausboot', swimmer:'Schwimmer', ferry:'Fähre', gate:'Schleuse' };
 
   function Obstacle(kind, lane, z) {
     this.kind = kind; this.lane = lane; this.z = (z == null ? 1 : z);
@@ -49,6 +49,10 @@
         ctx.fillStyle = '#C9462F'; ctx.beginPath(); ctx.arc(0, 0, 9 * s, 0, Math.PI * 2); ctx.fill();
         ctx.fillStyle = '#F5F0E1'; ctx.beginPath(); ctx.arc(0, 0, 4.5 * s, 0, Math.PI * 2); ctx.fill();
         ctx.fillStyle = '#7A1E12'; ctx.fillRect(-1.5 * s, -16 * s, 3 * s, 8 * s); break;
+      case 'buoy_g':
+        ctx.fillStyle = '#1F8F4E'; ctx.beginPath(); ctx.moveTo(-9*s, 6*s); ctx.lineTo(9*s, 6*s); ctx.lineTo(0, -8*s); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#0E5C31'; ctx.fillRect(-1.5 * s, -18 * s, 3 * s, 12 * s);
+        ctx.fillStyle = '#0E5C31'; ctx.beginPath(); ctx.arc(0, -20*s, 3*s, 0, Math.PI*2); ctx.fill(); break;
       case 'rock':
         ctx.fillStyle = '#42525E'; ctx.beginPath();
         ctx.moveTo(-16 * s, 4 * s); ctx.lineTo(-7 * s, -10 * s); ctx.lineTo(6 * s, -7 * s); ctx.lineTo(16 * s, 6 * s); ctx.lineTo(0, 12 * s); ctx.closePath(); ctx.fill();

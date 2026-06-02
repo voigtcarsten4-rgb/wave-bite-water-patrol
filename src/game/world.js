@@ -79,9 +79,19 @@
     this.pitch += (targetPitch - this.pitch) * Math.min(1, dt * 3);
 
     var zRate = speed / 520;
+    // FAHRWASSER: rot/grün-Bojengasse, deren Mitte mäandert (Kurven). Spieler faehrt DAZWISCHEN.
+    this._chCenter = 0.34 * Math.sin(this.scroll * 0.0011) + 0.14 * Math.sin(this.scroll * 0.0029 + 1.3);
+    this._chT = (this._chT == null ? 0 : this._chT) - dt;
+    if (this._chT <= 0) {
+      var c = this._chCenter, half = 0.40;
+      this.obstacles.push(new WB.Obstacle('buoy',  M.clamp(c - half, -0.9, 0.9), 1.04));   // Backbord rot links
+      this.obstacles.push(new WB.Obstacle('buoy_g', M.clamp(c + half, -0.9, 0.9), 1.04));  // Steuerbord grün rechts
+      this._chT = M.clamp(1.05 - this.region.difficulty * 0.05, 0.6, 1.1);
+    }
+    // Verkehr/Hindernisse (etwas seltener, damit die Gasse lesbar bleibt)
     this.spawnTimer -= dt;
-    var base = 0.82 - this.region.difficulty * 0.08;
-    if (this.spawnTimer <= 0) { this._spawn(); if (Math.random() < 0.35) this._spawn(); this.spawnTimer = M.clamp(base + M.rand(-0.18, 0.32), 0.32, 1.1); }
+    var base = 1.05 - this.region.difficulty * 0.07;
+    if (this.spawnTimer <= 0) { this._spawn(); if (Math.random() < 0.22) this._spawn(); this.spawnTimer = M.clamp(base + M.rand(-0.12, 0.4), 0.5, 1.4); }
 
     for (var i = this.obstacles.length - 1; i >= 0; i--) {
       var o = this.obstacles[i];
@@ -310,13 +320,13 @@
   // Sicherer Fahrkorridor: zwei dezente grüne Linien + kleine Pfeile entlang der aktuellen Spur.
   World.prototype._drawSafeLane = function (ctx, t) {
     var w = this.w, vb = this.viewBottom, hy = this.horizonY, mid = hy + (vb - hy) * 0.34;
-    var lane = this.playerLane;
+    var lane = this.playerLane; var cc = this._chCenter || 0;
     function projX(self, ln, near){ return near ? (w/2 + ln*self._laneHalf(0) - lane*w*0.46) : (w/2 + ln*0.28*self._laneHalf(1) - lane*w*0.12); }
     ctx.save();
     var grd = ctx.createLinearGradient(0, mid, 0, vb);
     grd.addColorStop(0, 'rgba(90,220,160,0.0)'); grd.addColorStop(1, 'rgba(90,220,160,0.30)');
     ctx.strokeStyle = grd; ctx.lineWidth = 2.5;
-    [-0.20, 0.20].forEach(function(off){
+    [cc-0.22, cc+0.22].forEach(function(off){
       ctx.beginPath(); ctx.moveTo(projX(this, off, true), vb); ctx.lineTo(projX(this, off, false), mid); ctx.stroke();
     }, this);
     // Richtungspfeile (scrollen nach unten = Fahrtgefühl)
@@ -324,7 +334,7 @@
     for (var i = 0; i < 3; i++) {
       var p = ((this.scroll * 0.0016 + i / 3) % 1);
       var yy = mid + (vb - mid) * (p * p);
-      var cx = w/2 - lane * M.lerp(w*0.12, w*0.46, p*p);
+      var cx = w/2 + (cc - lane) * M.lerp(w*0.12, w*0.46, p*p);
       var aw = M.lerp(5, 16, p), ah = M.lerp(4, 12, p);
       ctx.globalAlpha = 0.18 + 0.5 * p;
       ctx.beginPath(); ctx.moveTo(cx - aw, yy - ah); ctx.lineTo(cx, yy); ctx.lineTo(cx + aw, yy - ah); ctx.closePath(); ctx.fill();
