@@ -166,10 +166,14 @@
   }
 
   // Cinematic-Mission -> echte Spiel-Mission (IDs aus WB.data.missions)
-  var REAL_ID={1:'m_sturm',2:'m_rettung',3:'m_verfolgung',4:'m_nacht',5:'m_schmuggler',6:'m_speed',7:'m_kontrolle',8:'m_diebstahl',9:'m_vermisst',10:'m_streife'};
+  var REAL_ID={1:'m_sturm',2:'m_rettung',3:'m_verfolgung',4:'m_nacht',5:'m_schmuggler',6:'m_speed',7:'m_razzia',8:'m_beweis',9:'m_vermisst',10:'m_streife'};
   function startGameplay(m){
     var rid = m && REAL_ID[m.id];
-    if (rid && WB.Game && WB.Game.start) { try { WB.Game.start(rid); return; } catch(e){} }
+    if (rid && WB.Game) {
+      try { WB.Game._skipCinemaOnce = true;   // Kino hat Cinematic+Briefing schon gezeigt -> kein Doppel
+            if (WB.Game._launch) { WB.Game._launch(rid); return; }
+            if (WB.Game.start) { WB.Game.start(rid); return; } } catch(e){ WB.Game._skipCinemaOnce=false; }
+    }
     var qs=document.getElementById('btn-quickstart'); if(qs) qs.click();
   }
 
