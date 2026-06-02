@@ -9,6 +9,8 @@
   function escFromSave(){ try { var s = WB.Save.data, runs = (s.stats && s.stats.runs) || 0, lvl = s.captainLevel || 1; return Math.min(1, runs / 25 * 0.6 + (lvl - 1) / 20 * 0.4); } catch (e) { return 0; } }
 
   var COCKPIT = 'cockpit_bridge';
+  // Echtes Cockpit-Foto als fester Vordergrund (transparente Scheibe -> Welt scheint durch).
+  var HELM = new Image(); HELM.src = 'assets/cockpit/cockpit_helm.webp';
   // RS-Backgrounds: dedizierte, BOOTS-FREIE POV-Hintergründe (nicht die loc_*-Kinostills mit Booten!).
   var BG = { bucht: 'bg_calm_bay_1', kanal: 'bg_narrow_canal_1', seenplatte: 'bg_night_lake_1', schleuse: 'bg_lock_1' };
   function pickBg(region, w){
@@ -383,9 +385,17 @@
     ctx.fillStyle = lg; ctx.fillRect(0, 0, w, hy * 1.8); ctx.restore();
   };
 
-  // ---------- Cockpit-Vordergrund: FESTE Frontscheibe (3 Scheiben, A-Holme, Mittelstege, Dach) + Armatur ----------
+  // ---------- Cockpit-Vordergrund: echtes Helm-Foto (transparente Scheibe) ODER gezeichneter Fallback-Rahmen ----------
   World.prototype._drawCockpit = function (ctx, t) {
     var w = this.w, h = this.h, dt = this.dashTop, hy = this.horizonY;
+    if (HELM.complete && HELM.naturalWidth) {
+      var iw=HELM.naturalWidth, ih=HELM.naturalHeight, s=Math.max(w/iw, h/ih);
+      var dw=iw*s, dh=ih*s, dx=(w-dw)/2, dy=(h-dh)/2;
+      var bl0=document.getElementById('bluelight');
+      if (bl0 && bl0.classList.contains('on')) { var pl=0.5+0.5*Math.sin(t*8); ctx.save(); ctx.globalCompositeOperation='lighter'; var bgG=ctx.createLinearGradient(0,hy*0.4,0,hy*1.7); bgG.addColorStop(0,'rgba(70,150,255,'+(0.06+pl*0.14).toFixed(2)+')'); bgG.addColorStop(1,'rgba(70,150,255,0)'); ctx.fillStyle=bgG; ctx.fillRect(0,hy*0.4,w,hy*1.4); ctx.restore(); }
+      ctx.drawImage(HELM, dx, dy, dw, dh);
+      return;
+    }
     var roofH = Math.round(h * 0.05);
     var yTop = roofH, yBot = dt;
     var pOut = Math.round(w * 0.10);     // A-Holm-Breite (unten)
