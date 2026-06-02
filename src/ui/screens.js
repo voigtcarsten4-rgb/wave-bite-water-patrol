@@ -863,11 +863,16 @@
       } else {
         var msg = data.reason === 'time'
           ? 'Zeit abgelaufen – der Auftrag ist geplatzt.'
-          : 'Boot zu stark beschaedigt!';
+          : (data.reason === 'escaped' ? 'Zu viel Abstand – das Boot ist entkommen.' : 'Boot zu stark beschaedigt!');
+        var c = data.close, headTxt = c ? c.head : 'Mission gescheitert';
+        var motiv = c ? ('<div class="lose-motiv"><div class="lose-prog"><span style="width:' + Math.max(6, c.pct) + '%"></span></div>'
+              + '<p class="muted">' + c.sub + '</p>'
+              + '<div class="comeback">🌬️ Beim nächsten Versuch: <b>+' + c.bonus + ' 🪙 Rückenwind-Bonus</b></div></div>')
+            : ('<p class="muted">' + msg + '</p>');
         html = '<div class="result-card lose">'
           + '<div class="result-icon">🌊</div>'
-          + '<h2>Mission gescheitert</h2><p class="muted">' + msg + '</p>'
-          + '<div class="result-actions"><button class="btn btn-gold" id="res-again">Erneut</button>'
+          + '<h2>' + headTxt + '</h2>' + motiv
+          + '<div class="result-actions"><button class="btn btn-gold" id="res-again">Nochmal – jetzt klappt\'s</button>'
           + '<button class="btn btn-line" id="res-menu">Menue</button></div></div>';
         var overlay2 = $('overlay-result');
         if (overlay2) {

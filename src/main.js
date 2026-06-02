@@ -32,6 +32,7 @@
       var afterIntro = function () {
         if (!st.onboarded) WB.Screens.showOnboarding(function () { st.onboarded = true; WB.Save.save(); if (WB.News) WB.News.maybeShow(); });
         else if (WB.News) WB.News.maybeShow();
+        if (WB.Retention) WB.Retention.greetReturn();
       };
       // Intro bei JEDEM Spielstart abspielen (skippbar per Tap).
       var playIntroThen = function () { if (WB.Intro && WB.Intro.playSignature) WB.Intro.playSignature(afterIntro); else if (WB.Intro) WB.Intro.play(afterIntro); else afterIntro(); };

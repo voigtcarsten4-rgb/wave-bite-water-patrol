@@ -21,6 +21,7 @@
 
     _launchObj: function (mission) {
       this.mission = mission;
+      if (WB.Retention) WB.Retention.grantComeback(mission);
       this.region = WB.data.regionById(mission.regionId);
       this.boatStats = WB.Progression.effectiveStats(WB.Save.data.selectedBoatId);
       var boat = new WB.Boat(this.boatStats);
@@ -208,7 +209,8 @@
           subtitle: reason === 'time' ? 'Zeit abgelaufen – der Verdächtige ist weg.' : (reason === 'escaped' ? 'Zu viel Abstand – das Boot ist entkommen.' : 'Boot zu stark beschädigt.'),
           duration: 3000
         };
-        var showFail = function () { WB.Screens.showResult({ success: false, reason: reasonF, mission: missionF, mode: modeF, event: missionF }); };
+        var closeF = (WB.Retention) ? WB.Retention.onFail(this.world, missionF, reason) : null;
+        var showFail = function () { WB.Screens.showResult({ success: false, reason: reasonF, mission: missionF, mode: modeF, event: missionF, close: closeF }); };
         if (WB.Cinematic) WB.Cinematic.play(failCfg, showFail); else { WB.Audio.fail(); showFail(); }
       }
     }

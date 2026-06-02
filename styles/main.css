@@ -732,3 +732,9 @@ body {
 .ret-mark.ok{background:#6fe0a3}
 .ret-lbl{font:700 12px ui-monospace,monospace;color:#cfe6ff;margin:4px 0}
 @media (max-width:560px){.mg2{max-width:94vw}.radar2{width:74vw;height:74vw;max-width:280px;max-height:280px}.ret-radar{width:62vw;height:62vw;max-width:220px;max-height:220px}}
+
+/* ===== v51 RC2.0 Retention: Niederlage-Motivation ===== */
+.lose-motiv{margin:10px 0 4px}
+.lose-prog{height:8px;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden;margin:0 auto 10px;max-width:240px}
+.lose-prog span{display:block;height:100%;background:linear-gradient(90deg,#5BB98B,#9CE3BE);border-radius:99px}
+.comeback{margin-top:8px;font:700 13px system-ui,sans-serif;color:#E7CE8B;background:rgba(201,162,75,.12);border:1px solid rgba(201,162,75,.35);border-radius:10px;padding:8px 10px}
