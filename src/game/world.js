@@ -9,7 +9,15 @@
   function escFromSave(){ try { var s = WB.Save.data, runs = (s.stats && s.stats.runs) || 0, lvl = s.captainLevel || 1; return Math.min(1, runs / 25 * 0.6 + (lvl - 1) / 20 * 0.4); } catch (e) { return 0; } }
 
   var COCKPIT = 'cockpit_bridge';
-  var BG = { bucht: 'loc_mueggelsee', kanal: 'loc_spree', seenplatte: 'loc_dahme', schleuse: 'loc_lock' };
+  // RS-Backgrounds: dedizierte, BOOTS-FREIE POV-Hintergründe (nicht die loc_*-Kinostills mit Booten!).
+  var BG = { bucht: 'bg_calm_bay_1', kanal: 'bg_narrow_canal_1', seenplatte: 'bg_night_lake_1', schleuse: 'bg_lock_1' };
+  function pickBg(region, w){
+    if (w && w._fog) return 'bg_foggy_channel_1';
+    var night = !!(w && ((w._tod==='night') || w.storm));
+    var id = BG[region.id] || 'bg_calm_bay_1';
+    if (region.id==='bucht' && night) id = 'bg_night_lake_1';
+    return id;
+  }
   var TRAFFIC = ['buoy','sail','motor','sup','houseboat','swimmer','ferry','rock','log'];
   // Pro Missionstyp ein klares Ziel + Fahrhinweis (Learning by Playing / UX-Klarheit)
   var OBJ = {
@@ -39,7 +47,7 @@
     this.curSpeed = 120; this.playerLane = 0; this.shake = 0; this.flash = 0;
     this.isChase = !!({ pursuit:1, smuggler:1 })[mission.type]; // v45: nur Verfolgung/Schmuggler = Jagd; control/eco/rescue/patrol = Routen-Ziel
     this.failReason = null; this.opp = null;
-    this.bgId = BG[region.id] || 'loc_mueggelsee';
+    this.bgId = BG[region.id] || 'bg_calm_bay_1';
     this.cockpitId = COCKPIT;
     this._parts = null; this._lucyT = 0; this._wasBoost = false; this._zone = null; this._zoneEnd = 0;
     this.roll = 0; this.pitch = 0;
@@ -64,6 +72,7 @@
     this._fog = !!(V && V.weather === 'fog');
     if (V && (V.weather === 'storm')) this.storm = true;
     this._tod = V && V.tod;
+    this.bgId = pickBg(region, this);
   }
 
   World.prototype.layout = function (w, h) {
@@ -468,7 +477,6 @@
     ctx.beginPath(); ctx.arc(rx, cyc, rr, 0, Math.PI*2); ctx.stroke();
     ctx.beginPath(); ctx.arc(rx, cyc, rr*0.6, 0, Math.PI*2); ctx.stroke();
     var ang=(t*1.6)%(Math.PI*2);
-    var sweep=ctx.createConicGradient ? null : null;
     ctx.globalAlpha=0.55; ctx.strokeStyle='rgba(120,235,180,0.8)';
     ctx.beginPath(); ctx.moveTo(rx,cyc); ctx.lineTo(rx+Math.cos(ang)*rr, cyc+Math.sin(ang)*rr); ctx.stroke();
     // ein „Kontakt"-Punkt
