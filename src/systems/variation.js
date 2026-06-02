@@ -20,7 +20,7 @@
   WB.Variation = {
     roll: function (mission) {
       var runs = 0; try { runs = (WB.Save.data.stats && WB.Save.data.stats.runs) || 0; } catch (e) {}
-      var seed = (runs * 2654435761) ^ (Date.now() & 0xffff) ^ hash(mission && mission.id || 'm');
+      var seed = (runs * 2654435761) ^ (Date.now() & 0xffffff) ^ ((Math.random()*0xffffff)|0) ^ hash(mission && mission.id || "m");
       var r = rng(seed);
       var weather = WEATHER[(r() * WEATHER.length) | 0];
       var tod = TOD[(r() * TOD.length) | 0];
