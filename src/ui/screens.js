@@ -362,6 +362,7 @@
       } catch (e) {}
       var strip = document.getElementById('world-strip');
       if (strip && WB.News) { strip.innerHTML = WB.News.statusStrip(); strip.onclick = function () { WB.News.showBriefing(null); }; }
+      if (WB.Wasserlage) WB.Wasserlage.mount('wasserlage-cockpit');
       if (WB.LucyHUD) WB.LucyHUD.mount();
       show('screen-start');
     },
