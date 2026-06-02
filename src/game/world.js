@@ -53,6 +53,7 @@
 
   World.prototype.layout = function (w, h) {
     this.w = w; this.h = h;
+    this.left = 0; this.right = w;   // v45-Fix: Begrenzung fuer Gegner-AI (lane = right-left, sonst NaN -> Jagd unloesbar)
     // Welt füllt den ganzen Bildschirm; Cockpit-Konsole liegt als Vordergrund über dem unteren Teil.
     this.viewBottom = Math.round(h * 0.965);   // Wasser reicht fast bis zum unteren Rand
     this.horizonY  = Math.round(h * 0.27);     // Horizont weiter oben -> mehr Welt/Tiefe
