@@ -385,7 +385,7 @@
     ctx.fillStyle = lg; ctx.fillRect(0, 0, w, hy * 1.8); ctx.restore();
   };
 
-  // ---------- Cockpit-Vordergrund: echtes Helm-Foto (transparente Scheibe) ODER gezeichneter Fallback-Rahmen ----------
+  // ---------- Cockpit-Vordergrund: FESTE Frontscheibe (3 Scheiben, A-Holme, Mittelstege, Dach) + Armatur ----------
   World.prototype._drawCockpit = function (ctx, t) {
     var w = this.w, h = this.h, dt = this.dashTop, hy = this.horizonY;
     if (HELM.complete && HELM.naturalWidth) {
@@ -487,6 +487,7 @@
     ctx.beginPath(); ctx.arc(rx, cyc, rr, 0, Math.PI*2); ctx.stroke();
     ctx.beginPath(); ctx.arc(rx, cyc, rr*0.6, 0, Math.PI*2); ctx.stroke();
     var ang=(t*1.6)%(Math.PI*2);
+    var sweep=ctx.createConicGradient ? null : null;
     ctx.globalAlpha=0.55; ctx.strokeStyle='rgba(120,235,180,0.8)';
     ctx.beginPath(); ctx.moveTo(rx,cyc); ctx.lineTo(rx+Math.cos(ang)*rr, cyc+Math.sin(ang)*rr); ctx.stroke();
     // ein „Kontakt"-Punkt
@@ -664,14 +665,38 @@
     }
   };
 
+  // Geschwindigkeits-FX: Warp-Streifen aus dem Fluchtpunkt + Wind-Schimmer. Ruhig bei Langsamfahrt, stark bei Boost.
+  World.prototype._speedFX = function (ctx, t) {
+    var w=this.w, vb=this.viewBottom, hy=this.horizonY;
+    var spd=Math.min(1, this.curSpeed/240), boost=this.boat.boosting?1:0;
+    var inten = Math.max(0,(spd-0.5))/0.5*0.55 + boost*0.6; if(inten<=0.02) return; inten=Math.min(1.1,inten);
+    var cx=w/2 - this.playerLane*w*0.10, cy=hy+(vb-hy)*0.26;
+    ctx.save(); ctx.globalCompositeOperation='lighter';
+    var N=Math.round(14+inten*26);
+    for(var i=0;i<N;i++){
+      var ang=(i*2.39996), p=((t*(0.7+inten*1.4))+i*0.123)%1;
+      var rr=Math.max(w,vb), r0=70+p*rr*0.62, r1=r0+(40+inten*120);
+      var a=inten*0.11*(1-p);
+      ctx.strokeStyle='rgba(225,242,255,'+a.toFixed(3)+')'; ctx.lineWidth=1+inten*1.6;
+      ctx.beginPath(); ctx.moveTo(cx+Math.cos(ang)*r0, cy+Math.sin(ang)*r0*0.72); ctx.lineTo(cx+Math.cos(ang)*r1, cy+Math.sin(ang)*r1*0.72); ctx.stroke();
+    }
+    // Sprueh-/Geschwindigkeitsschimmer als weiche Aufhellung am unteren Bildrand
+    var sg=ctx.createLinearGradient(0,vb*0.72,0,vb); sg.addColorStop(0,'rgba(220,240,255,0)'); sg.addColorStop(1,'rgba(220,240,255,'+(0.05+inten*0.12).toFixed(3)+')');
+    ctx.fillStyle=sg; ctx.fillRect(-w*0.2, vb*0.72, w*1.4, vb*0.28);
+    ctx.restore();
+    // seitlicher Tunnel-Blur (dunkle Kanten) verstaerkt Tempo-Eindruck
+    if(inten>0.25){ var eg=ctx.createRadialGradient(cx,cy,vb*0.30,cx,cy,vb*0.95); eg.addColorStop(0,'rgba(2,8,16,0)'); eg.addColorStop(1,'rgba(2,8,16,'+(0.10+inten*0.18).toFixed(3)+')'); ctx.fillStyle=eg; ctx.fillRect(-w*0.2,-vb*0.12,w*1.4,vb*1.24); }
+  };
+
   World.prototype.draw = function (ctx, t) {
     var w = this.w, h = this.h, vb = this.viewBottom, hy = this.horizonY;
 
     // ---------- WELT (durch die Scheibe) – neigt/rollt mit dem Boot ----------
     ctx.save();
     ctx.beginPath(); ctx.rect(0, 0, w, vb); ctx.clip();
-    var sx = this.shake * 6 * (Math.sin(t * 53) + Math.sin(t * 31)) * 0.5;
-    var sy = this.shake * 4 * (Math.cos(t * 47)) * 0.5;
+    var bzz = this.boat.boosting ? (Math.sin(t*61)*1.6 + Math.cos(t*89)*1.2) * Math.min(1,this.curSpeed/200) : 0;
+    var sx = this.shake * 6 * (Math.sin(t * 53) + Math.sin(t * 31)) * 0.5 + bzz;
+    var sy = this.shake * 4 * (Math.cos(t * 47)) * 0.5 + bzz*0.6;
     var stormAmp = this.storm ? 1.0 : 0.5;
     var bob = (Math.sin(t * 1.1) * 2.2 + Math.sin(t * 2.6) * 1.0) * stormAmp;
     var rollA = this.roll + Math.sin(t * 0.9) * 0.006 * stormAmp;   // Rollen ums untere Zentrum
@@ -710,6 +735,7 @@
     this._drawObstacleMarkers(ctx);
     if (this.opp) this.opp.draw(ctx, t);
     this._airLight(ctx, t);
+    this._speedFX(ctx, t);
 
     // (Eigenes Boot / Bug wird als FIXER Vordergrund nach dem Welt-Restore gezeichnet -> _drawBow)
     if (this.boat.boosting) {
