@@ -854,3 +854,22 @@ body {
 .intro-stage.film .intro-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:1;animation:none}
 .intro-stage.film .intro-grade{background:linear-gradient(180deg,rgba(4,8,15,.20),rgba(4,8,15,0) 24%,rgba(4,8,15,0) 76%,rgba(4,8,15,.42))}
 .intro-stage.film .cine-bar{display:none}
+
+/* ===== RS5: PWA-Install-Button + iOS-Anleitung ===== */
+.btn-install{ background:linear-gradient(135deg,#0a4d80,#0b6cab); color:#fff; border:1px solid rgba(120,180,255,.5);
+  font-weight:800; box-shadow:0 8px 22px -10px rgba(11,108,171,.8), inset 0 1px 0 rgba(255,255,255,.25); }
+.btn-install:hover{ transform:translateY(-1px); }
+#overlay-install .inst-card{ position:relative; max-width:380px; margin:auto; padding:24px 22px 20px; border-radius:22px; text-align:center;
+  background:linear-gradient(160deg, rgba(18,42,72,.97), rgba(8,20,36,.98)); border:1px solid rgba(201,162,75,.4);
+  box-shadow:0 30px 70px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.06); color:#eaf1f8; animation:skpIn .5s cubic-bezier(.2,.9,.3,1.15) both; }
+.inst-badge{ width:84px; height:84px; margin:0 auto 12px; border-radius:20px; overflow:hidden; box-shadow:0 12px 30px rgba(0,0,0,.5); }
+.inst-badge img{ width:100%; height:100%; object-fit:cover; display:block; }
+.inst-h{ margin:2px 0 8px; font-size:20px; }
+.inst-x{ color:var(--muted); font-size:13.5px; line-height:1.5; margin:0 auto 16px; max-width:310px; }
+.inst-step{ display:flex; align-items:center; gap:11px; text-align:left; background:rgba(255,255,255,.04);
+  border:1px solid var(--glass-line); border-radius:13px; padding:11px 13px; margin:0 0 9px; font-size:13.5px; color:#dfe9f4; }
+.inst-n{ flex:0 0 auto; width:26px; height:26px; border-radius:50%; display:grid; place-items:center; font-weight:800; font-size:13px;
+  color:#06121f; background:linear-gradient(135deg,var(--gold),var(--gold-2)); }
+.inst-share{ font-size:16px; }
+.inst-note{ font-size:11px; color:rgba(255,255,255,.5); margin:12px 0 14px; line-height:1.45; }
+@media (max-width:560px){ #overlay-install .inst-card{ max-width:92vw; } }
