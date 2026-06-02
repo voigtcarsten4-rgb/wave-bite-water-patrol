@@ -28,7 +28,7 @@
     smuggler:'Eng bleiben, Abstand Schritt für Schritt schließen.'
   };
 
-  function World(boat, region, mission) {
+  function World(boat, region, mission, variant) {
     this.boat = boat; this.region = region; this.mission = mission;
     this.water = new WB.Water();
     this.obstacles = []; this.gulls = [];
@@ -51,6 +51,15 @@
     this.escortHoldT = 0; this.escortProgress = 0; this._escWarn = 0;
     this.objective = this.isEscort ? 'VIP-Jacht eskortieren – Sicherheitsabstand halten (nicht zu nah, nicht abreißen lassen).' : (OBJ[mission.type] || 'Erreiche den Zielpunkt.');
     this.objectiveHint = this.isEscort ? 'Tempo so anpassen, dass der Abstand im grünen Band bleibt.' : (HINT[mission.type] || '');
+    // RC3.0 Phase C: Missions-Variation
+    this.variant = variant || (WB.Variation ? WB.Variation.roll(mission) : null);
+    var V = this.variant;
+    this.distance = mission.distance * ((V && V.distMul) || 1);
+    this._trafficMul = (V && V.trafficMul) || 1;
+    this._startLane = (V && V.startLane) || 0;
+    this._fog = !!(V && V.weather === 'fog');
+    if (V && (V.weather === 'storm')) this.storm = true;
+    this._tod = V && V.tod;
   }
 
   World.prototype.layout = function (w, h) {
@@ -60,13 +69,13 @@
     this.viewBottom = Math.round(h * 0.965);   // Wasser reicht fast bis zum unteren Rand
     this.horizonY  = Math.round(h * 0.27);     // Horizont weiter oben -> mehr Welt/Tiefe
     this.dashTop   = Math.round(h * 0.72);     // Oberkante der Cockpit-Konsole (Armaturen)
-    this.boat.reset(w / 2, this.viewBottom - 40);
+    this.boat.reset(w / 2 + (this._startLane || 0) * w * 0.30, this.viewBottom - 40);
     this.gulls = [];
     for (var i = 0; i < 4; i++) this.gulls.push({ x: M.rand(0, w), y: M.rand(this.horizonY * 0.3, this.horizonY * 1.2), s: M.rand(0.6, 1.2), v: M.rand(8, 20) * (Math.random() < 0.5 ? -1 : 1), ph: Math.random() * 6 });
     if ((this.isChase || this.isEscort) && WB.Opponent) { this.opp = new WB.Opponent(this, this.mission, this.region); if (this.isEscort) this.opp.label = 'VIP-Jacht'; }
   };
 
-  World.prototype.progressRatio = function () { if (this.isEscort) return M.clamp(this.escortProgress, 0, 1); return this.opp ? M.clamp(1 - this.opp.gap, 0, 1) : M.clamp(this.progress / this.mission.distance, 0, 1); };
+  World.prototype.progressRatio = function () { if (this.isEscort) return M.clamp(this.escortProgress, 0, 1); return this.opp ? M.clamp(1 - this.opp.gap, 0, 1) : M.clamp(this.progress / (this.distance || this.mission.distance), 0, 1); };
 
   // Perspektiv-Projektion: z (1 fern .. 0 nah) -> Bildschirm. Nahebene = viewBottom (unterer Rand).
   World.prototype._t = function (z) { var tt = 1 - M.clamp(z, 0, 1); return tt * tt; };
@@ -151,7 +160,7 @@
     // Verkehr/Hindernisse (etwas seltener, damit die Gasse lesbar bleibt)
     this.spawnTimer -= dt;
     var base = 1.05 - this.region.difficulty * 0.07;
-    if (this.spawnTimer <= 0) { this._spawn(); if (Math.random() < 0.22) this._spawn(); this.spawnTimer = M.clamp(base + M.rand(-0.12, 0.4), 0.5, 1.4); }
+    if (this.spawnTimer <= 0) { this._spawn(); if (Math.random() < 0.22 * this._trafficMul) this._spawn(); this.spawnTimer = M.clamp((base + M.rand(-0.12, 0.4)) / (this._trafficMul || 1), 0.32, 1.6); }
 
     for (var i = this.obstacles.length - 1; i >= 0; i--) {
       var o = this.obstacles[i];
@@ -220,7 +229,7 @@
       }
     } else if (!this.harborActive) {
       this.progress += speed * dt;
-      if (this.progress >= this.mission.distance) { this.harborActive = true; this.harborZ = 1.0;
+      if (this.progress >= this.distance) { this.harborActive = true; this.harborZ = 1.0;
         if (WB.LucyHUD && WB.LucyHUD.say) WB.LucyHUD.say(this.mission.type==='rescue' ? '🛟 Zielbereich – jetzt LANGSAM heran!' : (this.mission.type==='control'||this.mission.type==='smuggler') ? '🔦 Anlegen – Boost loslassen, langsam längsseits!' : '⚓ Zielpunkt voraus.');
       }
     } else {
@@ -591,6 +600,7 @@
 
     // ---------- Tageszeit-Farbwelt über der Welt ----------
     var hr = new Date().getHours(), tint;
+    if (this._tod === 'morgen') hr = 7; else if (this._tod === 'tag') hr = 13; else if (this._tod === 'abend') hr = 19; else if (this._tod === 'nacht') hr = 23;
     if (hr < 7 || hr >= 21) tint = 'rgba(50,95,175,0.12)';
     else if (hr >= 18) tint = 'rgba(255,180,95,0.12)';
     else tint = 'rgba(255,228,150,0.07)';

@@ -25,7 +25,8 @@
       this.region = WB.data.regionById(mission.regionId);
       this.boatStats = WB.Progression.effectiveStats(WB.Save.data.selectedBoatId);
       var boat = new WB.Boat(this.boatStats);
-      this.world = new WB.World(boat, this.region, mission);
+      this.variant = (WB.Variation ? WB.Variation.roll(mission) : null);
+      this.world = new WB.World(boat, this.region, mission, this.variant);
       this.world.layout(WB.Engine.w, WB.Engine.h);
       this.runtime = new WB.MissionRuntime(mission);
       this.t = 0;
@@ -36,6 +37,7 @@
       var begin = function () {
         WB.Screens.showGame(mission);
         try { if (WB.Captain) WB.Captain.greet(); } catch (e) {}
+        try { if (WB.Game.variant && WB.LucyHUD) { var v=WB.Game.variant; setTimeout(function(){ WB.LucyHUD.say('📻 '+v.radio); },600); } } catch (e) {}
         if (WB.Engine._resize) WB.Engine._resize();   // Canvas erst messen, wenn der Game-Screen sichtbar ist
         self.world.layout(WB.Engine.w, WB.Engine.h);   // Welt mit gültigen Maßen einrichten (Fix gegen 0×0-Schwarzbild)
         if (WB.Audio) { WB.Audio.unlock(); WB.Audio.startAmbience(); }
