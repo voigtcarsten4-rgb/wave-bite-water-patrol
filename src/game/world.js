@@ -195,8 +195,11 @@
       this.progress += speed * dt;
       this.opp.update(dt, input, this.boat);
       if (this.isEscort) {
-        // ESKORTE: Abstandsband halten (nicht jagen). gap 0.30..0.62 = sicher.
-        this.opp.caught = false; this.opp.escaped = false;   // Jagd-Ende neutralisieren
+        // ESKORTE: Abstandsband halten (nicht jagen). VIP-Jacht faehrt eigenes Tempo:
+        // Rueckstellkraft zur Band-Mitte (0.45) -> neutrales Tempo haelt das Band; Boost schliesst auf, Leerlauf reisst ab.
+        this.opp.caught = false; this.opp.escaped = false;
+        var rel = input.boost ? 1.0 : (input.throttle ? 0.42 : -0.55);
+        this.opp.gap = M.clamp(this.opp.gap - rel * 0.16 * dt + (0.45 - this.opp.gap) * 0.30 * dt, 0.05, 0.95);
         var g = this.opp.gap; this._escWarn -= dt;
         if (g > 0.30 && g < 0.62) { this.escortHoldT += dt; this._escBand = 'ok'; }
         else {
@@ -206,7 +209,7 @@
             if (WB.Audio && WB.Audio.danger) WB.Audio.danger(); this._escWarn = 2.4;
           }
         }
-        var target = this.mission.escortHold || 16;
+        var target = this.mission.escortHold || 12;
         this.escortProgress = M.clamp(this.escortHoldT / target, 0, 1);
         if (this.escortHoldT >= target) this.delivered = true;
       } else {
