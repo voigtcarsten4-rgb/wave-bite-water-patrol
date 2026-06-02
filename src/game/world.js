@@ -36,7 +36,7 @@
     this.harborActive = false; this.harborZ = 1.0;
     this.delivered = false; this.failed = false; this.collisions = 0;
     this.curSpeed = 120; this.playerLane = 0; this.shake = 0; this.flash = 0;
-    this.isChase = !!({ control:1, eco:1, pursuit:1, rescue:1, smuggler:1 })[mission.type];
+    this.isChase = !!({ pursuit:1, smuggler:1 })[mission.type]; // v45: nur Verfolgung/Schmuggler = Jagd; control/eco/rescue/patrol = Routen-Ziel
     this.failReason = null; this.opp = null;
     this.bgId = BG[region.id] || 'loc_mueggelsee';
     this.cockpitId = COCKPIT;
