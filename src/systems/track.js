@@ -32,6 +32,7 @@
         d.events.push({ e: ev, t: Date.now(), p: props || null });
         if (d.events.length > 600) d.events = d.events.slice(-600);
         persist(d);
+        try { if (WB.GA && WB.GA.event) WB.GA.event(ev, props || {}); } catch (e) {}
       } catch (e) {}
     },
     rating: function (stars, comment) {
@@ -40,6 +41,7 @@
         d.ratings.push({ s: stars, c: String(comment || '').slice(0, 240), t: Date.now() });
         d.counters['rating_submitted'] = (d.counters['rating_submitted'] || 0) + 1;
         persist(d);
+        try { if (WB.GA && WB.GA.event) WB.GA.event('rating_submitted', { stars: stars }); } catch (e) {}
       } catch (e) {}
     },
     data: function () { return load() || blank(); },
