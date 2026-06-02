@@ -364,6 +364,7 @@
       if (strip && WB.News) { strip.innerHTML = WB.News.statusStrip(); strip.onclick = function () { WB.News.showBriefing(null); }; }
       if (WB.Wasserlage) WB.Wasserlage.mount('wasserlage-cockpit');
       if (WB.LucyHUD) WB.LucyHUD.mount();
+      if (WB.Skipper && WB.Skipper.onStart) WB.Skipper.onStart();
       show('screen-start');
     },
 
@@ -601,6 +602,10 @@
         + '<div class="row-between toggle-row"><span>📊 Nutzungsstatistik (nur lokal)</span>'
         + '<button class="switch' + (s.settings.tracking !== false ? ' on' : '') + '" id="t-track"><span></span></button></div>'
         + '</div>'
+        + '<div class="card"><h3>Kapitän</h3>'
+        + '<div class="row-between"><span class="muted">Dein Funkname</span><b>' + (WB.Skipper ? WB.Skipper.esc(WB.Skipper.display()) : 'Kapitän') + '</b></div>'
+        + '<div style="display:flex;gap:9px;margin-top:10px"><button class="btn btn-line" id="skp-name-edit">✎ Name ändern</button>'
+        + '<button class="btn btn-line" id="skp-name-reset">Zurücksetzen</button></div></div>'
         + '<div class="card"><h3>Präsentation</h3><p class="muted">Spiele die Eröffnungssequenz erneut.</p>'
         + '<button class="btn btn-line" id="btn-intro">🎬 Intro ansehen</button></div>'
         + '<div class="card"><h3>Rechtliches</h3><p class="muted">Impressum, Datenschutz und Hinweise zum fiktiven Spiel.</p>'
@@ -620,6 +625,8 @@
       });
       on('btn-legal', function () { Screens.showLegal(); });
       on('btn-intro', function () { if (WB.Intro) WB.Intro.play(null); });
+      on('skp-name-edit', function () { if (WB.Skipper) WB.Skipper._show(function () { Screens.showSettings(); }); });
+      on('skp-name-reset', function () { if (WB.Skipper) { WB.Skipper.clear(); Screens.showSettings(); } });
       show('screen-settings');
     },
 
@@ -649,7 +656,7 @@
       $('overlay-legal').innerHTML = '<div class="panel onb">'
         + (portrait ? '<div class="onb-port" style="background-image:url(\'' + portrait + '\')"></div>' : '')
         + '<span class="bf-funk">● ' + L.name + ' · KI-Dispatch</span>'
-        + '<h3>Willkommen, Captain.</h3>'
+        + '<h3>Willkommen an Bord, ' + (WB.Skipper ? WB.Skipper.esc(WB.Skipper.display()) : 'Captain') + '.</h3>'
         + '<p class="muted">Du steuerst dein Patrouillenboot aus der Brücke. <b>◄ ►</b> lenken, <b>⚡ Gas</b> beschleunigt, <b>Boost</b> gibt den Extra-Schub. Weiche Hindernissen aus und erreiche dein Ziel – bei Zeiteinsätzen tickt die Uhr.</p>'
         + '<p class="muted">Starte mit einem <b>Einzeleinsatz</b> oder geh direkt in die <b>Live Water Region</b> – Lena funkt dir laufend neue Lagen.</p>'
         + '<button class="btn btn-gold" id="onb-go">Los geht\'s</button></div>';
@@ -720,7 +727,7 @@
         + (station ? '<div class="bf-bg" style="background-image:url(\'' + station + '\')"></div>' : '')
         + '<div class="bf-scrim"></div>'
         + '<div class="bf-panel">'
-        + '<div class="bf-head"><span class="bf-funk">● LIVE · ' + L.name + ' · KI-Dispatch</span><span class="bf-rank">' + rank.short + '</span></div>'
+        + '<div class="bf-head"><span class="bf-funk">● LIVE · ' + L.name + ' · KI-Dispatch</span><span class="bf-rank">' + rank.short + ' · ' + (WB.Skipper ? WB.Skipper.esc(WB.Skipper.display()) : 'Kapitaen') + '</span></div>'
         + '<div class="bf-row">'
         + (portrait ? '<div class="bf-port" style="background-image:url(\'' + portrait + '\')"></div>' : '')
         + '<div class="bf-msg"><div class="bf-title">' + ev.icon + ' ' + esc(ev.title) + '</div>'
@@ -800,7 +807,7 @@
         + (station ? '<div class="bf-bg" style="background-image:url(\'' + station + '\')"></div>' : '')
         + '<div class="bf-scrim"></div>'
         + '<div class="bf-panel">'
-        + '<div class="bf-head"><span class="bf-funk">● FUNK · ' + WB.data.rankUnit + '</span><span class="bf-rank">' + rank.short + '</span></div>'
+        + '<div class="bf-head"><span class="bf-funk">● FUNK · ' + WB.data.rankUnit + '</span><span class="bf-rank">' + rank.short + ' · ' + (WB.Skipper ? WB.Skipper.esc(WB.Skipper.display()) : 'Kapitaen') + '</span></div>'
         + '<div class="bf-row">'
         + (portrait ? '<div class="bf-port" style="background-image:url(\'' + portrait + '\')"></div>' : '')
         + '<div class="bf-msg"><div class="bf-title">' + mission.icon + ' ' + esc(mission.title) + '</div>'
@@ -851,7 +858,7 @@
 
         html = '<div class="result-card win" style="position:relative">'
           + '<div class="result-icon">' + data.mission.icon + '</div>'
-          + '<h2>Einsatz erfolgreich!</h2>'
+          + '<h2>Sauber gefahren, ' + (WB.Skipper ? WB.Skipper.esc(WB.Skipper.display()) : 'Kapitaen') + '!</h2>'
           + starsAnimated(r.stars)
           + '<div class="rewards">'
           + rewardSpan('🪙 +', r.coins)
