@@ -34,14 +34,14 @@
               'Streife angesetzt. Augen offen, Kurs ruhig.'] },
 
     { id: 'e_control', type: 'control', title: 'Bootskontrolle', icon: '🔦', regionId: 'bucht',
-      objective: 'Boot kontrollieren', distance: [1700, 2200], timeLimit: 0, minigame: 'search',
+      objective: 'Boot kontrollieren', distance: [1700, 2200], timeLimit: 0, minigame: 'hafenkontrolle',
       char: 'char_witness_1', station: 'station_witness_pier_1',
       brief: ['Gemeldetes Boot am Steg - erst Radar-Scan, dann hinfahren.',
               'Verdaechtige Bewegung. Scanne die Signale, dann Kontrolle.',
               'Zeugin ist nervoes. Pruef das Radar und sieh nach.'] },
 
     { id: 'e_eco', type: 'eco', title: 'Umweltverstoss', icon: '🛢', regionId: 'kanal',
-      objective: 'Verursacher finden', distance: [2000, 2600], timeLimit: 0, minigame: null,
+      objective: 'Verursacher finden', distance: [2000, 2600], timeLimit: 0, minigame: 'funk',
       char: 'char_suspect_skipper_1', station: 'station_suspicious_boat_1',
       brief: ['Ölschimmer im Kanal. Folge der Spur durch den Verkehr.',
               'Jemand kippt was rein. Find den Verursacher.',
@@ -55,14 +55,14 @@
               'Er hat Vorsprung. Boost clever einsetzen, nicht verlieren!'] },
 
     { id: 'e_rescue', type: 'rescue', title: 'Rettungseinsatz', icon: '🛟', regionId: 'seenplatte',
-      objective: 'Person erreichen', distance: [2200, 2800], timeLimit: [46, 54], minigame: null,
+      objective: 'Person erreichen', distance: [2200, 2800], timeLimit: [46, 54], minigame: 'rettung',
       char: 'char_radio_operator_1', station: 'station_abandoned_jetty_1',
       brief: ['Notruf! Person im Wasser - volle Fahrt, jede Sekunde zählt.',
               'Wind frischt auf, Sicht schlecht. Schnell zur Position!',
               'Rettung Prioritaet. Kurs halten, Wellen nicht unterschaetzen.'] },
 
     { id: 'e_smuggler', type: 'smuggler', title: 'Schmuggler abfangen', icon: '🚔', regionId: 'schleuse',
-      objective: 'Boot abfangen', distance: [2300, 2800], timeLimit: [40, 46], minigame: 'lock',
+      objective: 'Boot abfangen', distance: [2300, 2800], timeLimit: [40, 46], minigame: 'schleuse',
       char: 'char_thief_1', station: 'station_event_deck_1',
       brief: ['Schmugglerboot an der Schleuse. Erst Radar, dann abfangen!',
               'Sie wollen durch die Schleuse. Stell sie vorher.',

@@ -1,13 +1,18 @@
-/* Wave Bite – Water Patrol · game/minigame.js · Minispiel-Dispatcher.
- * Routet einen Minispiel-Typ auf das passende Modul; unbekannt/null -> sofort weiter. */
+/* Wave Bite – Water Patrol · game/minigame.js · Minispiel-Dispatcher (modernisierte Einsatzmodule).
+ * Routet Typ -> Modul; unbekannt/null -> sofort weiter. Alt-Aliasse (search/lock) auf neue Module. */
 (function (WB) {
   'use strict';
   WB.Minigame = {
     play: function (type, cfg, onDone) {
-      if (type === 'radar'  && WB.MiniRadar)  return WB.MiniRadar.play(cfg || { need: 5, duration: 12000 }, onDone);
-      if (type === 'lock'   && WB.MiniLock)   return WB.MiniLock.play(cfg || { need: 3, duration: 15000 }, onDone);
-      if (type === 'search' && WB.MiniSearch) return WB.MiniSearch.play(cfg || { need: 3, cells: 9, duration: 13000 }, onDone);
-      if (onDone) onDone({ success: true, score: 0 });
+      var R = function (m, d) { return m ? m.play(cfg || d, onDone) : (onDone && onDone({ success: true, score: 0 })); };
+      switch (type) {
+        case 'radar':  case 'sonar':        return R(WB.MiniRadar,   { need: 4, duration: 14000 });
+        case 'funk':                        return R(WB.MiniFunk,    { rounds: 4, duration: 20000 });
+        case 'schleuse':                    return R(WB.MiniSchleuse,{ duration: 16000 });
+        case 'hafenkontrolle': case 'search':return R(WB.MiniHafen,  { rounds: 4, duration: 22000 });
+        case 'rettung': case 'lock':        return R(WB.MiniRettung, { duration: 20000 });
+        default: if (onDone) onDone({ success: true, score: 0 });
+      }
     }
   };
 })(window.WB = window.WB || {});
