@@ -1,10 +1,11 @@
-/* Wave Bite – game/minigame-extra.js  (v81)
+/* Wave Bite – game/minigame-extra.js  (v82)
  * NEUE, eigenständige Premium-Minispiele – additiv, kein Umbau:
  *   🎣 MiniAngeln  : Auswerfen (Power-Timing) → Biss (Reaktion) → Einholen (Spannungs-Rhythmus)
  *   🦈 MiniSharkBite: Ausweichen (3 Lanes, Reaktion) → Reel-Kampf (Spannung, dramatisch)
  * Registriert sich in WB.Minigame.play (Wrap), injiziert eigene Lage-Pool-Missionen + CSS + Achievements. */
 (function (WB) {
   'use strict';
+  var GEN=0;
   function $(id){ return document.getElementById(id); }
   function lucy(t){ if (WB.LucyHUD && WB.LucyHUD.say) WB.LucyHUD.say(t); }
 
@@ -63,10 +64,10 @@
   // ============================ 🎣 ANGELN ============================
   WB.MiniAngeln = { play:function(cfg,onDone){
     cfg=cfg||{}; var need=cfg.catches||3, dur=cfg.duration||26000, snapSpeed=cfg.tension||0.85, fishSpeed=cfg.fishSpeed||1;
-    var t0=Date.now(), caught=0, over=false;
+    var t0=Date.now(), caught=0, over=false; var myGen=++GEN; function dead(){ return over||myGen!==GEN; }
     var ui=host('🎣','ANGEL-PATROUILLE','Wirf aus · warte auf den Biss · halte die Leine, ohne sie zu reißen.');
     ui.score.textContent='0 / '+need;
-    function tick(){ if(over)return; var p=1-(Date.now()-t0)/dur; ui.tf.style.width=Math.max(0,p)*100+'%'; if(p<=0){ over=true; lucy(caught>=need?'Sauber gefischt.':'Zeit abgelaufen.'); done(ui.host,{success:caught>=need,score:caught},onDone); return;} setTimeout(tick,90);} 
+    function tick(){ if(dead())return; var p=1-(Date.now()-t0)/dur; ui.tf.style.width=Math.max(0,p)*100+'%'; if(p<=0){ over=true; lucy(caught>=need?'Sauber gefischt.':'Zeit abgelaufen.'); done(ui.host,{success:caught>=need,score:caught},onDone); return;} setTimeout(tick,90);} 
     tick();
     function round(){
       if(over)return;
@@ -75,7 +76,7 @@
         +'<div class="xg-power" id="ag-pw"><div class="zone"></div><div class="ind" id="ag-ind"></div></div>'
         +'<button class="mg-btn" id="ag-cast">🎣 Auswerfen</button>';
       var ind=$('ag-ind'), pw=$('ag-pw'); var x=0,dir=1,raf;
-      function loop(){ if(over)return; x+=dir*1.7; if(x>=100){x=100;dir=-1;} if(x<=0){x=0;dir=1;} ind.style.left=x+'%'; raf=requestAnimationFrame(loop);} loop();
+      function loop(){ if(dead()){return;} var ind=$('ag-ind'); if(!ind){return;} x+=dir*1.7; if(x>=100){x=100;dir=-1;} if(x<=0){x=0;dir=1;} ind.style.left=x+'%'; raf=requestAnimationFrame(loop);} loop();
       $('ag-cast').addEventListener('pointerdown',function(e){ e.preventDefault(); cancelAnimationFrame(raf);
         var good = x>=60 && x<=84; fb(ui.fb,good,good?'Perfekter Wurf!':'Wurf sitzt – mal sehen.'); bite(good); });
     }
@@ -105,10 +106,10 @@
       btn.addEventListener('pointerdown',function(e){e.preventDefault();reeling=true;});
       btn.addEventListener('pointerup',function(){reeling=false;}); btn.addEventListener('pointerleave',function(){reeling=false;});
       var fish=$('ag-fish'), fx=46;
-      (function loop(){ if(over||fin)return;
+      (function loop(){ if(dead()||fin)return; var pe=$('ag-prog'),te=$('ag-tens'); if(!pe||!te){fin=true;return;}
         prog += reeling?0.7*fishSpeed:-0.12; prog=Math.max(0,Math.min(100,prog));
         tens += reeling?(0.9*snapSpeed):-1.3; tens=Math.max(0,Math.min(100,tens));
-        $('ag-prog').style.width=prog+'%'; $('ag-tens').style.width=tens+'%';
+        pe.style.width=prog+'%'; te.style.width=tens+'%';
         fx += (reeling?-0.5:0.35); fx=Math.max(8,Math.min(70,fx)); if(fish){fish.style.left=fx+'%'; fish.style.transform='scaleX('+(reeling?-1:1)+')';}
         if(tens>=100){ fin=true; fb(ui.fb,false,'Leine gerissen!'); if(WB.Audio)WB.Audio.fail&&WB.Audio.fail(); setTimeout(round,700); return; }
         if(prog>=100){ fin=true; caught++; ui.score.textContent=caught+' / '+need; fb(ui.fb,true,'Fisch gelandet! 🐟'); if(WB.Audio)WB.Audio.coin&&WB.Audio.coin();
@@ -126,10 +127,10 @@
   // ============================ 🦈 SHARK BITE ============================
   WB.MiniSharkBite = { play:function(cfg,onDone){
     cfg=cfg||{}; var rounds=cfg.dodges||5, dur=cfg.duration||24000, react=cfg.react||1100, snapSpeed=cfg.tension||1.25;
-    var t0=Date.now(), ok=0, over=false, idx=0;
+    var t0=Date.now(), ok=0, over=false, idx=0; var myGen=++GEN; function dead(){ return over||myGen!==GEN; }
     var ui=host('🦈','SHARK BITE','Weiche den Angriffen aus – dann hol den Hai im Kampf ein!');
     ui.score.textContent='0 / '+rounds;
-    function tick(){ if(over)return; var p=1-(Date.now()-t0)/dur; ui.tf.style.width=Math.max(0,p)*100+'%'; if(p<=0){ over=true; done(ui.host,{success:false,score:ok},onDone); return;} setTimeout(tick,90);} tick();
+    function tick(){ if(dead())return; var p=1-(Date.now()-t0)/dur; ui.tf.style.width=Math.max(0,p)*100+'%'; if(p<=0){ over=true; done(ui.host,{success:false,score:ok},onDone); return;} setTimeout(tick,90);} tick();
     function dodge(){
       if(over)return;
       if(idx>=rounds){ return reel(); }
@@ -142,12 +143,12 @@
         +'<div class="xg-warn on" id="sk-warn" style="top:'+(target*33.3+9)+'%">⚠ ANGRIFF</div></div>'
         +'<div class="xg-lbl">Lenke das Boot aus der Angriffslinie!</div>'
         +'<div class="xg-row"><button class="mg-btn ghost" id="sk-up">▲ Oben</button><button class="mg-btn ghost" id="sk-mid">● Mitte</button><button class="mg-btn ghost" id="sk-dn">▼ Unten</button></div>';
-      var boat=$('sk-boat'), fin=$('sk-fin'); var boatLane=1; boat.style.top='42%';
+      var boat=$('sk-boat'), fin=$('sk-fin'); if(!boat||!fin){return;} var boatLane=1; boat.style.top='42%';
       function setLane(l){ boatLane=l; boat.style.top=(l*33.3+9)+'%'; }
       $('sk-up').onpointerdown=function(e){e.preventDefault();setLane(0);}; $('sk-mid').onpointerdown=function(e){e.preventDefault();setLane(1);}; $('sk-dn').onpointerdown=function(e){e.preventDefault();setLane(2);};
-      requestAnimationFrame(function(){ fin.style.transition='left '+(react/1000)+'s linear, right '+(react/1000)+'s linear'; fin.style.right='78%'; });
+      requestAnimationFrame(function(){ if(dead()||!fin)return; fin.style.transition='left '+(react/1000)+'s linear, right '+(react/1000)+'s linear'; fin.style.right='78%'; });
       var resolved=false;
-      var to=setTimeout(function(){ if(over||resolved)return; resolved=true;
+      var to=setTimeout(function(){ if(dead()||resolved)return; resolved=true;
         if(boatLane!==target){ ok++; fb(ui.fb,true,'Ausgewichen!'); if(WB.Audio)WB.Audio.coin&&WB.Audio.coin(); }
         else { fb(ui.fb,false,'Biss abbekommen!'); if(WB.Audio)WB.Audio.danger&&WB.Audio.danger(); }
         idx++; setTimeout(dodge,520);
@@ -164,10 +165,10 @@
       btn.addEventListener('pointerdown',function(e){e.preventDefault();reeling=true;});
       btn.addEventListener('pointerup',function(){reeling=false;}); btn.addEventListener('pointerleave',function(){reeling=false;});
       var sh=$('sk-shark'),fx=48;
-      (function loop(){ if(over||fin)return;
+      (function loop(){ if(dead()||fin)return; var pe=$('sk-prog'),te=$('sk-tens'); if(!pe||!te){fin=true;return;}
         prog += reeling?0.55:-0.14; prog=Math.max(0,Math.min(100,prog));
         tens += reeling?(1.15*snapSpeed):-1.5; tens=Math.max(0,Math.min(100,tens));
-        $('sk-prog').style.width=prog+'%'; $('sk-tens').style.width=tens+'%';
+        pe.style.width=prog+'%'; te.style.width=tens+'%';
         fx += reeling?-0.45:0.4; fx=Math.max(8,Math.min(72,fx)); if(sh)sh.style.left=fx+'%';
         if(tens>=100){ fin=true; fb(ui.fb,false,'Leine gerissen – der Hai entkommt!'); if(WB.Audio)WB.Audio.fail&&WB.Audio.fail(); over=true; setTimeout(function(){done(ui.host,{success:false,score:ok},onDone);},800); return; }
         if(prog>=100){ fin=true; over=true; fb(ui.fb,true,'Hai bezwungen! 🦈🏆'); if(WB.Audio)WB.Audio.success&&WB.Audio.success(); achieve('shark_slayer','Hai bezwungen'); lucy('Unglaublich, Kapitän!'); setTimeout(function(){done(ui.host,{success:true,score:ok+1},onDone);},700); return; }
