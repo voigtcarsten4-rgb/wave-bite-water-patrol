@@ -52,10 +52,50 @@
           + '<div class="wl-foot"><span class="wl-hint">' + L.hint + '</span><a class="wl-link" id="wl-open" href="' + WL_URL + '" target="_blank" rel="noopener">🌊 Revierdaten</a></div>';
         var bk = document.getElementById('wl-back'); if (bk) bk.onclick = function () { if (WB.Track) WB.Track.log('return_to_wasserlage'); };
         var op = document.getElementById('wl-open'); if (op) op.onclick = function () { if (WB.Track) WB.Track.log('wasserlage_cockpit_open'); };
+        // ECHTE ELWIS-Daten überlagern (Revier-Ampel, Schleuse, Meldungszähler)
+        var self = this;
+        this.fetchNotices(function (d) {
+          try {
+            var st = self.elwisState(d), foot = document.querySelector('#wasserlage-cockpit .wl-foot .wl-hint');
+            if (!st) { if (foot) foot.textContent = L.hint + ' · (Quelle: Revier-Sim, ELWIS offline)'; return; }
+            // Revier-Ampel aus echten Meldungen
+            var amp = st.red > 0 ? 'red' : (st.total > 0 ? 'amber' : 'green');
+            var ampTxt = st.red > 0 ? ('WARNSTUFE ROT · ' + st.red + ' Sperrung(en)') : (st.total > 0 ? (st.total + ' Meldungen aktiv') : 'REVIERE FREI');
+            var ampEl = document.querySelector('#wasserlage-cockpit .wl-amp'); if (ampEl) { ampEl.className = 'wl-amp ' + amp; ampEl.textContent = ampTxt; }
+            var dotEl = document.querySelector('#wasserlage-cockpit .wl-dot'); if (dotEl) dotEl.className = 'wl-dot ' + amp;
+            // Schleusenstatus aus echten Meldungen
+            var schEl = document.querySelector('#wasserlage-cockpit .wl-sch');
+            if (schEl) { if (st.red > 0) { schEl.className = 'wl-sch red'; schEl.textContent = '✖ Störung'; } else if (st.sch > 0) { schEl.className = 'wl-sch amber'; schEl.textContent = '⚠ ' + st.sch + ' Hinweise'; } else { schEl.className = 'wl-sch green'; schEl.textContent = '✓ Offen'; } }
+            var schSub = schEl && schEl.parentNode ? schEl.parentNode.querySelector('.wl-i-sub') : null; if (schSub) schSub.textContent = 'ELWIS · live';
+            if (foot) foot.innerHTML = '📡 ELWIS · ' + st.total + ' Meldungen · Stand ' + (st.updated || '–');
+          } catch (e) {}
+        });
       } catch (e) {}
     },
     refresh: function (id) { this.mount(id); },
-    lage: lage
+    lage: lage,
+    _notices: null,
+    fetchNotices: function (cb) {
+      if (this._notices) { cb && cb(this._notices); return; }
+      try {
+        var cached = JSON.parse(sessionStorage.getItem('wl.elwis') || 'null');
+        if (cached && (Date.now() - cached._t) < 1800000) { this._notices = cached; cb && cb(cached); return; }
+      } catch (e) {}
+      try {
+        var x = new XMLHttpRequest(); x.open('GET', 'https://voigtcarsten4-rgb.github.io/wasserlage/data/notices.json', true);
+        x.timeout = 7000;
+        var self = this;
+        x.onload = function () { try { var d = JSON.parse(x.responseText); d._t = Date.now(); self._notices = d; try { sessionStorage.setItem('wl.elwis', JSON.stringify(d)); } catch (e) {} cb && cb(d); } catch (e) { cb && cb(null); } };
+        x.onerror = function () { cb && cb(null); }; x.ontimeout = function () { cb && cb(null); };
+        x.send();
+      } catch (e) { cb && cb(null); }
+    },
+    elwisState: function (d) {
+      if (!d || !d.notices) return null;
+      var n = d.notices, red = 0, sch = 0;
+      for (var i = 0; i < n.length; i++) { var x = n[i]; if (x.type === 'red') red++; var blob = (x.description || '') + (x.waterway || '') + (x.reason || ''); if (/chleuse/.test(blob)) sch++; }
+      return { total: n.length, red: red, sch: sch, updated: d.updated_de || '' };
+    }
   };
   WB.Wasserlage = WL;
 })(window.WB = window.WB || {});
