@@ -161,12 +161,18 @@
 
     var greet = returning ? 'Willkommen zurück' : 'Willkommen an Bord';
     var sub = greet + (lvl >= 5 ? ', Kapitän (Lvl ' + lvl + ')' : ', Kapitän') + '. ' + lena.replace(/^Lena:\s*/,'');
-    var VMAP = { wow_sunrise_einsatz:'vid_welt_mueggelsee', im_steg_mueggelsee:'vid_welt_mueggelsee', loc_mueggelsee:'vid_welt_mueggelsee',
-      wow_berlin_skyline:'vid_welt_berlin', loc_spree:'vid_welt_berlin', loc_spree_day:'vid_welt_berlin',
-      rescue_gewitter:'vid_atm_sturm', chase_gewitter:'vid_atm_sturm', loc_storm:'vid_atm_sturm',
-      myst_lotse_distanz:'vid_myst_lotse', myst_geheimer_hafen:'vid_myst_lotse', char_lotse:'vid_myst_lotse',
-      myst_stroemung_hinweis:'vid_myst_stroemung', myst_geistersignal:'vid_myst_funksignal',
-      chase_finale:'vid_einsatz_verfolgung', chase_nacht:'vid_einsatz_verfolgung', loc_dahme:'vid_welt_dahme', wow_regatta_grosseinsatz:'vid_atm_regatta' };
+    var VMAP = { // RC2.0: dynamisches Intro nutzt die neuen ATMOSPHÄRE-Clips je Lage
+      wow_sunrise_einsatz:'vid_a4_sonnenaufgang', im_steg_mueggelsee:'vid_a4_sonnenaufgang', loc_mueggelsee:'vid_a4_sonnenaufgang',
+      wow_berlin_skyline:'vid_a4_nachtfahrt_berlin', loc_spree:'vid_a4_nachtfahrt_berlin', loc_spree_day:'vid_a4_nachtfahrt_berlin',
+      rescue_gewitter:'vid_a4_sturm_seenplatte', chase_gewitter:'vid_a4_sturm_seenplatte', loc_storm:'vid_a4_sturm_seenplatte',
+      myst_lotse_distanz:'vid_m2_lotse_nebel', myst_geheimer_hafen:'vid_m2_geheimer_anleger', char_lotse:'vid_m2_lotse_nebel',
+      myst_stroemung_hinweis:'vid_m2_stroemung_radar', myst_geistersignal:'vid_m2_funksignal',
+      rescue_nebel:'vid_a4_nebel_mueggelsee', im_fischer_seddinsee:'vid_a4_nebel_mueggelsee',
+      wow_regatta_grosseinsatz:'vid_a4_regatta', im_regattastrecke_gruenau:'vid_a4_regatta', loc_regatta:'vid_a4_regatta',
+      wow_hafenfest_polizei:'vid_a4_hafenfest', loc_hafenfest:'vid_a4_hafenfest', im_strandbar_wasser:'vid_a4_hafenfest',
+      ctrl_blaulicht_hafen:'vid_a4_blaulicht_wasser', wow_blaulicht_nachtnebel:'vid_a4_blaulicht_wasser',
+      loc_glienicker:'vid_a4_wasserleben_potsdam', loc_havel:'vid_a4_wasserleben_potsdam', loc_wannsee:'vid_a4_wasserleben_potsdam',
+      chase_finale:'vid_e2_verfolgung_spree', chase_nacht:'vid_m2_lotse_nebel', loc_dahme:'vid_a4_abendfahrt' };
     var vid = bg && VMAP[bg] && WB.Assets && WB.Assets.has(VMAP[bg]) ? WB.Assets.url(VMAP[bg]) : null;
     return { bg: bg ? (WB.Assets.url(bg)) : null, video: vid, kicker: kicker, title: title, subtitle: sub, lucy: lucy };
   }

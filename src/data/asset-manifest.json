@@ -1419,6 +1419,66 @@
       "category": "video",
       "src": "assets/video/vid_w3_heroshot.mp4",
       "status": "ready"
+    },
+    {
+      "id": "vid_a4_nachtfahrt_berlin",
+      "category": "video",
+      "src": "assets/video/vid_a4_nachtfahrt_berlin.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_a4_regenfront",
+      "category": "video",
+      "src": "assets/video/vid_a4_regenfront.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_a4_sturm_seenplatte",
+      "category": "video",
+      "src": "assets/video/vid_a4_sturm_seenplatte.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_a4_nebel_mueggelsee",
+      "category": "video",
+      "src": "assets/video/vid_a4_nebel_mueggelsee.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_a4_blaulicht_wasser",
+      "category": "video",
+      "src": "assets/video/vid_a4_blaulicht_wasser.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_a4_hafenfest",
+      "category": "video",
+      "src": "assets/video/vid_a4_hafenfest.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_a4_regatta",
+      "category": "video",
+      "src": "assets/video/vid_a4_regatta.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_a4_sonnenaufgang",
+      "category": "video",
+      "src": "assets/video/vid_a4_sonnenaufgang.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_a4_abendfahrt",
+      "category": "video",
+      "src": "assets/video/vid_a4_abendfahrt.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_a4_wasserleben_potsdam",
+      "category": "video",
+      "src": "assets/video/vid_a4_wasserleben_potsdam.mp4",
+      "status": "ready"
     }
   ]
 }
