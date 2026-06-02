@@ -33,21 +33,21 @@ body {
 #app {
   position: relative;
   width: 100%; max-width: 480px;
-  height: 100%; max-height: 980px;
+  height: 100%; height: 100dvh; max-height: 980px;
   margin: 0 auto;
   display: flex; flex-direction: column;
   overflow: hidden;
   background: linear-gradient(180deg, var(--navy-1), var(--navy-0));
 }
 @media (min-width: 520px) {
-  #app { height: 96vh; margin-top: 2vh; border-radius: 26px; box-shadow: var(--shadow);
+  #app { height: 96dvh; margin-top: 2vh; border-radius: 26px; box-shadow: var(--shadow);
          border: 1px solid rgba(201,162,75,0.18); }
 }
 
 /* ---- Topbar ---- */
 #topbar {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 18px 10px;
+  padding: calc(14px + env(safe-area-inset-top)) 18px 10px;
   flex: 0 0 auto;
   z-index: 5;
 }
@@ -76,7 +76,10 @@ body {
 .icon-btn:active { transform: scale(.94); }
 
 /* ---- Start screen ---- */
-#screen-start { justify-content: space-between; }
+#screen-start { justify-content: flex-start; }
+.start-scroll { position: relative; z-index: 1; flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column;
+  overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+.start-scroll .hero { flex: 1 0 auto; }
 .hero { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center; padding: 30px 24px 10px; position: relative; }
 .hero-mark { width: 92px; height: 92px; border-radius: 26px;
@@ -88,7 +91,7 @@ body {
 .hero h1 { margin: 0; font-size: 30px; letter-spacing: .5px; line-height: 1.1; }
 .hero .sub { color: var(--gold-2); font-weight: 600; letter-spacing: 3px; font-size: 12px; margin-top: 8px; text-transform: uppercase; }
 .hero p { color: var(--muted); max-width: 300px; margin: 14px auto 0; font-size: 14px; line-height: 1.5; }
-.menu { padding: 0 22px 30px; display: grid; gap: 11px; }
+.menu { padding: 0 22px calc(30px + env(safe-area-inset-bottom)); display: grid; gap: 11px; }
 .menu .btn-big { padding: 17px; font-size: 16px; }
 .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
 
@@ -183,7 +186,7 @@ body {
 #game-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 
 /* Game HUD */
-.hud-top { position: absolute; top: 0; left: 0; right: 0; padding: 12px 14px; display: flex;
+.hud-top { position: absolute; top: 0; left: 0; right: 0; padding: calc(12px + env(safe-area-inset-top)) 14px 12px; display: flex;
   align-items: flex-start; justify-content: space-between; gap: 10px; pointer-events: none; z-index: 3; }
 .hud-pill { background: rgba(8,18,30,.5); border: 1px solid var(--glass-line); border-radius: 12px;
   padding: 8px 11px; backdrop-filter: blur(8px); pointer-events: none; }
@@ -205,11 +208,11 @@ body {
 #hud-timer { display: flex; align-items: center; gap: 5px; color: #F2B5A8; }
 
 /* Progress (distance) bar bottom-of-top */
-.hud-progress { position: absolute; top: 70px; left: 14px; right: 14px; z-index: 3; }
+.hud-progress { position: absolute; top: calc(70px + env(safe-area-inset-top)); left: 14px; right: 14px; z-index: 3; }
 .hud-progress .lbl { font-size: 10px; color: var(--muted); margin-bottom: 3px; display:flex; align-items:center; gap:5px;}
 
 /* Touch controls */
-.controls { position: absolute; left: 0; right: 0; bottom: 0; padding: 0 20px 26px;
+.controls { position: absolute; left: 0; right: 0; bottom: 0; padding: 0 20px calc(26px + env(safe-area-inset-bottom));
   display: flex; align-items: flex-end; justify-content: space-between; z-index: 3; pointer-events: none; }
 .ctrl-cluster { display: flex; gap: 14px; pointer-events: auto; }
 .ctrl { width: 70px; height: 70px; border-radius: 50%; border: 1px solid var(--glass-line);
@@ -223,7 +226,8 @@ body {
 
 /* ---- Overlays ---- */
 .overlay { position: absolute; inset: 0; background: rgba(5,12,22,.72); backdrop-filter: blur(6px);
-  display: none; align-items: center; justify-content: center; padding: 24px; z-index: 20; }
+  display: none; align-items: center; justify-content: center; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  padding: max(24px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom)); z-index: 20; }
 .overlay.show { display: flex; animation: fade .2s ease; }
 .panel { background: linear-gradient(180deg, rgba(18,40,70,.96), rgba(8,18,30,.96));
   border: 1px solid var(--glass-line); border-radius: 22px; padding: 24px; width: 100%; max-width: 360px;
@@ -425,7 +429,7 @@ body {
 .intro-skip { position: absolute; bottom: 18px; left: 0; right: 0; text-align: center; font-size: 12px; color: var(--muted); z-index: 5; animation: blinkSkip 1.6s 2s infinite; }
 
 /* ---- In-Game: Kapitän, Blaulicht, Polizei-Aktionen ---- */
-.hud-captain { position: absolute; top: 58px; left: 14px; z-index: 3; display: flex; align-items: center; gap: 8px;
+.hud-captain { position: absolute; top: calc(58px + env(safe-area-inset-top)); left: 14px; z-index: 3; display: flex; align-items: center; gap: 8px;
   background: rgba(8,18,30,.5); border: 1px solid var(--glass-line); border-radius: 12px; padding: 5px 10px 5px 5px; backdrop-filter: blur(8px); pointer-events: none; }
 .hc-port { width: 34px; height: 34px; border-radius: 9px; background-size: cover; background-position: center top; background-color: #1a2c3e; border: 1px solid var(--glass-line); }
 .hc-meta { display: flex; flex-direction: column; line-height: 1.1; }
@@ -434,7 +438,7 @@ body {
 .bluelight { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; }
 .bluelight.on { animation: blaulicht 1s linear infinite; }
 @keyframes blaulicht { 0%,100% { box-shadow: inset 0 0 0 rgba(0,0,0,0); opacity: 0; } 25% { box-shadow: inset 0 70px 130px rgba(40,90,220,.5); opacity: 1; } 50% { opacity: 0; } 75% { box-shadow: inset 0 70px 130px rgba(220,40,40,.45); opacity: 1; } }
-.actions-bar { position: absolute; left: 0; right: 0; bottom: 120px; z-index: 3; display: flex; gap: 8px; justify-content: center; padding: 0 14px; }
+.actions-bar { position: absolute; left: 0; right: 0; bottom: calc(120px + env(safe-area-inset-bottom)); z-index: 3; display: flex; gap: 8px; justify-content: center; padding: 0 14px; }
 .act { flex: 1; max-width: 84px; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 18px;
   background: rgba(8,18,30,.5); border: 1px solid var(--glass-line); border-radius: 12px; padding: 8px 4px; color: var(--cream); backdrop-filter: blur(8px); cursor: pointer; }
 .act small { font-size: 9px; color: var(--muted); letter-spacing: .3px; }
