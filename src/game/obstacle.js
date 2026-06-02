@@ -8,6 +8,11 @@
 
   // halbe Trefferbreite (in lane-Einheiten) je Typ – große Boote breiter
   var HIT = { buoy:0.10, rock:0.12, log:0.16, sail:0.16, motor:0.15, sup:0.10, houseboat:0.22, swimmer:0.09, ferry:0.26, gate:0.13 };
+  // Mindest-Bildschirmgröße je Klasse (als Skalen-Floor) + globale Lesbarkeits-Vergrößerung
+  var MINS = { buoy:0.40, rock:0.40, log:0.42, sail:0.46, motor:0.55, sup:0.44, houseboat:0.62, swimmer:0.40, ferry:0.70, gate:0.42 };
+  var GS = 1.55;
+  // Klartext-Namen für Labels
+  Obstacle.NAME = { buoy:'Boje', rock:'Felsen', log:'Treibholz', sail:'Segler', motor:'Motorboot', sup:'SUP', houseboat:'Hausboot', swimmer:'Schwimmer', ferry:'Fähre', gate:'Schleuse' };
 
   function Obstacle(kind, lane, z) {
     this.kind = kind; this.lane = lane; this.z = (z == null ? 1 : z);
@@ -27,11 +32,17 @@
   // Zeichnet das Objekt an Bildschirmposition (x,y) mit Skalierung s (1 ≈ nah).
   Obstacle.prototype.drawAt = function (ctx, x, y, s) {
     if (s <= 0.02) return;
+    // Lesbarkeit: Mindestgröße je Klasse + globale Vergrößerung
+    s = Math.max(s, (typeof MINS[this.kind] === 'number' ? MINS[this.kind] : 0.4)) * GS;
     ctx.save();
     ctx.translate(x, y);
-    // Kontaktschatten / Wasserkontakt
-    ctx.save(); ctx.globalAlpha = 0.22; ctx.fillStyle = '#04101e';
-    ctx.beginPath(); ctx.ellipse(0, 10 * s, 26 * s, 7 * s, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    // kräftiger Kontaktschatten / Bugwelle (Wasserkontakt, dunkler -> Silhouette springt heraus)
+    ctx.save(); ctx.globalAlpha = 0.34; ctx.fillStyle = '#03101e';
+    ctx.beginPath(); ctx.ellipse(0, 11 * s, 30 * s, 8 * s, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    ctx.save(); ctx.globalCompositeOperation='lighter'; ctx.globalAlpha=0.5; ctx.fillStyle='rgba(255,255,255,.6)';
+    ctx.beginPath(); ctx.ellipse(0, 14 * s, 22 * s, 3.4 * s, 0, 0, Math.PI*2); ctx.fill(); ctx.restore();
+    // Schatten für klare Kontur gegen hellen UND dunklen Hintergrund
+    ctx.shadowColor = 'rgba(2,10,20,0.6)'; ctx.shadowBlur = 7 * s; ctx.shadowOffsetY = 3 * s;
 
     switch (this.kind) {
       case 'buoy':
@@ -77,6 +88,7 @@
       default:
         ctx.fillStyle = '#42525E'; ctx.beginPath(); ctx.arc(0, 0, 9 * s, 0, Math.PI * 2); ctx.fill();
     }
+    ctx.shadowColor='transparent'; ctx.shadowBlur=0; ctx.shadowOffsetY=0;
     ctx.restore();
   };
 

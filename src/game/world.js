@@ -46,7 +46,7 @@
   World.prototype._t = function (z) { var tt = 1 - M.clamp(z, 0, 1); return tt * tt; };
   World.prototype._projY = function (z) { return this.horizonY + (this.viewBottom - this.horizonY) * this._t(z); };
   World.prototype._laneHalf = function (z) { return M.lerp(this.w * 0.03, this.w * 0.62, this._t(z)); };
-  World.prototype._scale = function (z) { return M.lerp(0.12, 1.6, this._t(z)); };
+  World.prototype._scale = function (z) { return M.lerp(0.18, 2.4, this._t(z)); };
   World.prototype._projX = function (lane, z) {
     var t = this._t(z);
     var shift = this.playerLane * M.lerp(this.w * 0.04, this.w * 0.46, t);
@@ -290,6 +290,71 @@
     ctx.fillStyle = 'rgba(201,162,75,0.45)'; ctx.fillRect(0, dt - 2, w, 2);
   };
 
+  // Sicherer Fahrkorridor: zwei dezente grüne Linien + kleine Pfeile entlang der aktuellen Spur.
+  World.prototype._drawSafeLane = function (ctx, t) {
+    var w = this.w, vb = this.viewBottom, hy = this.horizonY, mid = hy + (vb - hy) * 0.34;
+    var lane = this.playerLane;
+    function projX(self, ln, near){ return near ? (w/2 + ln*self._laneHalf(0) - lane*w*0.46) : (w/2 + ln*0.28*self._laneHalf(1) - lane*w*0.12); }
+    ctx.save();
+    var grd = ctx.createLinearGradient(0, mid, 0, vb);
+    grd.addColorStop(0, 'rgba(90,220,160,0.0)'); grd.addColorStop(1, 'rgba(90,220,160,0.30)');
+    ctx.strokeStyle = grd; ctx.lineWidth = 2.5;
+    [-0.20, 0.20].forEach(function(off){
+      ctx.beginPath(); ctx.moveTo(projX(this, off, true), vb); ctx.lineTo(projX(this, off, false), mid); ctx.stroke();
+    }, this);
+    // Richtungspfeile (scrollen nach unten = Fahrtgefühl)
+    ctx.fillStyle = 'rgba(120,235,180,0.5)';
+    for (var i = 0; i < 3; i++) {
+      var p = ((this.scroll * 0.0016 + i / 3) % 1);
+      var yy = mid + (vb - mid) * (p * p);
+      var cx = w/2 - lane * M.lerp(w*0.12, w*0.46, p*p);
+      var aw = M.lerp(5, 16, p), ah = M.lerp(4, 12, p);
+      ctx.globalAlpha = 0.18 + 0.5 * p;
+      ctx.beginPath(); ctx.moveTo(cx - aw, yy - ah); ctx.lineTo(cx, yy); ctx.lineTo(cx + aw, yy - ah); ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+  };
+
+  // Gefahr-Marker + Label (Typ · Distanz) für die nächsten Objekte – Klarheit statt Überladung.
+  World.prototype._drawObstacleMarkers = function (ctx) {
+    var near = [];
+    for (var i = 0; i < this.obstacles.length; i++) { var o = this.obstacles[i]; if (o.z < 0.82 && o.z > 0.02) near.push(o); }
+    near.sort(function (a, b) { return a.z - b.z; });
+    var NAME = WB.Obstacle.NAME || {};
+    var shown = 0;
+    for (var k = 0; k < near.length && shown < 4; k++) {
+      var ob = near[k];
+      var dlane = Math.abs(ob.lane - this.playerLane);
+      var collide = dlane < (ob.hitW + 0.12);
+      var risk = (collide && ob.z < 0.6) ? 'red' : (dlane < 0.36 ? 'amber' : 'safe');
+      var col = risk === 'red' ? '#ff4d3d' : risk === 'amber' ? '#ffc23d' : '#6fe0a3';
+      var x = this._projX(ob.lane, ob.z), y = this._projY(ob.z), sc = this._scale(ob.z);
+      var topY = y - 30 * sc - 14;
+      // Chevron über dem Objekt
+      ctx.save();
+      ctx.fillStyle = col; ctx.globalAlpha = 0.92;
+      if (risk === 'red') { var pl = 0.6 + 0.4 * Math.sin(ob.phase * 3); ctx.globalAlpha = 0.6 + 0.4 * pl; }
+      ctx.beginPath(); ctx.moveTo(x - 8, topY); ctx.lineTo(x + 8, topY); ctx.lineTo(x, topY + 9); ctx.closePath(); ctx.fill();
+      // roter Kollisions-Ring direkt am Objekt
+      if (risk === 'red') { ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.globalAlpha = 0.55 + 0.35 * Math.sin(ob.phase * 3);
+        ctx.beginPath(); ctx.arc(x, y, 22 * sc, 0, Math.PI * 2); ctx.stroke(); }
+      // Label nur bei näheren Objekten (z<0.62)
+      if (ob.z < 0.62) {
+        var m = Math.max(0, Math.round(ob.z * 110));
+        var label = (NAME[ob.kind] || 'Objekt') + ' · ' + m + ' m';
+        ctx.font = '700 12px system-ui,sans-serif'; ctx.textAlign = 'center';
+        var tw = ctx.measureText(label).width, bx = x - tw/2 - 7, by = topY - 21, bw = tw + 14, bh = 18;
+        ctx.globalAlpha = 0.85; ctx.fillStyle = 'rgba(6,16,28,0.82)';
+        if (M.roundRect) { M.roundRect(ctx, bx, by, bw, bh, 6); ctx.fill(); } else ctx.fillRect(bx, by, bw, bh);
+        ctx.strokeStyle = col; ctx.lineWidth = 1.4; ctx.globalAlpha = 0.9;
+        if (M.roundRect) { M.roundRect(ctx, bx, by, bw, bh, 6); ctx.stroke(); }
+        ctx.globalAlpha = 1; ctx.fillStyle = '#fff'; ctx.fillText(label, x, by + 13);
+      }
+      ctx.restore();
+      shown++;
+    }
+  };
+
   World.prototype.draw = function (ctx, t) {
     var w = this.w, h = this.h, vb = this.viewBottom, hy = this.horizonY;
 
@@ -323,11 +388,16 @@
       ctx.fillText('⚓ ' + hn, w/2, hyP - 12*sc);
     }
 
+    // Safe-Lane / Navigationskorridor (dezent, grün) – zeigt den sicheren Kurs
+    this._drawSafeLane(ctx, t);
+
     var sorted = this.obstacles.slice().sort(function (a, b) { return b.z - a.z; });
     for (var i = 0; i < sorted.length; i++) {
       var o = sorted[i];
       o.drawAt(ctx, this._projX(o.lane, o.z), this._projY(o.z), this._scale(o.z));
     }
+    // Gefahr-Marker + Distanz-Labels für die nächsten relevanten Objekte (max 4)
+    this._drawObstacleMarkers(ctx);
     if (this.opp) this.opp.draw(ctx, t);
     this._airLight(ctx, t);
 
