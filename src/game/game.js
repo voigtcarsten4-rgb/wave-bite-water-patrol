@@ -35,6 +35,7 @@
       var self = this;
       var begin = function () {
         WB.Screens.showGame(mission);
+        try { if (WB.Captain) WB.Captain.greet(); } catch (e) {}
         if (WB.Engine._resize) WB.Engine._resize();   // Canvas erst messen, wenn der Game-Screen sichtbar ist
         self.world.layout(WB.Engine.w, WB.Engine.h);   // Welt mit gültigen Maßen einrichten (Fix gegen 0×0-Schwarzbild)
         if (WB.Audio) { WB.Audio.unlock(); WB.Audio.startAmbience(); }
@@ -169,6 +170,7 @@
 
     _end: function (success, reason) {
       WB.Engine.stop();
+      try { if (WB.Captain) WB.Captain.recordMission(this.world, { failed: !success }); } catch (e) {}
       if (WB.Audio) WB.Audio.stopAmbience();
       WB.Input.reset();
       this.state = 'result';

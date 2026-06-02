@@ -108,6 +108,8 @@
   World.prototype.update = function (dt, input) {
     var speed = this.boat.forwardSpeed(input);
     this.curSpeed = speed;
+    this.boostT = (this.boostT||0) + (this.boat.boosting?dt:0);
+    this._spdSum = (this._spdSum||0) + speed*dt;  // fuer Kapitaensprofil (Ø-Tempo)
     if (this.shake > 0) this.shake = Math.max(0, this.shake - dt * 2.4);
     if (this.flash > 0) this.flash = Math.max(0, this.flash - dt * 3.2);
     this.scroll += speed * dt;

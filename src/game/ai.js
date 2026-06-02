@@ -16,7 +16,8 @@
       if (runs < 2) return 0.28;                       // Anfänger sanft starten
       var hitRate = perf / Math.max(1, runs);          // Anteil perfekter Läufe
       var lvlPart = clamp(lvl / 20, 0, 1);
-      return clamp(hitRate * 0.62 + lvlPart * 0.30 + 0.08, 0.12, 1);
+      var bias = 0; try { if (WB.Captain) bias = WB.Captain.difficultyBias(); } catch (e) {}
+      return clamp(hitRate * 0.62 + lvlPart * 0.30 + 0.08 + bias, 0.12, 1);
     },
 
     // Live-Schwierigkeit für die aktuelle Welt: berücksichtigt Schaden & Kollisionen,
