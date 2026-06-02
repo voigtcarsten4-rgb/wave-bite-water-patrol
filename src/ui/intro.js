@@ -163,7 +163,7 @@
     var sub = greet + (lvl >= 5 ? ', Kapitän (Lvl ' + lvl + ')' : ', Kapitän') + '. ' + lena.replace(/^Lena:\s*/,'');
     var VMAP = { // RC2.0: dynamisches Intro nutzt die neuen ATMOSPHÄRE-Clips je Lage
       wow_sunrise_einsatz:'vid_a4_sonnenaufgang', im_steg_mueggelsee:'vid_a4_sonnenaufgang', loc_mueggelsee:'vid_a4_sonnenaufgang',
-      wow_berlin_skyline:'vid_a4_nachtfahrt_berlin', loc_spree:'vid_a4_nachtfahrt_berlin', loc_spree_day:'vid_a4_nachtfahrt_berlin',
+      wow_berlin_skyline:'vid_a4_nachtfahrt_berlin', loc_spree:'vid_a4_nachtfahrt_berlin', loc_spree_day:'vid_a4_nachtfahrt_berlin', wow_hero_shot:'hero_trailer',
       rescue_gewitter:'vid_a4_sturm_seenplatte', chase_gewitter:'vid_a4_sturm_seenplatte', loc_storm:'vid_a4_sturm_seenplatte',
       myst_lotse_distanz:'vid_m2_lotse_nebel', myst_geheimer_hafen:'vid_m2_geheimer_anleger', char_lotse:'vid_m2_lotse_nebel',
       myst_stroemung_hinweis:'vid_m2_stroemung_radar', myst_geistersignal:'vid_m2_funksignal',
