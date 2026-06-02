@@ -43,15 +43,17 @@
       // Premium-Still (Asset-4-Niveau) hat Vorrang; sonst Kurz-Clip.
       var hero = WB.Game._missionHero(mission);
       var heroUrl = (WB.Assets && hero) ? WB.Assets.url(hero) : null;
+      var mvid = WB.Game._missionVideo(mission);
+      var mvidUrl = (WB.Assets && mvid) ? WB.Assets.url(mvid) : null;
       var clip = WB.Game._missionClip(mission);
       var clipUrl = (WB.Assets && clip) ? WB.Assets.url(clip) : null;
-      if (WB.Cinematic && (heroUrl || clipUrl)) {
+      if (WB.Cinematic && (mvidUrl || heroUrl || clipUrl)) {
         WB.Cinematic.play({
           kicker: '● EINSATZ · ' + (WB.data.rankUnit || 'WATER PATROL'),
           title: mission.title, subtitle: mission.objective || '',
-          bgUrl: heroUrl,
-          videoUrl: heroUrl ? null : clipUrl,
-          duration: heroUrl ? 3000 : 2600
+          bgUrl: heroUrl,                                   // Fallback-Standbild
+          videoUrl: mvidUrl || (heroUrl ? null : clipUrl),  // echtes Video hat Vorrang
+          duration: mvidUrl ? 3600 : (heroUrl ? 3000 : 2600)
         }, begin);
       } else { begin(); }
     },
@@ -67,6 +69,17 @@
       };
       var byType = { pursuit: 'chase_highspeed', rescue: 'rescue_sup', smuggler: 'myst_schmuggleruebergabe',
         eco: 'myst_stroemung_hinweis', control: 'ctrl_motorboot', patrol: 'wow_sunrise_einsatz' };
+      var id = byId[mission.id] || byType[mission.type] || null;
+      return (id && WB.Assets && WB.Assets.has(id)) ? id : null;
+    },
+
+    // Echtes Mission-Video je Einsatz (Wave-Video-Phase). null => Standbild-Hero nutzen.
+    _missionVideo: function (mission) {
+      var byId = { m_vip:'vid_welt_glienicke', m_funk:'vid_myst_funksignal', m_beweis:'vid_myst_uebergabe',
+        m_razzia:'vid_einsatz_hafenstoerung', m_sturm:'vid_atm_sturm', m_umwelt:'vid_myst_stroemung',
+        m_schmuggler:'vid_einsatz_schleuse', m_streife:'vid_welt_mueggelsee', m_nacht:'vid_einsatz_verfolgung' };
+      var byType = { pursuit:'vid_einsatz_verfolgung', rescue:'vid_einsatz_rettung', control:'vid_einsatz_kontrolle',
+        smuggler:'vid_einsatz_schleuse', eco:'vid_myst_stroemung', patrol:'vid_welt_berlin' };
       var id = byId[mission.id] || byType[mission.type] || null;
       return (id && WB.Assets && WB.Assets.has(id)) ? id : null;
     },
@@ -159,7 +172,9 @@
         var cfg = {
           kicker: '● FUNK · ' + WB.data.rankUnit,
           bgUrl: (function(){ var h=WB.Game._rewardHero(promoted); return (h&&WB.Assets)?WB.Assets.url(h):((WB.Assets&&mission.briefStation)?WB.Assets.url(mission.briefStation):null); })(),
-          videoUrl: (WB.Game._rewardHero(promoted)) ? null : (WB.Assets ? WB.Assets.url(promoted ? 'cine_boat_hero' : 'cine_reward') : null),
+          videoUrl: (function(){ var pool = promoted ? ['vid_bel_rang','vid_bel_wolff','vid_bel_heroshot'] : ['vid_bel_heroshot','vid_welt_berlin'];
+            var lvl=(WB.Save.data&&WB.Save.data.captainLevel)||0; var id=pool[lvl%pool.length];
+            return (WB.Assets&&WB.Assets.has(id))?WB.Assets.url(id):(WB.Assets?WB.Assets.url(promoted?'cine_boat_hero':'cine_reward'):null); })(),
           title: promoted ? 'BEFÖRDERT' : 'EINSATZ ERFOLGREICH',
           subtitle: promoted ? promoted.name : ('🪙 +' + res.coins + '   ✦ +' + res.xp + ' XP'),
           stars: res.stars,

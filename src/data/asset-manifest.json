@@ -1107,6 +1107,138 @@
       "category": "cinematic",
       "src": "assets/leo/rescue_gewitter.webp",
       "status": "ready"
+    },
+    {
+      "id": "hero_trailer",
+      "category": "video",
+      "src": "assets/video/hero_trailer.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_welt_mueggelsee",
+      "category": "video",
+      "src": "assets/video/vid_welt_mueggelsee.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_welt_berlin",
+      "category": "video",
+      "src": "assets/video/vid_welt_berlin.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_welt_dahme",
+      "category": "video",
+      "src": "assets/video/vid_welt_dahme.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_welt_glienicke",
+      "category": "video",
+      "src": "assets/video/vid_welt_glienicke.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_welt_schleuse",
+      "category": "video",
+      "src": "assets/video/vid_welt_schleuse.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_einsatz_verfolgung",
+      "category": "video",
+      "src": "assets/video/vid_einsatz_verfolgung.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_einsatz_rettung",
+      "category": "video",
+      "src": "assets/video/vid_einsatz_rettung.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_einsatz_schleuse",
+      "category": "video",
+      "src": "assets/video/vid_einsatz_schleuse.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_einsatz_kontrolle",
+      "category": "video",
+      "src": "assets/video/vid_einsatz_kontrolle.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_einsatz_hafenstoerung",
+      "category": "video",
+      "src": "assets/video/vid_einsatz_hafenstoerung.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_myst_lotse",
+      "category": "video",
+      "src": "assets/video/vid_myst_lotse.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_myst_funksignal",
+      "category": "video",
+      "src": "assets/video/vid_myst_funksignal.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_myst_verlassenes_boot",
+      "category": "video",
+      "src": "assets/video/vid_myst_verlassenes_boot.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_myst_uebergabe",
+      "category": "video",
+      "src": "assets/video/vid_myst_uebergabe.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_myst_stroemung",
+      "category": "video",
+      "src": "assets/video/vid_myst_stroemung.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_bel_rang",
+      "category": "video",
+      "src": "assets/video/vid_bel_rang.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_bel_wolff",
+      "category": "video",
+      "src": "assets/video/vid_bel_wolff.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_bel_rettung",
+      "category": "video",
+      "src": "assets/video/vid_bel_rettung.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_bel_elite",
+      "category": "video",
+      "src": "assets/video/vid_bel_elite.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_bel_heroshot",
+      "category": "video",
+      "src": "assets/video/vid_bel_heroshot.mp4",
+      "status": "ready"
+    },
+    {
+      "id": "vid_atm_sturm",
+      "category": "video",
+      "src": "assets/video/vid_atm_sturm.mp4",
+      "status": "ready"
     }
   ]
 }

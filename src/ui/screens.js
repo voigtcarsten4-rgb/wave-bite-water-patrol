@@ -281,6 +281,7 @@
     init: function () {
       // Startscreen-Navigation
       on('btn-quickstart', function () { Screens.quickStart(); });
+      on('btn-trailer', function () { if (WB.Cinematic && WB.Assets && WB.Assets.has('hero_trailer')) { if(WB.Audio){WB.Audio.unlock();} WB.Cinematic.play({ kicker:'● TRAILER', title:'', subtitle:'', videoUrl: WB.Assets.url('hero_trailer'), duration: 30000 }, function(){}); } });
       on('btn-live', function () { if (WB.Endless) WB.Endless.start(); });
       on('btn-story', function () { if (WB.Story) WB.Story.start(); });
       on('btn-goto-missions', function () { Screens.showMissions(); });
