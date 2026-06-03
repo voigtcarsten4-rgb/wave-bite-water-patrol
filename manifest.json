@@ -1,7 +1,7 @@
 {
   "name": "Wave Bite – Captain's Run",
   "short_name": "Wave Bite",
-  "description": "Maritimes Premium-Liefer-Game. Steuere dein Boot, erfülle Missionen, schalte Boote & Häfen frei.",
+  "description": "Wave Bite – Captain's Run: maritimer Einsatz-Simulator. Steuere dein Patrouillenboot aus dem Cockpit durch die Reviere Berlin-Brandenburgs, übernimm Funk-Einsätze, meistere Wetter, Strömung & enge Fahrrinnen und steig zum Kapitän auf.",
   "lang": "de",
   "start_url": ".",
   "scope": ".",
@@ -9,10 +9,28 @@
   "orientation": "portrait",
   "background_color": "#081627",
   "theme_color": "#0B1E3B",
-  "categories": ["games", "entertainment"],
+  "categories": [
+    "games",
+    "entertainment"
+  ],
   "icons": [
-    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "assets/icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
