@@ -1,5 +1,5 @@
 /* Wave Bite - Water Patrol · data/missions.js
- * Polizei-Einsaetze (Maritime Patrol Unit) - KEIN Food. Mit Funk-Briefing + Portraits.
+ * Polizei-Einsätze (Maritime Patrol Unit) - KEIN Food. Mit Funk-Briefing + Portraits.
  * Felder: id,type,title,icon,objective,desc,regionId,distance,timeLimit,
  *         rewardCoins,rewardXp,unlockLevel,difficulty,briefChar,briefStation,brief
  */
@@ -15,22 +15,22 @@
       brief: 'Zentrale an Patrol One: Routinekontrolle in der Bucht. Augen offen halten, Kurs sauber fahren.' },
 
     { id: 'm_kontrolle', type: 'control', title: 'Bootskontrolle Nordsteg', icon: '🔦',
-      objective: 'Verdaechtiges Boot kontrollieren', desc: 'Ein gemeldetes Boot liegt am Nordsteg. Fahr hin und sichere die Kontrolle.',
+      objective: 'Verdächtiges Boot kontrollieren', desc: 'Ein gemeldetes Boot liegt am Nordsteg. Fahr hin und sichere die Kontrolle.',
       regionId: 'bucht', distance: 1900, timeLimit: 0, rewardCoins: 100, rewardXp: 70,
       unlockLevel: 1, difficulty: 1, briefChar: 'char_witness_1', briefStation: 'station_witness_pier_1',
-      brief: 'Zeugin meldet ein verdaechtiges Boot am Nordsteg. Hinfahren, Lage checken, kontrollieren.' },
+      brief: 'Zeugin meldet ein verdächtiges Boot am Nordsteg. Hinfahren, Lage checken, kontrollieren.' },
 
-    { id: 'm_umwelt', type: 'eco', title: 'Umweltverstoss im Kanal', icon: '🛢',
+    { id: 'm_umwelt', type: 'eco', title: 'Umweltverstoß im Kanal', icon: '🛢',
       objective: 'Verursacher aufspüren', desc: 'Ölspur im Hafenkanal. Folge der Spur durch den Verkehr zum Verursacher.',
       regionId: 'kanal', distance: 2300, timeLimit: 0, rewardCoins: 150, rewardXp: 105,
       unlockLevel: 2, difficulty: 2, briefChar: 'char_suspect_skipper_1', briefStation: 'station_suspicious_boat_1',
       brief: 'Achtung: Ölspur im Kanal gemeldet. Verursacher aufspüren - dichter Bootsverkehr voraus.' },
 
     { id: 'm_verfolgung', type: 'pursuit', title: 'Verfolgung: Schnellboot', icon: '🚨',
-      objective: 'Schnellboot stellen', desc: 'Ein Schnellboot flieht Richtung Nordkanal. Dranbleiben - enge Durchfahrten, Zeit laeuft!',
+      objective: 'Schnellboot stellen', desc: 'Ein Schnellboot flieht Richtung Nordkanal. Dranbleiben - enge Durchfahrten, Zeit läuft!',
       regionId: 'kanal', distance: 2200, timeLimit: 45, rewardCoins: 230, rewardXp: 160,
       unlockLevel: 3, difficulty: 3, briefChar: 'char_suspect_skipper_1', briefStation: 'station_suspicious_boat_1',
-      brief: 'Patrol One, Verfolgung! Verdaechtiges Schnellboot Richtung Nordkanal. Abstand halten, dranbleiben.' },
+      brief: 'Patrol One, Verfolgung! Verdächtiges Schnellboot Richtung Nordkanal. Abstand halten, dranbleiben.' },
 
     { id: 'm_rettung', type: 'rescue', title: 'Rettungseinsatz Seenplatte', icon: '🛟',
       objective: 'Person erreichen', desc: 'Person im Wasser gemeldet. Bei Wind und Wellen so schnell wie möglich zur Position.',

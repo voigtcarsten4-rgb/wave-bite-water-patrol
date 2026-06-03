@@ -1,6 +1,6 @@
 /* Wave Bite - Water Patrol · data/content.js
  * KI-kuratierte Content-Bibliothek für Lena (KI-Dispatch) + Live Water Region.
- * Endless-Engine rekombiniert diese Bausteine -> unendliche, abwechslungsreiche Einsaetze.
+ * Endless-Engine rekombiniert diese Bausteine -> unendliche, abwechslungsreiche Einsätze.
  * (Architektur-Hook: später live von einem Lena-Backend generierbar - siehe WATER-PATROL-UNIVERSE.md) */
 (function (WB) {
   'use strict';
@@ -20,7 +20,7 @@
     ],
     streakLines: [
       'Sauber gefahren!', 'Stark - die Region ist ruhiger dank dir.', 'Beeindruckend, Captain.',
-      'Das war Praezision.', 'Weiter so, die Crew ist stolz.'
+      'Das war Präzision.', 'Weiter so, die Crew ist stolz.'
     ]
   };
 
@@ -30,17 +30,17 @@
       objective: 'Revier sichern', distance: [1500, 2000], timeLimit: 0, minigame: null,
       char: 'char_harbor_master_1', station: 'station_harbor_office_1',
       brief: ['Routinelage in der Bucht. Fahr die Linie sauber ab.',
-              'Nichts Konkretes - aber zeig Praesenz auf dem Wasser.',
+              'Nichts Konkretes - aber zeig Präsenz auf dem Wasser.',
               'Streife angesetzt. Augen offen, Kurs ruhig.'] },
 
     { id: 'e_control', type: 'control', title: 'Bootskontrolle', icon: '🔦', regionId: 'bucht',
       objective: 'Boot kontrollieren', distance: [1700, 2200], timeLimit: 0, minigame: 'hafenkontrolle',
       char: 'char_witness_1', station: 'station_witness_pier_1',
       brief: ['Gemeldetes Boot am Steg - erst Radar-Scan, dann hinfahren.',
-              'Verdaechtige Bewegung. Scanne die Signale, dann Kontrolle.',
-              'Zeugin ist nervoes. Pruef das Radar und sieh nach.'] },
+              'Verdächtige Bewegung. Scanne die Signale, dann Kontrolle.',
+              'Zeugin ist nervös. Prüf das Radar und sieh nach.'] },
 
-    { id: 'e_eco', type: 'eco', title: 'Umweltverstoss', icon: '🛢', regionId: 'kanal',
+    { id: 'e_eco', type: 'eco', title: 'Umweltverstoß', icon: '🛢', regionId: 'kanal',
       objective: 'Verursacher finden', distance: [2000, 2600], timeLimit: 0, minigame: 'funk',
       char: 'char_suspect_skipper_1', station: 'station_suspicious_boat_1',
       brief: ['Ölschimmer im Kanal. Folge der Spur durch den Verkehr.',
@@ -51,7 +51,7 @@
       objective: 'Schnellboot stellen', distance: [2000, 2500], timeLimit: [40, 48], minigame: null,
       char: 'char_suspect_skipper_1', station: 'station_suspicious_boat_1',
       brief: ['Es flieht! Schnellboot Richtung Nordkanal - dranbleiben!',
-              'Verfolgung laeuft. Enge Durchfahrten, halt die Zeit.',
+              'Verfolgung läuft. Enge Durchfahrten, halt die Zeit.',
               'Er hat Vorsprung. Boost clever einsetzen, nicht verlieren!'] },
 
     { id: 'e_rescue', type: 'rescue', title: 'Rettungseinsatz', icon: '🛟', regionId: 'seenplatte',
@@ -59,7 +59,7 @@
       char: 'char_radio_operator_1', station: 'station_abandoned_jetty_1',
       brief: ['Notruf! Person im Wasser - volle Fahrt, jede Sekunde zählt.',
               'Wind frischt auf, Sicht schlecht. Schnell zur Position!',
-              'Rettung Prioritaet. Kurs halten, Wellen nicht unterschaetzen.'] },
+              'Rettung Priorität. Kurs halten, Wellen nicht unterschätzen.'] },
 
     { id: 'e_smuggler', type: 'smuggler', title: 'Schmuggler abfangen', icon: '🚔', regionId: 'schleuse',
       objective: 'Boot abfangen', distance: [2300, 2800], timeLimit: [40, 46], minigame: 'schleuse',
@@ -73,10 +73,10 @@
       char: 'char_harbor_master_1', station: 'station_abandoned_jetty_1',
       brief: ['Sturmwarnung! Sichere die offene Seenplatte.',
               'Gewitter zieht auf. Halt das Revier, bevor es kippt.',
-              'Boeen und Wellen - ruhige Hand, klare Linie.'] },
+              'Böen und Wellen - ruhige Hand, klare Linie.'] },
 
     { id: 'e_ghost', type: 'ghost', title: 'Geistersignal', icon: '📡', regionId: 'kanal',
-      objective: 'Signal aufklaeren', distance: [1800, 2300], timeLimit: 0, minigame: 'radar',
+      objective: 'Signal aufklären', distance: [1800, 2300], timeLimit: 0, minigame: 'radar',
       char: 'char_radio_operator_1', station: 'station_radio_room_1',
       brief: ['Unklares Radarecho. Scanne es - irgendwas stimmt nicht.',
               'Geistersignal im Kanal. Lena kriegt es nicht sauber - sieh nach.',
