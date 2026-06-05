@@ -69,7 +69,8 @@
     this.escalation = E;
     this.distance = mission.distance * ((V && V.distMul) || 1) * (1 + E * 0.22);
     this._trafficMul = ((V && V.trafficMul) || 1) * (1 + E * 0.6);
-    this._curveAmp = 0.60 * (1 + E * 0.30); this._curveAmp2 = 0.24 * (1 + E * 0.30); // RS6: deutlichere, gut sichtbare Kurven
+    this._curveAmp = 0.98 * (1 + E * 0.28); this._curveAmp2 = 0.46 * (1 + E * 0.28); // RS7: starke, langgezogene Kurven
+    this._curveK = 0; this._curveKv = 0;   // geglättete Kurvenkrümmung (Kamera/Strecke/Physik)
     this._startLane = (V && V.startLane) || 0;
     this._fog = !!(V && V.weather === 'fog');
     if (V && (V.weather === 'storm')) this.storm = true;
@@ -100,7 +101,12 @@
   World.prototype._projX = function (lane, z) {
     var t = this._t(z);
     var shift = this.playerLane * M.lerp(this.w * 0.04, this.w * 0.46, t);
-    return this.w / 2 + lane * this._laneHalf(z) - shift;
+    return this.w / 2 + lane * this._laneHalf(z) - shift + this._curveShift(z);
+  };
+  // RS7: pseudo-3D Kurven-Versatz – am Boot (nah) 0, zum Horizont (fern) stark -> die Strecke biegt sich sichtbar weg.
+  World.prototype._curveShift = function (z) {
+    var f = 1 - this._t(z);                       // 0 nah -> 1 fern
+    return (this._curveK || 0) * Math.pow(f, 1.75) * this.w * 0.82;
   };
 
   World.prototype._spawn = function () {
@@ -141,20 +147,33 @@
     if (this.flash > 0) this.flash = Math.max(0, this.flash - dt * 3.2);
     this.scroll += speed * dt;
 
+    // RS7: AAA-Kurvenmodell – langgezogene, deutlich sichtbare Bögen (mehrere Frequenzen überlagert),
+    // weich eingefedert -> Kurven kommen heran, man legt sich hinein, fährt heraus.
+    var cvRaw = this._curveAmp * Math.sin(this.scroll * 0.00058)
+              + this._curveAmp2 * Math.sin(this.scroll * 0.00146 + 1.3)
+              + (this._curveAmp * 0.30) * Math.sin(this.scroll * 0.00031 + 4.1);
+    this._curveK += (cvRaw - this._curveK) * Math.min(1, dt * 2.0);   // geglättet (Ease-in/-out)
+    this._curveK = M.clamp(this._curveK, -1.7, 1.7);
+
     this.boat.update(dt, input, 0, this.w);
-    var halfRange = (this.w / 2) - (this.boat.w / 2);
+    // RS7: Zentrifugalkraft – in der Kurve wird das Boot nach außen getragen; der Spieler MUSS aktiv gegenlenken.
+    var bw = this.boat.w || (this.w * 0.12);
+    var push = this._curveK * (this.curSpeed / 185) * 70 * dt;
+    this.boat.x = M.clamp(this.boat.x + push, bw * 0.5, this.w - bw * 0.5);
+    var halfRange = (this.w / 2) - (bw / 2);
     this.playerLane = M.clamp((this.boat.x - this.w / 2) / (halfRange || 1), -1, 1);
 
     // Bootsbewegung: Rollen (Lenken) + Nicken (Tempo/Boost) – sanft gedämpft, nicht seekrank.
     var stormAmp = this.storm ? 1.0 : 0.45;
-    var targetRoll = -this.playerLane * 0.045 + Math.sin(this._lt = (this._lt||0) + dt) * 0 ; // base from steer
+    this._lt = (this._lt||0) + dt;
+    var targetRoll = -this.playerLane * 0.05 - this._curveK * 0.13;   // RS7: Boot/Kamera legt sich in den Bogen
     this.roll += (targetRoll - this.roll) * Math.min(1, dt * 4);
     var targetPitch = (this.boat.boosting ? -0.012 : 0) + (speed/2600);
     this.pitch += (targetPitch - this.pitch) * Math.min(1, dt * 3);
 
     var zRate = speed / 520;
     // FAHRWASSER: rot/grün-Bojengasse, deren Mitte mäandert (Kurven). Spieler faehrt DAZWISCHEN.
-    this._chCenter = (this._curveAmp||0.40) * Math.sin(this.scroll * 0.0011) + (this._curveAmp2||0.16) * Math.sin(this.scroll * 0.0029 + 1.3);
+    this._chCenter = this._curveK * 0.32 + 0.085 * Math.sin(this.scroll * 0.0021 + 0.7);   // RS7: Fahrwasser-Mitte folgt der Kurve (nah leichte Verschiebung, fern via _curveShift)
     // FAHRWASSER-LERNLOGIK: zwischen den Tonnen (|lane-Mitte|<0.40) = sauberer Kurs.
     this.totalT += dt;
     var _off = Math.abs(this.playerLane - this._chCenter);
@@ -304,7 +323,7 @@
     var w = this.w, vb = this.viewBottom, hy = this.horizonY, dt = this.dashTop, oh = h0(this);
     var img = WB.Assets && WB.Assets.get(this.bgId);
     var zoom = 1.04 + 0.03 * Math.sin(t * 0.2);
-    var px = -this.playerLane * w * 0.06;
+    var px = -this.playerLane * w * 0.06 - (this._curveK || 0) * w * 0.15;   // RS7: Kulisse schwenkt mit der Kurve (Parallax-Yaw)
     // Berlin-Brandenburg-Kulisse füllt die GANZE Scheibe (man fährt darauf zu)
     if (img && img.complete && img.naturalWidth) {
       ctx.save(); ctx.beginPath(); ctx.rect(-w*0.2, -oh, w*1.4, vb + oh); ctx.clip();
@@ -335,10 +354,11 @@
       var yb = hy + Math.pow(d, 1.65) * (vb - hy);
       var amp = M.lerp(1.2, 15, d), step = M.lerp(22, 70, d);
       var ph = sc2 * (0.010 + d*0.02) + wi*0.6 + t*9;
+      var csx = (this._curveK || 0) * Math.pow(1 - d, 1.75) * w * 0.80;   // RS7: Wasseroberfläche biegt zur Kurve (nah 0, fern stark)
       ctx.beginPath();
       for (xx = x0; xx <= w + w*0.2; xx += step) {
         var yy2 = yb + Math.sin(xx*(0.010+d*0.016)+ph)*amp + Math.sin(xx*0.03 - t*7 + wi)*amp*0.18;
-        if (xx === x0) ctx.moveTo(xx, yy2); else ctx.lineTo(xx, yy2);
+        if (xx === x0) ctx.moveTo(xx + csx, yy2); else ctx.lineTo(xx + csx, yy2);
       }
       ctx.globalAlpha = M.lerp(0.05, 0.34, d);
       ctx.lineWidth = M.lerp(0.6, 2.1, d);
@@ -569,7 +589,7 @@
   // RS5: Ufer links/rechts – bewegen sich perspektivisch + verschieben mit der Kurve (cc) -> Kurve sichtbar.
   World.prototype._drawBanks = function (ctx, t) {
     var w = this.w, vb = this.viewBottom, hy = this.horizonY, cc = this._chCenter || 0, lane = this.playerLane, self = this;
-    function px(ln, near){ return near ? (w/2 + ln*self._laneHalf(0) - lane*w*0.46) : (w/2 + ln*0.30*self._laneHalf(1) - lane*w*0.12); }
+    function px(ln, near){ return near ? (w/2 + ln*self._laneHalf(0) - lane*w*0.46 + self._curveShift(0)) : (w/2 + ln*0.30*self._laneHalf(1) - lane*w*0.12 + self._curveShift(1)); }
     var topY = hy + (vb - hy) * 0.05;
     function bank(nearLn, farLn, dir){
       var nearX = px(nearLn, true), farX = px(farLn, false), edge = (dir < 0 ? -w*0.25 : w*1.25);
@@ -591,8 +611,8 @@
   // RS6: leuchtende, geschwungene Fahrrinnen-Linie ("Rennlinie") mit fliessenden Chevrons – Vorbild preview.html
   World.prototype._drawSafeLane = function (ctx, t) {
     var w = this.w, self = this, sc = this.scroll;
-    var ca = this._curveAmp || 0.5, ca2 = this._curveAmp2 || 0.18, LOOK = 1700;
-    function chAt(s){ return ca * Math.sin(s*0.0011) + ca2 * Math.sin(s*0.0029 + 1.3); }
+    var ck = this._curveK || 0, LOOK = 1700;
+    function chAt(s){ return ck * 0.32 + 0.085 * Math.sin(s*0.0021 + 0.7); }   // RS7: konsistent mit _chCenter; Bogen kommt aus _curveShift
     function ptAt(d){ var z = d, off = chAt(sc + d*LOOK); return { x: self._projX(off, z), y: self._projY(z) }; }
     var P = [], d;
     for (d = 0; d <= 1.0001; d += 0.045) P.push(ptAt(d));
@@ -684,7 +704,7 @@
     var w=this.w, vb=this.viewBottom, hy=this.horizonY;
     var spd=Math.min(1, this.curSpeed/240), boost=this.boat.boosting?1:0;
     var inten = Math.max(0,(spd-0.5))/0.5*0.55 + boost*0.6; if(inten<=0.02) return; inten=Math.min(1.1,inten);
-    var cx=w/2 - this.playerLane*w*0.10, cy=hy+(vb-hy)*0.26;
+    var cx=w/2 - this.playerLane*w*0.10 - (this._curveK||0)*w*0.20, cy=hy+(vb-hy)*0.26;
     ctx.save(); ctx.globalCompositeOperation='lighter';
     var N=Math.round(14+inten*26);
     for(var i=0;i<N;i++){
