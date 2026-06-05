@@ -156,10 +156,11 @@
     this._curveK = M.clamp(this._curveK, -1.7, 1.7);
 
     this.boat.update(dt, input, 0, this.w);
-    // RS7: Zentrifugalkraft – in der Kurve wird das Boot nach außen getragen; der Spieler MUSS aktiv gegenlenken.
+    // RS7: Zentrifugalkraft – in der Kurve trägt es das Boot nach außen; leichte Selbstzentrierung sorgt für ein
+    // kurvenabhängiges Gleichgewicht (kein Anpicken an die Wand) -> der Spieler lenkt spürbar dagegen.
     var bw = this.boat.w || (this.w * 0.12);
-    var push = this._curveK * (this.curSpeed / 185) * 70 * dt;
-    this.boat.x = M.clamp(this.boat.x + push, bw * 0.5, this.w - bw * 0.5);
+    var drift = (this._curveK * 46 - (this.playerLane || 0) * 40) * (this.curSpeed / 185) * dt;
+    this.boat.x = M.clamp(this.boat.x + drift, bw * 0.5, this.w - bw * 0.5);
     var halfRange = (this.w / 2) - (bw / 2);
     this.playerLane = M.clamp((this.boat.x - this.w / 2) / (halfRange || 1), -1, 1);
 
