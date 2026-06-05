@@ -33,9 +33,11 @@
   // Forward-Speed (Scroll px/s) abhängig von Stats, Gas, Boost, Treibstoff.
   Boat.prototype.targetSpeed = function (input) {
     var cruise = 95 + this.stats.speed * 11;
-    var t = cruise * 0.82;                       // Leerlauf-Gleiten (Trägheit)
-    if (input.throttle && this.fuel > 0.02) t = cruise * 1.55;
-    if (this.boosting) t *= 1.7;
+    // RS9: Spieler steuert den Vortrieb. Ohne Gas sinkt der Schub auf Mindest-Drift (KEIN Stopp, KEIN Rückwärts) –
+    // dadurch lassen sich Hindernisse nicht durch Anhalten umfahren; Gas = voller Marschschub, Boost = Extra-Schub.
+    var t = cruise * 0.46;                                       // Mindest-Drift (treibt immer langsam vorwärts)
+    if (input.throttle && this.fuel > 0.02) t = cruise * 1.05;   // Gas
+    if (this.boosting) t = cruise * 1.75;                        // Boost
     return t;
   };
   Boat.prototype.forwardSpeed = function () {

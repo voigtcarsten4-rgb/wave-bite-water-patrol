@@ -96,7 +96,7 @@
   // Perspektiv-Projektion: z (1 fern .. 0 nah) -> Bildschirm. Nahebene = viewBottom (unterer Rand).
   World.prototype._t = function (z) { var tt = 1 - M.clamp(z, 0, 1); return tt * tt; };
   World.prototype._projY = function (z) { return this.horizonY + (this.viewBottom - this.horizonY) * this._t(z); };
-  World.prototype._laneHalf = function (z) { return M.lerp(this.w * 0.03, this.w * 0.62, this._t(z)); };
+  World.prototype._laneHalf = function (z) { return M.lerp(this.w * 0.04, this.w * 0.92, this._t(z)); };   // RS9: breiterer Fahrrinnen-Funnel (öffnet bis in die Bildecken)
   World.prototype._scale = function (z) { return M.lerp(0.18, 2.4, this._t(z)); };
   World.prototype._projX = function (lane, z) {
     var t = this._t(z);
@@ -107,6 +107,18 @@
   World.prototype._curveShift = function (z) {
     var f = 1 - this._t(z);                       // 0 nah -> 1 fern
     return (this._curveK || 0) * Math.pow(f, 1.75) * this.w * 0.82;
+  };
+  // RS9: Strafzeit auf den Countdown anrechnen (falls Mission ein Zeitlimit hat) + Flash für die Anzeige.
+  World.prototype._applyTimePenalty = function (sec) {
+    this.penaltyT = (this.penaltyT || 0) + sec;
+    this._penFlash = Math.min(1.4, (this._penFlash || 0) + Math.min(0.9, sec * 0.35));
+    try {
+      var rt = WB.Game && WB.Game.runtime;
+      if (rt && this.mission && this.mission.timeLimit > 0) {
+        rt.timeLeft = Math.max(0, rt.timeLeft - sec);
+        if (rt.timeLeft <= 0) rt.timeUp = true;
+      }
+    } catch (e) {}
   };
 
   World.prototype._spawn = function () {
@@ -136,10 +148,10 @@
   };
 
   World.prototype.update = function (dt, input) {
-    var speed = this.boat.forwardSpeed(input);
+    var speed = this.boat.forwardSpeed(input);   // RS9: rein spielergesteuert (Gas/Boost), kein Auto-Vortrieb
     this._elapsed = (this._elapsed || 0) + dt;
-    var _ramp = Math.min(1, 0.55 + this._elapsed / 7 * 0.45);   // faires Start-Tempo: 55% -> 100% in 7s
-    speed *= _ramp;
+    this.raceT = (this.raceT || 0) + dt;          // Laufzeit – es geht immer um Zeit
+    this.penaltyT = this.penaltyT || 0;           // aufaddierte Strafzeit
     this.curSpeed = speed;
     this.boostT = (this.boostT||0) + (this.boat.boosting?dt:0);
     this._spdSum = (this._spdSum||0) + speed*dt;  // fuer Kapitaensprofil (Ø-Tempo)
@@ -182,8 +194,10 @@
     if (this.inChannel) { this.cleanT += dt; this.offT = Math.max(0, this.offT - dt * 0.6); }
     else {
       this.offT += dt; this._offWarn -= dt;
+      // RS9: Verlassen der Fahrrinne kostet Zeit – die Härte steigt mit Revier-Schwierigkeit & Eskalation.
+      this._applyTimePenalty(dt * (0.7 + this.region.difficulty * 0.22 + this.escalation * 0.9));
       if (this.offT > 1.1 && this._offWarn <= 0) {
-        if (WB.LucyHUD && WB.LucyHUD.say) WB.LucyHUD.say('⚠ Zurück ins Fahrwasser – zwischen rot und grün bleiben!');
+        if (WB.LucyHUD && WB.LucyHUD.say) WB.LucyHUD.say('⚠ Raus aus der Fahrrinne – das kostet Zeit! Zwischen rot und grün bleiben.');
         if (WB.Audio && WB.Audio.danger) WB.Audio.danger();
         this._offWarn = 2.6;
       }
@@ -198,20 +212,24 @@
       this.obstacles.push(br); this.obstacles.push(bg);
       this._chT = M.clamp(1.15 - this.region.difficulty * 0.05, 0.82, 1.25);   // RS8: dichtere Tonnenreihe -> Rand durchgehend markiert
     }
-    // RS5: KEINE Objektflut. Nur SELTENE, bewusste Einzel-Hindernisse – erst nach Eingewöhnung.
+    // RS9: HINDERNIS-PARCOURS. Gestaffelter Slalom (abwechselnd links/rechts) mit Dimensionen, die realistisches
+    // Ausweichen erlauben. Anzahl/Dichte STEIGEN mit Streckenfortschritt & Eskalation (steigende Herausforderung).
     this.hazardT = (this.hazardT == null ? 9999 : this.hazardT) - dt;
-    var hazardStart = 16, hazGap = Math.max(8, 14 - this.region.difficulty * 1.2);
-    if (this._elapsed > hazardStart) {
-      if (this.hazardT > 9000) this.hazardT = hazGap;            // erstes Hindernis erst nach Eingewöhnung
+    var prog = M.clamp(this.progress / (this.distance || this.mission.distance || 1), 0, 1);
+    var ramp = M.clamp(this.escalation * 0.5 + prog * 0.75, 0, 1.25);
+    var hazardStart = 13, hazGap = Math.max(5.0, 12 - this.region.difficulty * 1.0 - ramp * 4.2);
+    if (this._elapsed > hazardStart && !this.harborActive && !this.opp) {
+      if (this.hazardT > 9000) this.hazardT = hazGap;
       if (this.hazardT <= 0) {
-        var hk = M.pick(['log','rock','motor']);                 // klar erkennbares Einzelhindernis
-        var hSide = (Math.random() < 0.5 ? -1 : 1);
-        var inLane = Math.random() < 0.55;                       // bewusste Ausweichaufgabe ODER am Rand
-        // RS8: Hindernis bewusst zu EINER Seite versetzt -> auf der anderen Seite bleibt klar befahrbares Wasser (realistisches Ausweichen)
-        var hl = inLane ? M.clamp(this._chCenter + hSide * M.rand(0.22, 0.50), -0.62, 0.62)
-                        : M.clamp(this._chCenter + hSide * M.rand(0.74, 1.02), -1.2, 1.2);
-        this.obstacles.push(new WB.Obstacle(hk, hl, 1.09));   // weiter weg gespawnt = mehr Vorlauf/Reaktionszeit
-        this.hazardT = hazGap + M.rand(-2, 4);
+        var n = 2 + Math.round(ramp * 2);                       // 2..4 Hindernisse pro Parcours-Welle
+        var side0 = (Math.random() < 0.5 ? -1 : 1);
+        for (var hp = 0; hp < n; hp++) {
+          var hk = M.pick(['log','rock','motor']);
+          var sd = side0 * (hp % 2 === 0 ? 1 : -1);             // abwechselnd L/R = Slalom (Gegenseite frei befahrbar)
+          var hl = M.clamp(this._chCenter + sd * M.rand(0.30, 0.52), -0.60, 0.60);
+          this.obstacles.push(new WB.Obstacle(hk, hl, 1.10 + hp * 0.17));   // in die Tiefe gestaffelt = Reaktionszeit
+        }
+        this.hazardT = hazGap + M.rand(-1, 3);
       }
     }
 
@@ -227,6 +245,10 @@
         if (!isMarker && Math.abs(o.lane - this.playerLane) < (o.hitW + 0.06)) {
           if (this.boat.hit(o.kind === 'swimmer' ? 'log' : o.kind)) {
             this.collisions += 1; this.shake = Math.min(1, this.shake + 0.85); this.flash = 0.6;
+            // RS9: Kollision kostet Zeit (skaliert mit Schwierigkeit/Eskalation) – falsche Manöver werden bestraft.
+            var hitPen = 2.0 + this.region.difficulty * 0.6 + this.escalation * 2.2;
+            this._applyTimePenalty(hitPen);
+            if (WB.LucyHUD && WB.LucyHUD.say) WB.LucyHUD.say('💥 Kollision – +' + Math.round(hitPen) + 's Strafzeit!');
             if (this.boat.integrity <= 0) this.failed = true;
           }
         }
@@ -724,6 +746,25 @@
     if(inten>0.25){ var eg=ctx.createRadialGradient(cx,cy,vb*0.30,cx,cy,vb*0.95); eg.addColorStop(0,'rgba(2,8,16,0)'); eg.addColorStop(1,'rgba(2,8,16,'+(0.10+inten*0.18).toFixed(3)+')'); ctx.fillStyle=eg; ctx.fillRect(-w*0.2,-vb*0.12,w*1.4,vb*1.24); }
   };
 
+  // RS9: Race-Clock + Strafzeit-Anzeige (es geht immer um Zeit) – kompakte Pille oben mittig auf der Scheibe.
+  World.prototype._drawClock = function (ctx) {
+    var w = this.w, rt = this.raceT || 0;
+    var mm = Math.floor(rt / 60), ss = Math.floor(rt % 60);
+    var pen = Math.round(this.penaltyT || 0);
+    var label = '⏱ ' + (mm < 10 ? '0' : '') + mm + ':' + (ss < 10 ? '0' : '') + ss + (pen > 0 ? ('  +' + pen + 's') : '');
+    ctx.save();
+    ctx.font = '700 14px system-ui,sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    var tw = ctx.measureText(label).width, bw = tw + 22, bx = w / 2 - bw / 2, by = 6, bh = 26;
+    ctx.fillStyle = 'rgba(6,16,28,0.60)';
+    if (M.roundRect) { M.roundRect(ctx, bx, by, bw, bh, 13); ctx.fill(); } else ctx.fillRect(bx, by, bw, bh);
+    ctx.strokeStyle = 'rgba(201,162,75,0.50)'; ctx.lineWidth = 1.2;
+    if (M.roundRect) { M.roundRect(ctx, bx, by, bw, bh, 13); ctx.stroke(); }
+    ctx.fillStyle = (pen > 0) ? '#ffb4a6' : '#F5F0E1';
+    ctx.fillText(label, w / 2, by + bh / 2 + 1);
+    if (this._penFlash > 0) { this._penFlash = Math.max(0, this._penFlash - 0.035); ctx.globalAlpha = Math.min(0.55, this._penFlash); ctx.strokeStyle = '#ff4d3d'; ctx.lineWidth = 3; if (M.roundRect) { M.roundRect(ctx, bx - 2, by - 2, bw + 4, bh + 4, 15); ctx.stroke(); } }
+    ctx.restore();
+  };
+
   World.prototype.draw = function (ctx, t) {
     var w = this.w, h = this.h, vb = this.viewBottom, hy = this.horizonY;
 
@@ -803,6 +844,9 @@
 
     // ---------- Cockpit-Vordergrund (fix, bewegt sich NICHT mit der Welt) ----------
     this._drawCockpit(ctx, t);
+
+    // ---------- Race-Clock / Strafzeit (über allem) ----------
+    this._drawClock(ctx);
   };
 
   WB.World = World;

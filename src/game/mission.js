@@ -76,16 +76,23 @@
     if (clean < 0.80) stars -= 1;                       // unsauberer Kurs
     if (clean < 0.55) stars -= 1;
     if (cpRatio < 0.8 && stars > 2) stars = 2;          // Kontrollpunkte verpasst
-    if (world.collisions >= 2) stars -= 1;              // Kollisionen bleiben spürbar (jetzt selten)
+    if (world.collisions >= 2) stars -= 1;              // Kollisionen bleiben spürbar
     if (boat_integrity(world) < 0.35 && stars > 1) stars = 1;
+    // RS9: Strafzeit (Fahrrinne verlassen / Kollisionen) drückt die Wertung
+    var pen = world.penaltyT || 0;
+    if (pen > 6 && stars > 1) stars -= 1;
+    if (pen > 15 && stars > 1) stars -= 1;
     if (stars < 1) stars = 1;
     if (stars > 3) stars = 3;
 
     var starMult = stars === 3 ? 1.1 : (stars === 2 ? 0.85 : 0.6);
     var prestigeMult = 1 + boatStats.prestige * 0.03;
     var coins = Math.round(this.mission.rewardCoins * starMult * prestigeMult);
+    // RS9: AAA-Zeit-Belohnung – zügige, strafarme Fahrt gibt bis zu +35% Bonus-Coins.
+    var timeBonus = Math.max(0, Math.round((1 - Math.min(1, pen / 18)) * this.mission.rewardCoins * 0.35 * starMult));
+    coins += timeBonus;
     var xp = Math.round(this.mission.rewardXp * starMult);
-    return { stars: stars, coins: coins, xp: xp, collisions: world.collisions, perfect: stars === 3 };
+    return { stars: stars, coins: coins, xp: xp, collisions: world.collisions, perfect: stars === 3, penaltyT: Math.round(pen), timeBonus: timeBonus, raceT: Math.round(world.raceT || 0) };
   };
 
   function boat_integrity(world) { return world.boat.integrity; }
