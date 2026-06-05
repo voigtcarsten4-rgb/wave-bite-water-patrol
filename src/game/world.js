@@ -171,8 +171,11 @@
     this._chT = (this._chT == null ? 0 : this._chT) - dt;
     if (this._chT <= 0) {
       var c = this._chCenter, half = 0.56;
-      this.obstacles.push(new WB.Obstacle('buoy',  M.clamp(c - half, -0.9, 0.9), 1.04));   // Backbord rot links
-      this.obstacles.push(new WB.Obstacle('buoy_g', M.clamp(c + half, -0.9, 0.9), 1.04));  // Steuerbord grün rechts
+      this._buoyNum = ((this._buoyNum || 0) % 9) + 1;            // RS6: fortlaufende Fahrwasser-Nummern wie in der Vorlage
+      var br = new WB.Obstacle('buoy',  M.clamp(c - half, -0.9, 0.9), 1.04);   // Backbord rot links
+      var bg = new WB.Obstacle('buoy_g', M.clamp(c + half, -0.9, 0.9), 1.04);  // Steuerbord grün rechts
+      br.num = this._buoyNum; bg.num = this._buoyNum;
+      this.obstacles.push(br); this.obstacles.push(bg);
       this._chT = M.clamp(1.5 - this.region.difficulty * 0.05, 1.0, 1.6);
     }
     // RS5: KEINE Objektflut. Nur SELTENE, bewusste Einzel-Hindernisse – erst nach Eingewöhnung.
@@ -595,9 +598,9 @@
     for (d = 0; d <= 1.0001; d += 0.045) P.push(ptAt(d));
     function path(){ var i; ctx.beginPath(); for (i=0;i<P.length;i++){ var q=P[i]; if(i===0) ctx.moveTo(q.x,q.y); else { var pr=P[i-1]; ctx.quadraticCurveTo(pr.x,pr.y,(pr.x+q.x)/2,(pr.y+q.y)/2);} } }
     ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.lineCap='round'; ctx.lineJoin='round';
-    path(); ctx.strokeStyle='rgba(60,190,205,0.10)'; ctx.lineWidth=this._laneHalf(0)*0.5; ctx.shadowColor='rgba(70,200,215,0.5)'; ctx.shadowBlur=24; ctx.stroke();
-    path(); ctx.strokeStyle='rgba(120,235,235,0.18)'; ctx.lineWidth=this._laneHalf(0)*0.13; ctx.shadowBlur=14; ctx.stroke();
-    path(); ctx.strokeStyle='rgba(210,245,235,0.5)'; ctx.lineWidth=Math.max(1.6, w*0.006); ctx.shadowColor='rgba(150,245,210,0.8)'; ctx.shadowBlur=9; ctx.stroke();
+    path(); ctx.strokeStyle='rgba(60,195,210,0.16)'; ctx.lineWidth=this._laneHalf(0)*0.62; ctx.shadowColor='rgba(70,205,220,0.65)'; ctx.shadowBlur=30; ctx.stroke();
+    path(); ctx.strokeStyle='rgba(120,240,238,0.26)'; ctx.lineWidth=this._laneHalf(0)*0.17; ctx.shadowBlur=18; ctx.stroke();
+    path(); ctx.strokeStyle='rgba(225,250,240,0.72)'; ctx.lineWidth=Math.max(2.0, w*0.0078); ctx.shadowColor='rgba(160,250,215,0.95)'; ctx.shadowBlur=12; ctx.stroke();
     var CN = 7, a;
     for (a=0;a<CN;a++){
       var dd = ((a/CN) + sc*0.00035) % 1;
@@ -606,7 +609,7 @@
       var ang=Math.atan2(p2.y-p1.y, p2.x-p1.x), scc=M.lerp(1.15,0.28,dd);
       var al = (dd<0.06?dd/0.06:1) * (dd>0.9?(1-dd)/0.1:1);
       ctx.save(); ctx.translate(p1.x,p1.y); ctx.rotate(ang+Math.PI/2);
-      ctx.globalAlpha = 0.5*al; ctx.fillStyle='rgba(150,240,225,0.95)'; ctx.shadowColor='rgba(90,220,200,0.9)'; ctx.shadowBlur=11;
+      ctx.globalAlpha = 0.68*al; ctx.fillStyle='rgba(165,248,232,0.98)'; ctx.shadowColor='rgba(95,228,205,0.95)'; ctx.shadowBlur=14;
       ctx.beginPath(); ctx.moveTo(0,-15*scc); ctx.lineTo(13*scc,11*scc); ctx.lineTo(0,5*scc); ctx.lineTo(-13*scc,11*scc); ctx.closePath(); ctx.fill();
       ctx.restore();
     }

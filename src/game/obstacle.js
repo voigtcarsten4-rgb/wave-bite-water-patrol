@@ -54,6 +54,42 @@
     if (this.z <= -0.05) this.dead = true;
   };
 
+  // RS6: Premium-Boje im Stil der preview.html-Vorlage (Gradient-Koerper, Turm, Nummer, Lichtkopf, Wasserschatten)
+  function premiumBuoy(ctx, s, col, lt, num) {
+    var r = 10 * s, bh = 30 * s;
+    num = (num == null) ? '' : String(num);
+    // farbiger Wasser-Ring um den Fuss
+    ctx.save();
+    ctx.globalAlpha = 0.30; ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = Math.max(1, 1.6 * s);
+    ctx.beginPath(); ctx.ellipse(0, r * 1.05, r * 1.7, r * 0.34, 0, 0, Math.PI * 2); ctx.stroke();
+    ctx.globalAlpha = 0.26; ctx.fillStyle = col;
+    ctx.beginPath(); ctx.ellipse(0, r * 1.12, r * 1.4, r * 0.26, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = 1;
+    // Koerper mit Verlauf
+    ctx.shadowColor = lt; ctx.shadowBlur = 12 * s + 5;
+    var gd = ctx.createLinearGradient(-r, -bh, r, r);
+    gd.addColorStop(0, 'rgba(255,255,255,.34)'); gd.addColorStop(0.22, col); gd.addColorStop(1, 'rgba(0,0,0,.5)');
+    ctx.fillStyle = gd; ctx.beginPath(); ctx.ellipse(0, 0, r * 1.15, r * 0.62, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.shadowBlur = 0; ctx.strokeStyle = 'rgba(0,0,0,.35)'; ctx.lineWidth = 1.5 * s; ctx.stroke();
+    // Turm/Gestaenge
+    ctx.strokeStyle = col; ctx.lineWidth = Math.max(1.8, 3 * s);
+    ctx.beginPath();
+    ctx.moveTo(-r * 0.6, -r * 0.15); ctx.lineTo(-r * 0.22, -bh); ctx.lineTo(r * 0.22, -bh); ctx.lineTo(r * 0.6, -r * 0.15);
+    ctx.moveTo(-r * 0.4, -r * 0.5); ctx.lineTo(r * 0.4, -r * 0.5);
+    ctx.moveTo(-r * 0.3, -bh * 0.6); ctx.lineTo(r * 0.3, -bh * 0.6);
+    ctx.stroke();
+    // Nummern-Plakette
+    if (num) {
+      ctx.fillStyle = 'rgba(0,0,0,.32)'; M.roundRect(ctx, -r * 0.5, -r * 0.28, r, r * 0.86, 4 * s); ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,.92)'; ctx.font = '700 ' + Math.max(9, 15 * s) + 'px system-ui,sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(num, 0, r * 0.15);
+    }
+    // leuchtender Lichtkopf
+    ctx.shadowColor = lt; ctx.shadowBlur = 14 * s + 8; ctx.fillStyle = lt;
+    ctx.beginPath(); ctx.arc(0, -bh - 6 * s, Math.max(2.5, 4.5 * s), 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
   // Zeichnet das Objekt an Bildschirmposition (x,y) mit Skalierung s (1 ≈ nah).
   Obstacle.prototype.drawAt = function (ctx, x, y, s) {
     if (s <= 0.02) return;
@@ -71,13 +107,9 @@
 
     switch (this.kind) {
       case 'buoy':
-        ctx.fillStyle = '#C9462F'; ctx.beginPath(); ctx.arc(0, 0, 9 * s, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = '#F5F0E1'; ctx.beginPath(); ctx.arc(0, 0, 4.5 * s, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = '#7A1E12'; ctx.fillRect(-1.5 * s, -16 * s, 3 * s, 8 * s); break;
+        premiumBuoy(ctx, s, '#bd2b20', '#ff3d30', this.num); break;
       case 'buoy_g':
-        ctx.fillStyle = '#1F8F4E'; ctx.beginPath(); ctx.moveTo(-9*s, 6*s); ctx.lineTo(9*s, 6*s); ctx.lineTo(0, -8*s); ctx.closePath(); ctx.fill();
-        ctx.fillStyle = '#0E5C31'; ctx.fillRect(-1.5 * s, -18 * s, 3 * s, 12 * s);
-        ctx.fillStyle = '#0E5C31'; ctx.beginPath(); ctx.arc(0, -20*s, 3*s, 0, Math.PI*2); ctx.fill(); break;
+        premiumBuoy(ctx, s, '#4f9f2f', '#8cff55', this.num); break;
       case 'rock':
         ctx.fillStyle = '#42525E'; ctx.beginPath();
         ctx.moveTo(-16 * s, 4 * s); ctx.lineTo(-7 * s, -10 * s); ctx.lineTo(6 * s, -7 * s); ctx.lineTo(16 * s, 6 * s); ctx.lineTo(0, 12 * s); ctx.closePath(); ctx.fill();
