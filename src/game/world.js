@@ -69,7 +69,7 @@
     this.escalation = E;
     this.distance = mission.distance * ((V && V.distMul) || 1) * (1 + E * 0.22);
     this._trafficMul = ((V && V.trafficMul) || 1) * (1 + E * 0.6);
-    this._curveAmp = 0.52 * (1 + E * 0.30); this._curveAmp2 = 0.20 * (1 + E * 0.30); // RS5: deutlichere Kurven
+    this._curveAmp = 0.60 * (1 + E * 0.30); this._curveAmp2 = 0.24 * (1 + E * 0.30); // RS6: deutlichere, gut sichtbare Kurven
     this._startLane = (V && V.startLane) || 0;
     this._fog = !!(V && V.weather === 'fog');
     if (V && (V.weather === 'storm')) this.storm = true;
@@ -324,18 +324,34 @@
     var gl = ctx.createLinearGradient(0, hy - 6, 0, hy + 70);
     gl.addColorStop(0, 'rgba(255,236,190,0.0)'); gl.addColorStop(0.4, 'rgba(255,236,190,0.16)'); gl.addColorStop(1, 'rgba(255,236,190,0)');
     ctx.fillStyle = gl; ctx.fillRect(0, hy - 6, w, 76); ctx.restore();
-    // Tiefen-/Fahrlinien zum Fluchtpunkt (nur im unteren, voll deckenden Wasserbereich)
-    ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,0.10)'; ctx.lineWidth = 1;
-    var lanes = [-0.6,-0.3,0,0.3,0.6], i, midY = hy + (vb - hy) * 0.34;
-    for (i = 0; i < lanes.length; i++) {
-      ctx.beginPath(); ctx.moveTo(w/2 + lanes[i]*this._laneHalf(0) - this.playerLane*w*0.46, vb);
-      ctx.lineTo(w/2 + lanes[i]*0.28*this._laneHalf(1) - this.playerLane*w*0.12, midY); ctx.stroke();
+    // RS6: hochwertige, tiefen-skalierte Wasseroberflaeche (Wellenlinien + Glints) – Vorbild preview.html
+    var sc2 = this.scroll, x0 = -w*0.2, N = (w < 560 ? 54 : 92), wi, xx;
+    ctx.save();
+    for (wi = 0; wi < N; wi++) {
+      var d = wi / (N - 1);
+      var yb = hy + Math.pow(d, 1.65) * (vb - hy);
+      var amp = M.lerp(1.2, 15, d), step = M.lerp(22, 70, d);
+      var ph = sc2 * (0.010 + d*0.02) + wi*0.6 + t*9;
+      ctx.beginPath();
+      for (xx = x0; xx <= w + w*0.2; xx += step) {
+        var yy2 = yb + Math.sin(xx*(0.010+d*0.016)+ph)*amp + Math.sin(xx*0.03 - t*7 + wi)*amp*0.18;
+        if (xx === x0) ctx.moveTo(xx, yy2); else ctx.lineTo(xx, yy2);
+      }
+      ctx.globalAlpha = M.lerp(0.05, 0.34, d);
+      ctx.lineWidth = M.lerp(0.6, 2.1, d);
+      ctx.strokeStyle = (wi % 7 === 0) ? 'rgba(255,255,255,0.55)' : 'rgba(150,214,236,0.42)';
+      ctx.stroke();
     }
-    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-    for (i = 0; i < 7; i++) {
-      var p = ((this.scroll * 0.004 + i / 7) % 1);
-      var yy = midY + (vb - midY) * (p * p);
-      ctx.beginPath(); ctx.moveTo(-w*0.2, yy); ctx.lineTo(w*1.2, yy); ctx.stroke();
+    ctx.restore();
+    ctx.save(); ctx.globalCompositeOperation = 'screen';
+    var GN = (w < 560 ? 22 : 42), gi;
+    for (gi = 0; gi < GN; gi++) {
+      var gd = (gi % 18) / 18;
+      var gx = ((gi*103 + Math.sin(t*4+gi)*90) % (w*1.4)) + x0;
+      var gy = hy + ((gi*61 + sc2*0.6) % (vb - hy));
+      ctx.globalAlpha = 0.03 + gd*0.11;
+      ctx.fillStyle = 'rgba(255,247,220,0.5)';
+      ctx.beginPath(); ctx.ellipse(gx, gy, 10 + gd*40, 1 + gd*3, Math.sin(gi)*0.4, 0, Math.PI*2); ctx.fill();
     }
     ctx.restore();
   };
@@ -569,35 +585,30 @@
     ctx.restore();
   };
 
-  // Sicherer Fahrkorridor: zwei dezente grüne Linien + kleine Pfeile entlang der aktuellen Spur.
+  // RS6: leuchtende, geschwungene Fahrrinnen-Linie ("Rennlinie") mit fliessenden Chevrons – Vorbild preview.html
   World.prototype._drawSafeLane = function (ctx, t) {
-    var w = this.w, vb = this.viewBottom, hy = this.horizonY, mid = hy + (vb - hy) * 0.34;
-    var lane = this.playerLane; var cc = this._chCenter || 0;
-    function projX(self, ln, near){ return near ? (w/2 + ln*self._laneHalf(0) - lane*w*0.46) : (w/2 + ln*0.28*self._laneHalf(1) - lane*w*0.12); }
-    ctx.save();
-    // breiter Korridor passend zur Fahrrinne (Tonnen bei cc±0.56)
-    var grd = ctx.createLinearGradient(0, mid, 0, vb);
-    grd.addColorStop(0, 'rgba(90,220,170,0.0)'); grd.addColorStop(1, 'rgba(90,220,170,0.40)');
-    ctx.strokeStyle = grd; ctx.lineWidth = 3;
-    [cc-0.34, cc+0.34].forEach(function(off){
-      ctx.beginPath(); ctx.moveTo(projX(this, off, true), vb); ctx.lineTo(projX(this, off, false), mid); ctx.stroke();
-    }, this);
-    // dezente Neon-Leitlinie in der Mitte (gestrichelt, HUD-Stil) -> "hier fahren"
-    ctx.save(); ctx.setLineDash([10, 12]); ctx.lineDashOffset = -(this.scroll * 0.05) % 22;
-    var ng = ctx.createLinearGradient(0, mid, 0, vb);
-    ng.addColorStop(0, 'rgba(120,235,200,0.0)'); ng.addColorStop(1, 'rgba(150,245,210,0.55)');
-    ctx.strokeStyle = ng; ctx.lineWidth = 2.2; ctx.shadowColor = 'rgba(120,235,200,0.8)'; ctx.shadowBlur = 6;
-    ctx.beginPath(); ctx.moveTo(projX(this, cc, true), vb); ctx.lineTo(projX(this, cc, false), mid); ctx.stroke();
-    ctx.restore();
-    // Richtungspfeile (scrollen nach unten = Fahrtgefühl)
-    ctx.fillStyle = 'rgba(120,235,180,0.5)';
-    for (var i = 0; i < 3; i++) {
-      var p = ((this.scroll * 0.0016 + i / 3) % 1);
-      var yy = mid + (vb - mid) * (p * p);
-      var cx = w/2 + (cc - lane) * M.lerp(w*0.12, w*0.46, p*p);
-      var aw = M.lerp(5, 16, p), ah = M.lerp(4, 12, p);
-      ctx.globalAlpha = 0.18 + 0.5 * p;
-      ctx.beginPath(); ctx.moveTo(cx - aw, yy - ah); ctx.lineTo(cx, yy); ctx.lineTo(cx + aw, yy - ah); ctx.closePath(); ctx.fill();
+    var w = this.w, self = this, sc = this.scroll;
+    var ca = this._curveAmp || 0.5, ca2 = this._curveAmp2 || 0.18, LOOK = 1700;
+    function chAt(s){ return ca * Math.sin(s*0.0011) + ca2 * Math.sin(s*0.0029 + 1.3); }
+    function ptAt(d){ var z = d, off = chAt(sc + d*LOOK); return { x: self._projX(off, z), y: self._projY(z) }; }
+    var P = [], d;
+    for (d = 0; d <= 1.0001; d += 0.045) P.push(ptAt(d));
+    function path(){ var i; ctx.beginPath(); for (i=0;i<P.length;i++){ var q=P[i]; if(i===0) ctx.moveTo(q.x,q.y); else { var pr=P[i-1]; ctx.quadraticCurveTo(pr.x,pr.y,(pr.x+q.x)/2,(pr.y+q.y)/2);} } }
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.lineCap='round'; ctx.lineJoin='round';
+    path(); ctx.strokeStyle='rgba(60,190,205,0.10)'; ctx.lineWidth=this._laneHalf(0)*0.5; ctx.shadowColor='rgba(70,200,215,0.5)'; ctx.shadowBlur=24; ctx.stroke();
+    path(); ctx.strokeStyle='rgba(120,235,235,0.18)'; ctx.lineWidth=this._laneHalf(0)*0.13; ctx.shadowBlur=14; ctx.stroke();
+    path(); ctx.strokeStyle='rgba(210,245,235,0.5)'; ctx.lineWidth=Math.max(1.6, w*0.006); ctx.shadowColor='rgba(150,245,210,0.8)'; ctx.shadowBlur=9; ctx.stroke();
+    var CN = 7, a;
+    for (a=0;a<CN;a++){
+      var dd = ((a/CN) + sc*0.00035) % 1;
+      var i2 = Math.min(P.length-2, Math.floor(dd*(P.length-1)));
+      var p1=P[i2], p2=P[i2+1];
+      var ang=Math.atan2(p2.y-p1.y, p2.x-p1.x), scc=M.lerp(1.15,0.28,dd);
+      var al = (dd<0.06?dd/0.06:1) * (dd>0.9?(1-dd)/0.1:1);
+      ctx.save(); ctx.translate(p1.x,p1.y); ctx.rotate(ang+Math.PI/2);
+      ctx.globalAlpha = 0.5*al; ctx.fillStyle='rgba(150,240,225,0.95)'; ctx.shadowColor='rgba(90,220,200,0.9)'; ctx.shadowBlur=11;
+      ctx.beginPath(); ctx.moveTo(0,-15*scc); ctx.lineTo(13*scc,11*scc); ctx.lineTo(0,5*scc); ctx.lineTo(-13*scc,11*scc); ctx.closePath(); ctx.fill();
+      ctx.restore();
     }
     ctx.restore();
   };
