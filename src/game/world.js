@@ -178,7 +178,7 @@
     // FAHRWASSER-LERNLOGIK: zwischen den Tonnen (|lane-Mitte|<0.40) = sauberer Kurs.
     this.totalT += dt;
     var _off = Math.abs(this.playerLane - this._chCenter);
-    this.inChannel = _off < 0.56;
+    this.inChannel = _off < 0.66;   // RS8: breitere Fahrrinne (mehr Platz für Ausweichmanöver)
     if (this.inChannel) { this.cleanT += dt; this.offT = Math.max(0, this.offT - dt * 0.6); }
     else {
       this.offT += dt; this._offWarn -= dt;
@@ -190,13 +190,13 @@
     }
     this._chT = (this._chT == null ? 0 : this._chT) - dt;
     if (this._chT <= 0) {
-      var c = this._chCenter, half = 0.56;
+      var c = this._chCenter, half = 0.78;   // RS8: Begrenzungstonnen weit auseinander -> sitzen am linken/rechten Scheibenrand
       this._buoyNum = ((this._buoyNum || 0) % 9) + 1;            // RS6: fortlaufende Fahrwasser-Nummern wie in der Vorlage
-      var br = new WB.Obstacle('buoy',  M.clamp(c - half, -0.9, 0.9), 1.04);   // Backbord rot links
-      var bg = new WB.Obstacle('buoy_g', M.clamp(c + half, -0.9, 0.9), 1.04);  // Steuerbord grün rechts
+      var br = new WB.Obstacle('buoy',  M.clamp(c - half, -1.25, 1.25), 1.04);   // Backbord rot links
+      var bg = new WB.Obstacle('buoy_g', M.clamp(c + half, -1.25, 1.25), 1.04);  // Steuerbord grün rechts
       br.num = this._buoyNum; bg.num = this._buoyNum;
       this.obstacles.push(br); this.obstacles.push(bg);
-      this._chT = M.clamp(1.5 - this.region.difficulty * 0.05, 1.0, 1.6);
+      this._chT = M.clamp(1.15 - this.region.difficulty * 0.05, 0.82, 1.25);   // RS8: dichtere Tonnenreihe -> Rand durchgehend markiert
     }
     // RS5: KEINE Objektflut. Nur SELTENE, bewusste Einzel-Hindernisse – erst nach Eingewöhnung.
     this.hazardT = (this.hazardT == null ? 9999 : this.hazardT) - dt;
@@ -207,9 +207,10 @@
         var hk = M.pick(['log','rock','motor']);                 // klar erkennbares Einzelhindernis
         var hSide = (Math.random() < 0.5 ? -1 : 1);
         var inLane = Math.random() < 0.55;                       // bewusste Ausweichaufgabe ODER am Rand
-        var hl = inLane ? M.clamp(this._chCenter + M.rand(-0.18, 0.18), -0.8, 0.8)
-                        : M.clamp(this._chCenter + hSide * M.rand(0.6, 0.95), -1.0, 1.0);
-        this.obstacles.push(new WB.Obstacle(hk, hl, 1.06));
+        // RS8: Hindernis bewusst zu EINER Seite versetzt -> auf der anderen Seite bleibt klar befahrbares Wasser (realistisches Ausweichen)
+        var hl = inLane ? M.clamp(this._chCenter + hSide * M.rand(0.22, 0.50), -0.62, 0.62)
+                        : M.clamp(this._chCenter + hSide * M.rand(0.74, 1.02), -1.2, 1.2);
+        this.obstacles.push(new WB.Obstacle(hk, hl, 1.09));   // weiter weg gespawnt = mehr Vorlauf/Reaktionszeit
         this.hazardT = hazGap + M.rand(-2, 4);
       }
     }
@@ -764,7 +765,10 @@
     var sorted = this.obstacles.slice().sort(function (a, b) { return b.z - a.z; });
     for (var i = 0; i < sorted.length; i++) {
       var o = sorted[i];
-      o.drawAt(ctx, this._projX(o.lane, o.z), this._projY(o.z), this._scale(o.z));
+      var oSc = this._scale(o.z), oy = this._projY(o.z);
+      // RS8: Begrenzungstonnen schaukeln natürlich auf der Welle (am Rand sichtbar belebt)
+      if (o.kind === 'buoy' || o.kind === 'buoy_g') oy += Math.sin(t * 1.7 + (o.phase || 0)) * (1.4 + 4.5 * oSc);
+      o.drawAt(ctx, this._projX(o.lane, o.z), oy, oSc);
     }
     // Gefahr-Marker + Distanz-Labels für die nächsten relevanten Objekte (max 4)
     this._drawObstacleMarkers(ctx);
